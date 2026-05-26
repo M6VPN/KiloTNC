@@ -184,12 +184,61 @@ If the caller output frame array fills, additional valid frames in that call are
 
 Streaming stats report sample count, decoded bits, flags, candidate frames, valid frames, bad FCS, oversize frames, malformed frames, dropped frames, processed chunks, DCD score, and average confidence.
 
+## M1.6 Streaming TX State Machine
+
+M1.6 adds an incremental host-side TX state machine:
+
+```text
+afsk1200_tx_init()
+afsk1200_tx_start_frame()
+afsk1200_tx_process()
+afsk1200_tx_abort()
+afsk1200_tx_is_active()
+afsk1200_tx_stats()
+```
+
+The M1.6 transmit pipeline is:
+
+```text
+AX.25 UI frame bytes with FCS
+	|
+	HDLC bit-stuffing
+	|
+	leading flags for TXDELAY
+	|
+	NRZI encode
+	|
+	AFSK1200 tone generation
+	|
+	chunked signed 16-bit PCM
+	|
+	trailing flags for TXTAIL
+```
+
+`afsk1200_tx_start_frame()` accepts AX.25 UI frame bytes including FCS. It does not accept KISS frames. Tests prepare frames with `ax25_encode_ui_fcs()`.
+
+The TX state machine states are:
+
+- `IDLE`: no active transmission.
+- `PREAMBLE_FLAGS`: emit configured leading HDLC flags.
+- `FRAME_BITS`: emit HDLC-stuffed frame bits.
+- `TAIL_FLAGS`: emit configured trailing HDLC flags.
+- `DONE`: transmission has completed.
+
+`afsk1200_tx_process()` emits up to the caller-provided PCM capacity. Output buffers smaller than one bit are valid, and partial tone samples are retained across calls. TXDELAY and TXTAIL are represented as HDLC flag counts in the host-side simulator.
+
+This module does not control PTT. PTT timing and fail-safe behavior remain a later safety-layer task. M1.6 validates generated TX PCM by decoding it through both the whole-buffer RX acquisition API and the streaming RX state machine.
+
 ## Limitations
 
 - Generated host vectors only.
 - Best-offset selection only, not a full timing recovery loop.
 - Diagnostic DCD score only, not production DCD.
 - Streaming host-side state only, not an embedded HAL or DMA integration.
+- No PTT safety layer.
+- No USB/KISS transmit queue.
+- No real radio level control.
+- No pre-emphasis/de-emphasis decision.
 - No squelch/COS integration.
 - Mild synthetic noise only.
 - No real sample clock drift tolerance claim.

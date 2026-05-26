@@ -173,12 +173,36 @@ M1.5 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Whole-buffer and streaming decode comparison for the same generated PCM.
 - Mild deterministic additive noise and DC offset through streaming chunks.
 
+M1.6 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- TX init with default config.
+- TX init with custom TXDELAY, TXTAIL, and amplitude.
+- NULL argument handling.
+- Invalid amplitude rejection.
+- Empty, oversize, and bad-FCS frame rejection.
+- Start while busy rejection.
+- Output buffer exactly one bit long.
+- Output buffer smaller than one bit, including one-sample chunks.
+- Irregular output chunk sizes.
+- Generated sample count from leading flags, stuffed frame bits, trailing flags, and 40 samples per bit.
+- Generated PCM int16_t range.
+- TX inactive/done behavior after all samples are emitted.
+- Abort stops active transmission.
+- Stats counters for queued, done, rejected, bits, samples, chunks, and underruns.
+- Zero TXDELAY and TXTAIL flags.
+- Two sequential frame starts after completion.
+- TX-generated PCM decoded by whole-buffer RX acquisition.
+- TX-generated PCM decoded by streaming RX.
+
 Pending:
 
 - Full timing recovery loop.
 - Production DCD.
 - Squelch/COS integration.
 - Embedded ring-buffer integration.
+- PTT safety layer.
+- USB/KISS transmit queue.
+- Real radio level control.
 - Real noisy decode.
 - Real sample clock drift handling.
 - Real-radio testing.
