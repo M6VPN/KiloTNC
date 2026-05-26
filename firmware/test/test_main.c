@@ -7,6 +7,7 @@
 
 int test_ax25(void);
 int test_fcs(void);
+int test_fuzz(void);
 int test_hdlc(void);
 int test_kiss(void);
 
@@ -22,6 +23,7 @@ main(void)
 	failures += test_run("hdlc", test_hdlc);
 	failures += test_run("ax25", test_ax25);
 	failures += test_run("kiss", test_kiss);
+	failures += test_run("fuzz", test_fuzz);
 
 	if (failures != 0) {
 		(void)printf("failed: %d\n", failures);

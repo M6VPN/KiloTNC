@@ -21,6 +21,7 @@ kiss_encode_frame(uint8_t port, uint8_t command, const uint8_t *data,
 {
 	size_t i;
 	size_t pos;
+	uint32_t type_word;
 	uint8_t type;
 	enum kiss_result res;
 
@@ -40,8 +41,11 @@ kiss_encode_frame(uint8_t port, uint8_t command, const uint8_t *data,
 
 	if (command == KISS_CMD_RETURN)
 		type = KISS_CMD_RETURN;
-	else
-		type = (uint8_t)((port << 4U) | (command & 0x0FU));
+	else {
+		type_word = ((uint32_t)port << 4U) |
+		    ((uint32_t)command & 0x0FU);
+		type = (uint8_t)type_word;
+	}
 
 	res = kiss_emit_byte(out, out_cap, &pos, type);
 	if (res != KISS_OK)

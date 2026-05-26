@@ -4,9 +4,11 @@
 CC	?= cc
 CFLAGS	+= -std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror
 CFLAGS	+= -I firmware/include
+SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
 
 BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
+SANBIN	= ${BUILD}/kilotnc_tests_sanitize
 
 SRCS	= firmware/src/ax25.c \
 	  firmware/src/fcs.c \
@@ -14,6 +16,7 @@ SRCS	= firmware/src/ax25.c \
 	  firmware/src/kiss.c \
 	  firmware/test/test_ax25.c \
 	  firmware/test/test_fcs.c \
+	  firmware/test/test_fuzz.c \
 	  firmware/test/test_hdlc.c \
 	  firmware/test/test_kiss.c \
 	  firmware/test/test_main.c
@@ -27,7 +30,14 @@ ${TESTBIN}: ${SRCS}
 test: ${TESTBIN}
 	./${TESTBIN}
 
+sanitize: ${SANBIN}
+	./${SANBIN}
+
+${SANBIN}: ${SRCS}
+	mkdir -p ${BUILD}
+	${CC} ${CFLAGS} ${SANFLAGS} -o $@ ${SRCS}
+
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test clean
+.PHONY: all test sanitize clean

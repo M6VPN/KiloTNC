@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1 host-side protocol simulator and test scaffold.
+Current stage: M1.1 host-side protocol hardening, fuzzing, and CI.
 
 PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -66,6 +66,14 @@ Clean generated files:
 ```text
 make clean
 ```
+
+Run the optional sanitizer build:
+
+```text
+make sanitize
+```
+
+GitHub Actions runs `make test` and `make sanitize` on push and pull request.
 
 ## Repository Layout
 

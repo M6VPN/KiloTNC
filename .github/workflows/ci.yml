@@ -1,0 +1,25 @@
+# KiloTNC - Developed by M6VPN (M6VPN@tuta.com)
+# KiloTNC/.github/workflows/ci.yml
+
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clean
+        run: make clean
+
+      - name: Test
+        run: make test
+
+      - name: Sanitizers
+        run: make sanitize

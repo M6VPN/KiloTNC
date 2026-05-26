@@ -59,7 +59,10 @@ hdlc_bitstuff(const uint8_t *in, size_t in_bits, uint8_t *out,
 static bool
 hdlc_get_bit(const uint8_t *buf, size_t bit)
 {
-	return ((buf[bit / 8U] >> (bit % 8U)) & 1U) != 0U;
+	uint32_t byte;
+
+	byte = buf[bit / 8U];
+	return ((byte >> (bit % 8U)) & 1U) != 0U;
 }
 
 static enum hdlc_result

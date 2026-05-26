@@ -31,6 +31,7 @@ ax25_decode_ui(const uint8_t *frame, size_t frame_len,
 	size_t addr_count;
 	size_t info_len;
 	size_t off;
+	bool found_ext;
 
 	if (frame == NULL || out == NULL)
 		return AX25_ERR_ARG;
@@ -40,6 +41,7 @@ ax25_decode_ui(const uint8_t *frame, size_t frame_len,
 	(void)memset(out, 0, sizeof(*out));
 	addr_count = 0U;
 	off = 0U;
+	found_ext = false;
 
 	while (off + KILOTNC_AX25_ADDR_LEN <= frame_len) {
 		if (addr_count >= KILOTNC_AX25_MAX_ADDRS)
@@ -59,11 +61,15 @@ ax25_decode_ui(const uint8_t *frame, size_t frame_len,
 
 		addr_count++;
 		off += KILOTNC_AX25_ADDR_LEN;
-		if ((frame[off - 1U] & AX25_ADDR_EXT) != 0U)
+		if ((frame[off - 1U] & AX25_ADDR_EXT) != 0U) {
+			found_ext = true;
 			break;
+		}
 	}
 
 	if (addr_count < KILOTNC_AX25_MIN_ADDRS)
+		return AX25_ERR_MALFORMED;
+	if (!found_ext)
 		return AX25_ERR_MALFORMED;
 	if (addr_count > KILOTNC_AX25_MIN_ADDRS)
 		out->ndigis = addr_count - KILOTNC_AX25_MIN_ADDRS;

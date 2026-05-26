@@ -47,6 +47,18 @@ M1 implemented tests:
 - SetHardware bounded payload.
 - TXDELAY, P, SlotTime, TXtail, FullDuplex, and Return command parsing.
 
+M1.1 edge tests:
+
+- Empty input and single or repeated FEND input.
+- Command-only data frame.
+- Maximum and over-maximum payloads.
+- Incomplete and invalid escape handling.
+- Unsupported command payload ignore.
+- Port 15 data frame handling.
+- SetHardware exact-max and over-max payload handling.
+- Encode output buffer too small.
+- NULL public argument handling.
+
 ## AX.25 and HDLC Tests
 
 - Encode destination and source callsign/SSID fields.
@@ -72,6 +84,23 @@ M1 implemented tests:
 - AX.25 invalid SSID rejection.
 - AX.25 corrupted FCS rejection.
 - AX.25 address extension bit handling.
+
+M1.1 edge tests:
+
+- FCS empty buffer, known ASCII vector, separate append, in-place append, short output, NULL arguments, and short validate.
+- HDLC empty input, no-stuff input, multiple stuffing events, exact and short output buffers, malformed runs, and NULL arguments.
+- AX.25 shortest and longest callsigns, SSID 0 and 15, empty and maximum information fields, oversize information rejection, malformed address chains, output buffer too small, and NULL arguments.
+
+## Fuzz Tests
+
+M1.1 deterministic fuzz tests:
+
+- KISS parser random byte streams.
+- HDLC unstuffing random byte streams.
+- AX.25 decode random byte streams.
+- FCS validate random byte streams.
+
+The fuzz harness uses a fixed seed, bounded iterations, fixed-size buffers, and no heap allocation.
 
 ## Modem Tests
 
