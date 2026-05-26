@@ -158,6 +158,28 @@ DMA, codec drivers, GPIO PTT, hardware registers, or transmitter audio.
 This remains host-native. It does not use real RF receive, real USB, ADC,
 DAC, SAI, I2S, DMA, codec drivers, GPIO PTT, or hardware registers.
 
+## M2.9 Full Host-Test Loopback Coverage
+
+`make embedded-test` now also verifies:
+
+- USB CDC KISS input through the embedded TNC.
+- Simulated AFSK1200 TX sample generation into the audio stub.
+- Bounded copy from audio TX samples into audio RX samples.
+- AFSK1200 RX decode from the audio stub back into AX.25 frames.
+- KISS data-frame output through the USB CDC stub.
+- AX.25 destination, source, and info equality across the full path.
+- KISS FEND and FESC escaping across the full path.
+- SETHW mode 6 and 22 before data frames.
+- Unsupported command handling before a data frame.
+- Unsupported mode blocking without unsafe activation.
+- Max iteration timeout behavior.
+- Watchdog-fault abort behavior.
+- Full-loopback counters and diagnostics.
+- PTT remains off throughout the loopback.
+
+This remains host-native. It does not use real USB, ADC, DAC, SAI, I2S,
+DMA, codec drivers, GPIO PTT, RF receive, RF transmit, or hardware registers.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

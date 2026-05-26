@@ -7,6 +7,7 @@ int test_embedded_app(void);
 int test_audio_stub(void);
 int test_embedded_audio(void);
 int test_embedded_diag(void);
+int test_embedded_loopback(void);
 int test_embedded_modem(void);
 int test_embedded_tnc(void);
 int test_embedded_usb_bridge(void);
@@ -30,6 +31,8 @@ main(void)
 	if (test_embedded_tnc() != 0)
 		return 1;
 	if (test_embedded_diag() != 0)
+		return 1;
+	if (test_embedded_loopback() != 0)
 		return 1;
 
 	return 0;

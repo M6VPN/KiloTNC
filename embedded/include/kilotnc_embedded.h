@@ -8,6 +8,6 @@
 #include "kilotnc_platform.h"
 
 #define KILOTNC_EMBEDDED_STAGE \
-	"M2.8 embedded RX audio/modem boundary skeleton"
+	"M2.9 embedded full host-test loopback"
 
 #endif

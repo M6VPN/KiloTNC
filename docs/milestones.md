@@ -145,9 +145,19 @@ M2.8 status:
 - Add modem RX counters and RX output drop counters to diagnostics.
 - Keep real receiver hardware, audio peripherals, GPIO PTT, USB hardware, and RF out of the repo.
 
+M2.9 status:
+
+- Add full host-test loopback around embedded USB, TNC, modem, and audio stubs.
+- Inject USB KISS input and request simulated AFSK1200 TX.
+- Copy generated TX samples into the audio RX stub in bounded chunks.
+- Decode RX samples and emit KISS data frames back to USB.
+- Verify AX.25 destination, source, and info equality across the full path.
+- Test max iteration timeout and watchdog-fault abort behavior.
+- Keep PTT off and keep real USB, audio, GPIO PTT, and RF out of the repo.
+
 Next planned M2 passes:
 
-- M2.9: embedded full host-test loopback.
+- M2.10: compile-gated STM32H753 target skeleton.
 
 M2 scope:
 

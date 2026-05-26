@@ -26,6 +26,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.6 host-native embedded TNC tests verify KISS commands, malformed input, unsupported modes, and invalid modes do not change the stub PTT state.
 - M2.7 host-native modem boundary tests verify simulated AFSK sample generation does not change the stub PTT state.
 - M2.8 host-native RX modem tests verify audio RX processing and KISS output do not change the stub PTT state.
+- M2.9 host-native full loopback tests verify USB KISS input, simulated audio TX/RX, and USB KISS output keep the stub PTT state off.
 
 ## Watchdog And Timeout
 
@@ -42,6 +43,8 @@ M2 firmware planning must include:
 - Watchdog faults that abort active simulated modem TX.
 - RX audio processing that cannot key PTT.
 - Malformed or noise-like RX audio that cannot affect watchdog or PTT safe-off.
+- Full host-test loopback that exits by max iteration timeout instead of locking up.
+- Watchdog faults that abort full host-test loopback safely.
 
 ## Diagnostics Visibility
 
@@ -55,6 +58,7 @@ M2 must expose enough diagnostics for board tests:
 - Embedded TNC mode, KISS command, and mode request counters.
 - Embedded modem TX active, request, done, rejected, abort, and sample counters.
 - Embedded modem RX frame, sample, audio error, and output drop counters.
+- Full loopback USB, audio, modem, watchdog, timeout, and final PTT counters.
 - TX active state.
 - Max TX timeout event.
 - Fault counter snapshot.
@@ -79,5 +83,7 @@ Before any future real radio PTT connection:
 12. Watchdog fault aborts simulated modem TX.
 13. Simulated RX audio decode is tested without changing PTT state.
 14. Malformed RX audio is tested without changing PTT state.
+15. Full host-test loopback is tested without changing PTT state.
+16. Full host-test loopback timeout and watchdog fault paths are tested.
 
 Only after these gates should a later milestone consider hardware PTT connection planning.

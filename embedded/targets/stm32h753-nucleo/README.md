@@ -6,7 +6,7 @@ Board path:
 
 - NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board.
 
-M2.8 status:
+M2.9 status:
 
 - Compile-only skeleton.
 - Host-native platform stub tests.
@@ -18,6 +18,8 @@ M2.8 status:
 - Simulated AFSK1200 sample generation into the audio stub.
 - Host-native RX audio/modem boundary tests.
 - Decoded AX.25 frames emitted as KISS to the USB stub.
+- Host-native full USB KISS to simulated audio TX/RX to USB KISS loopback tests.
+- Timeout and watchdog-fault loopback tests.
 - No vendor project committed.
 - No STM32 HAL or Cube code committed.
 - No CMSIS tree committed.

@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.8 expands the host-native embedded skeleton test with RX audio/modem boundary coverage.
+M2.9 expands the host-native embedded skeleton test with full USB KISS to simulated audio TX/RX to USB KISS loopback coverage.
 
 Planned M2 test sequence:
 
@@ -24,6 +24,8 @@ Planned M2 test sequence:
 - AFSK1200 streaming RX from audio stub samples.
 - Decoded AX.25 frame KISS output to the USB CDC stub.
 - RX output drop counters.
+- Full host-test loopback through USB, TNC, modem TX, audio TX/RX, modem RX, and USB output.
+- Full-loopback timeout and watchdog-fault handling.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.

@@ -664,6 +664,25 @@ M2.8 embedded RX audio/modem boundary gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.9 embedded full host-test loopback gate:
+
+- `make embedded-test` covers USB KISS input to embedded TNC.
+- `make embedded-test` covers simulated modem TX sample generation.
+- `make embedded-test` copies audio TX samples into audio RX in bounded chunks.
+- `make embedded-test` covers audio RX decode to AX.25 frames.
+- `make embedded-test` emits decoded RX frames as USB KISS output.
+- `make embedded-test` verifies AX.25 destination, source, and info equality.
+- `make embedded-test` covers KISS FEND and FESC escaping across the full path.
+- `make embedded-test` covers SETHW mode 6 and 22 before data frames.
+- `make embedded-test` covers unsupported KISS command handling before a data frame.
+- `make embedded-test` verifies unsupported modes do not activate unsafe paths.
+- `make embedded-test` covers max iteration timeout behavior.
+- `make embedded-test` covers watchdog-fault abort behavior.
+- `make embedded-test` covers full-loopback counters and diagnostics.
+- `make embedded-test` verifies PTT remains off throughout loopback tests.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

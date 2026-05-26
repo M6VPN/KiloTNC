@@ -56,7 +56,7 @@ portable core
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds host-native embedded TNC core integration for KISS command handling, mode mapping, control state, and diagnostics. M2.7 adds a host-native modem/audio boundary that writes simulated AFSK1200 samples into the audio stub. M2.8 adds a host-native RX audio/modem boundary that decodes generated test samples and emits KISS to the USB stub. Real USB stack, real audio peripheral integration, and RF transmit remain future work.
+M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds host-native embedded TNC core integration for KISS command handling, mode mapping, control state, and diagnostics. M2.7 adds a host-native modem/audio boundary that writes simulated AFSK1200 samples into the audio stub. M2.8 adds a host-native RX audio/modem boundary that decodes generated test samples and emits KISS to the USB stub. M2.9 adds a host-native full loopback from USB KISS input through simulated audio TX/RX and back to USB KISS output. Real USB stack, real audio peripheral integration, and RF transmit remain future work.
 
 ## Build Strategy
 

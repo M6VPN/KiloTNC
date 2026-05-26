@@ -138,7 +138,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.8 embedded status: host-native RX audio/modem boundary skeleton.'
+	@printf '%s\n' 'M2.9 embedded status: full host-test loopback skeleton.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -356,6 +356,7 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/app/embedded_audio.c \
 	  embedded/app/embedded_diag.c \
+	  embedded/app/embedded_loopback.c \
 	  embedded/app/embedded_modem.c \
 	  embedded/app/embedded_tnc.c \
 	  embedded/app/embedded_usb_bridge.c \
@@ -366,6 +367,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_embedded_app.c \
 	  embedded/tests/test_embedded_audio.c \
 	  embedded/tests/test_embedded_diag.c \
+	  embedded/tests/test_embedded_loopback.c \
 	  embedded/tests/test_embedded_main.c \
 	  embedded/tests/test_embedded_modem.c \
 	  embedded/tests/test_embedded_tnc.c \
@@ -384,6 +386,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	${CC} ${EMBED_CFLAGS} -o $@ embedded/app/embedded_app.c \
 		embedded/app/embedded_audio.c \
 		embedded/app/embedded_diag.c \
+		embedded/app/embedded_loopback.c \
 		embedded/app/embedded_modem.c \
 		embedded/app/embedded_tnc.c \
 		embedded/app/embedded_usb_bridge.c \
@@ -394,6 +397,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_embedded_app.c \
 		embedded/tests/test_embedded_audio.c \
 		embedded/tests/test_embedded_diag.c \
+		embedded/tests/test_embedded_loopback.c \
 		embedded/tests/test_embedded_main.c \
 		embedded/tests/test_embedded_modem.c \
 		embedded/tests/test_embedded_tnc.c \
