@@ -172,9 +172,17 @@ M2.11 status:
 - Keep real pin assignments unverified.
 - Keep HAL, CMSIS, TinyUSB, vendor projects, hardware registers, pin initialization, and real drivers out of the repo.
 
+M2.12 status:
+
+- Add target-local build metadata in `target_sources.mk` and `target_build.mk`.
+- Add `check_target_compile.sh` for skip-safe opt-in target checks.
+- Object-compile target skeleton sources under `build/embedded-target/` when `arm-none-eabi-gcc` is available.
+- Skip cleanly when `arm-none-eabi-gcc` is absent.
+- Keep linker scripts, startup vectors, HAL, CMSIS, TinyUSB, vendor SDKs, flash commands, hardware registers, pin assignments, real drivers, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.12: opt-in STM32 cross-compile skeleton, still no HAL import and no flashable firmware unless explicitly gated.
+- M2.13: embedded vendor dependency boundary planning or USB CDC stack selection planning, still no vendor import unless explicitly gated.
 
 M2 scope:
 

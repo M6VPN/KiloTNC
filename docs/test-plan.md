@@ -688,7 +688,7 @@ M2.10 compile-gated STM32H753 target skeleton gate:
 - `make embedded-test` includes the target metadata host test.
 - `make embedded-target-help` prints opt-in STM32H753 target guidance.
 - `make embedded-target-check` exits success with a skip message when `arm-none-eabi-gcc` is absent.
-- If `arm-none-eabi-gcc` is present, `make embedded-target-check` syntax-checks only safe target skeleton sources.
+- If `arm-none-eabi-gcc` is present, `make embedded-target-check` checks only safe target skeleton sources.
 - Target-specific C files are excluded from normal host builds.
 - Target-specific C files contain no STM32 HAL, CMSIS, TinyUSB, or vendor includes.
 - Target-specific C files contain no hardware register access and no pin assignments.
@@ -701,6 +701,18 @@ M2.11 STM32H753 resource planning gate:
 - `make embedded-test` covers target resource metadata.
 - Planned USB, test PTT GPIO, audio, diagnostics, watchdog, and reset flags are present.
 - Pin assignments remain unverified and `TBD`.
+- No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
+M2.12 opt-in STM32H753 target check gate:
+
+- `embedded/targets/stm32h753-nucleo/target_sources.mk` exists.
+- `embedded/targets/stm32h753-nucleo/target_build.mk` exists.
+- `embedded/targets/stm32h753-nucleo/check_target_compile.sh` exists and is executable.
+- `make embedded-target-check` exits success with `skip: arm-none-eabi-gcc not found` when the compiler is absent.
+- If `arm-none-eabi-gcc` is present, `make embedded-target-check` object-compiles only safe target skeleton sources.
+- Target object output stays under `build/embedded-target/`.
+- No ELF, BIN, HEX, linker script, startup vector table, vendor project, vendor headers, flash command, or flashable firmware image is produced.
+- `make embedded-test` remains host-native and independent of the ARM toolchain.
 - No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
 Pending:

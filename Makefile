@@ -22,10 +22,6 @@ KISSTESTBIN = ${BUILD}/kilotncd_kiss_test
 EMBEDBIN = ${BUILD}/kilotnc_embedded_tests
 EMBED_CFLAGS = ${CFLAGS} -I embedded/include -I embedded/app \
 	  -I embedded/platform -I embedded/targets/stm32h753-nucleo
-EMBED_TARGET_CFLAGS = -std=c99 -Wall -Wextra -Wconversion \
-	  -Wsign-conversion -Werror -DKILOTNC_TARGET_STM32H753_NUCLEO \
-	  -I embedded/include -I embedded/app -I embedded/platform \
-	  -I embedded/targets/stm32h753-nucleo
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  daemon/kilotncd_control.c \
 	  tools/wav_writer.c
@@ -91,7 +87,8 @@ help:
 	@printf '%s\n' '  kiss-compat-test  run local KISS compatibility checks'
 	@printf '%s\n' '  embedded-test     build and run host-native embedded skeleton tests'
 	@printf '%s\n' '  embedded-target-help show opt-in STM32H753 target guidance'
-	@printf '%s\n' '  embedded-target-check check opt-in STM32H753 skeleton syntax'
+	@printf '%s\n' '  embedded-target-check check opt-in STM32H753 skeleton objects'
+	@printf '%s\n' '  embedded-target-sources show opt-in STM32H753 skeleton sources'
 	@printf '%s\n' '  interop-help      show optional interop wrapper guidance'
 	@printf '%s\n' '  embedded-help     show M2 embedded skeleton guidance'
 	@printf '%s\n' '  clean             remove build outputs'
@@ -145,7 +142,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.10 embedded status: compile-gated STM32H753 target skeleton.'
+	@printf '%s\n' 'M2.12 embedded status: opt-in STM32H753 target object check.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -159,7 +156,8 @@ embedded-target-help:
 	@printf '%s\n' '  target: stm32h753-nucleo'
 	@printf '%s\n' '  board path: NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board'
 	@printf '%s\n' '  normal CI target: make embedded-test'
-	@printf '%s\n' '  opt-in syntax check: make embedded-target-check'
+	@printf '%s\n' '  opt-in object check: make embedded-target-check'
+	@printf '%s\n' '  target source list: make embedded-target-sources'
 	@printf '%s\n' ''
 	@printf '%s\n' 'Reserved future environment variables:'
 	@printf '%s\n' '  KILOTNC_EMBEDDED_TARGET=stm32h753-nucleo'
@@ -169,15 +167,10 @@ embedded-target-help:
 	@printf '%s\n' 'No STM32Cube, CMSIS, TinyUSB, HAL, linker script, startup code, or flashable image is committed.'
 
 embedded-target-check:
-	@if command -v ${ARM_NONE_EABI_CC} >/dev/null 2>&1; then \
-		printf '%s\n' 'checking stm32h753-nucleo target skeleton syntax'; \
-		${ARM_NONE_EABI_CC} ${EMBED_TARGET_CFLAGS} -fsyntax-only \
-			embedded/targets/stm32h753-nucleo/target_main.c \
-			embedded/targets/stm32h753-nucleo/target_platform.c; \
-	else \
-		printf '%s\n' 'skip: arm-none-eabi-gcc not found; target skeleton syntax check not run'; \
-		printf '%s\n' 'set ARM_NONE_EABI_CC=/path/to/arm-none-eabi-gcc to opt in'; \
-	fi
+	ARM_NONE_EABI_CC="${ARM_NONE_EABI_CC}" embedded/targets/stm32h753-nucleo/check_target_compile.sh
+
+embedded-target-sources:
+	@${MAKE} -f embedded/targets/stm32h753-nucleo/target_build.mk embedded-target-print-sources
 
 embedded-test: ${EMBEDBIN}
 	./${EMBEDBIN}
@@ -450,4 +443,4 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all clean daemon daemon-test embedded-help embedded-target-check embedded-target-help embedded-test help interop-help kiss-compat-test sanitize test tools tool-test
+.PHONY: all clean daemon daemon-test embedded-help embedded-target-check embedded-target-help embedded-target-sources embedded-test help interop-help kiss-compat-test sanitize test tools tool-test

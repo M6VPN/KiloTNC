@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.11 adds STM32H753 resource planning metadata and documentation. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
+M2.12 adds an opt-in STM32H753 target object check. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -28,7 +28,7 @@ Show target skeleton guidance with:
 make embedded-target-help
 ```
 
-Run the opt-in skip-safe target skeleton check with:
+Run the opt-in skip-safe target skeleton object check with:
 
 ```text
 make embedded-target-check
@@ -51,3 +51,5 @@ The embedded full host-test loopback coordinates the USB CDC stub, embedded TNC,
 The STM32H753 target skeleton under `embedded/targets/stm32h753-nucleo/` contains metadata, compile-gated placeholder source files, and planning notes for future linker, startup, USB, watchdog, GPIO, and audio work. The target source files do not include STM32 HAL, CMSIS, TinyUSB, vendor headers, hardware registers, pin assignments, or real drivers.
 
 The M2.11 resource metadata header records planned USB, test PTT GPIO, diagnostics, audio, watchdog, and reset resources while keeping all real pin assignments marked unverified. The resource plan is in `docs/m2-stm32h753-resource-plan.md`.
+
+M2.12 adds target-local build metadata in `target_sources.mk` and `target_build.mk`, plus `check_target_compile.sh`. The check compiles only target skeleton objects under `build/embedded-target/` when `arm-none-eabi-gcc` is available, skips cleanly when it is absent, and does not link or create ELF, BIN, HEX, startup, linker, HAL, CMSIS, TinyUSB, or vendor output.

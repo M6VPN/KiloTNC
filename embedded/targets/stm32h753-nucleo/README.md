@@ -21,7 +21,7 @@ M2.10 status:
 - Host-native full USB KISS to simulated audio TX/RX to USB KISS loopback tests.
 - Timeout and watchdog-fault loopback tests.
 - Compile-gated STM32H753 target skeleton files.
-- Opt-in target syntax check through `make embedded-target-check`.
+- Opt-in target skeleton check through `make embedded-target-check`.
 - Placeholder target platform hooks that return safe defaults or unsupported.
 - Linker, startup, USB, watchdog, GPIO, and audio planning notes.
 - No vendor project committed.
@@ -50,3 +50,15 @@ M2.11 status:
 - No hardware drivers exist.
 - No radio connection exists.
 - No PTT pin is selected for real use.
+
+M2.12 status:
+
+- Target-local source metadata is in `target_sources.mk`.
+- Target-local object-check metadata is in `target_build.mk`.
+- The opt-in check wrapper is `check_target_compile.sh`.
+- `make embedded-target-check` runs the wrapper.
+- `ARM_NONE_EABI_CC=/path/to/arm-none-eabi-gcc make embedded-target-check` selects a specific compiler.
+- If `arm-none-eabi-gcc` is absent, the check prints `skip: arm-none-eabi-gcc not found` and exits success.
+- If the compiler is present, only `target_main.c` and `target_platform.c` are compiled to temporary object files under `build/embedded-target/`.
+- No link step runs.
+- No ELF, BIN, HEX, linker script, startup vector table, HAL, CMSIS, TinyUSB, vendor SDK, flash command, or flashable firmware image is produced.

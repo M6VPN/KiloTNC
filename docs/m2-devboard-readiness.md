@@ -56,7 +56,7 @@ portable core
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds host-native embedded TNC core integration for KISS command handling, mode mapping, control state, and diagnostics. M2.7 adds a host-native modem/audio boundary that writes simulated AFSK1200 samples into the audio stub. M2.8 adds a host-native RX audio/modem boundary that decodes generated test samples and emits KISS to the USB stub. M2.9 adds a host-native full loopback from USB KISS input through simulated audio TX/RX and back to USB KISS output. M2.10 adds a compile-gated STM32H753 target skeleton with metadata, placeholder target hooks, and opt-in syntax checking. M2.11 adds STM32H753 resource planning and target resource metadata with real pin assignments still unverified. Real board build, flash, USB stack, audio peripheral integration, GPIO PTT, and RF transmit remain future work.
+M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds host-native embedded TNC core integration for KISS command handling, mode mapping, control state, and diagnostics. M2.7 adds a host-native modem/audio boundary that writes simulated AFSK1200 samples into the audio stub. M2.8 adds a host-native RX audio/modem boundary that decodes generated test samples and emits KISS to the USB stub. M2.9 adds a host-native full loopback from USB KISS input through simulated audio TX/RX and back to USB KISS output. M2.10 adds a compile-gated STM32H753 target skeleton with metadata, placeholder target hooks, and opt-in target checking. M2.11 adds STM32H753 resource planning and target resource metadata with real pin assignments still unverified. M2.12 adds opt-in target-local object-check metadata and a skip-safe cross-compile wrapper. Real board build, flash, USB stack, audio peripheral integration, GPIO PTT, and RF transmit remain future work.
 
 ## Build Strategy
 
@@ -68,6 +68,7 @@ M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, w
 - Keep no-heap and fixed-buffer rules for core modem, protocol, and control code.
 - Keep STM32CubeIDE and vendor-generated output outside the repo unless a later milestone explicitly changes that policy.
 - Keep `make embedded-test` host-native so CI does not require an ARM toolchain.
+- Keep `make embedded-target-check` opt-in, object-only, and skip-safe when `arm-none-eabi-gcc` is absent.
 
 ## Safety Gates
 

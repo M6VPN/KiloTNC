@@ -29,6 +29,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.9 host-native full loopback tests verify USB KISS input, simulated audio TX/RX, and USB KISS output keep the stub PTT state off.
 - M2.10 target skeleton files contain no pin assignments, no real PTT pin, no real watchdog hardware path, no startup code, and no flashable firmware image.
 - M2.11 resource planning keeps the test PTT GPIO as `TBD` and marks all real pin assignments unverified.
+- M2.12 target object checks do not link firmware, create flashable images, assign pins, access hardware registers, or key PTT.
 
 ## Watchdog And Timeout
 
@@ -59,6 +60,15 @@ M2 firmware planning must include:
 - USB and future network input must not directly key PTT.
 - Boot, debug, power, clock, USB, and Ethernet pins must be avoided for test PTT planning.
 - Audio TX must remain disconnected from any transmitter.
+
+## M2.12 Target Check Safety Rules
+
+- No flashable firmware image exists.
+- The target object check cannot key PTT.
+- No pin assignments are active.
+- No linker script or startup vector table is present.
+- No flash programming command is present.
+- Target C files must remain free of STM32 HAL, CMSIS, TinyUSB, vendor headers, and hardware registers.
 
 ## Diagnostics Visibility
 

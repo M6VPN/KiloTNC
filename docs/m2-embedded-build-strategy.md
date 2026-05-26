@@ -194,14 +194,14 @@ Normal host CI still uses:
 make embedded-test
 ```
 
-The opt-in target guidance and syntax check are:
+The opt-in target guidance and target check are:
 
 ```text
 make embedded-target-help
 make embedded-target-check
 ```
 
-`make embedded-target-check` exits success with a skip message when `arm-none-eabi-gcc` is absent. If the compiler is available, it syntax-checks only safe target skeleton files with `KILOTNC_TARGET_STM32H753_NUCLEO` defined.
+`make embedded-target-check` exits success with a skip message when `arm-none-eabi-gcc` is absent. If the compiler is available, it checks only safe target skeleton files with `KILOTNC_TARGET_STM32H753_NUCLEO` defined.
 
 The target skeleton does not require STM32Cube, CMSIS, STM32 HAL, TinyUSB, startup code, linker scripts, hardware registers, pin assignments, or a vendor IDE project. It does not link firmware and does not produce a flashable image.
 
@@ -214,6 +214,24 @@ M2.11 adds planning metadata and documentation only:
 - Target metadata tests for resource flags and unverified pin assignments.
 
 `make embedded-test` remains host-native and does not require an ARM toolchain. No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, linker script, startup code, or flashable firmware is added.
+
+## M2.12 Opt-In STM32H753 Target Check
+
+M2.12 moves target check metadata into:
+
+```text
+embedded/targets/stm32h753-nucleo/target_sources.mk
+embedded/targets/stm32h753-nucleo/target_build.mk
+embedded/targets/stm32h753-nucleo/check_target_compile.sh
+```
+
+`target_sources.mk` lists only safe target skeleton sources and include paths. It defines the `stm32h753-nucleo` target name and compile gate macro name.
+
+`target_build.mk` builds temporary target skeleton object files under `build/embedded-target/`. It has no linker script, startup object, vendor SDK path, flash image, or link rule.
+
+`check_target_compile.sh` uses `${ARM_NONE_EABI_CC:-arm-none-eabi-gcc}`. If the compiler is absent, it prints `skip: arm-none-eabi-gcc not found` and exits success. If the compiler is present, it object-compiles the target skeleton sources only.
+
+No ELF, BIN, HEX, startup vector table, linker script, STM32Cube, CMSIS, STM32 HAL, TinyUSB, vendor project, hardware register access, pin initialization, or flash programming is added.
 
 ## Future Build Approaches
 

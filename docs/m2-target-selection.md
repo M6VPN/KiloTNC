@@ -75,6 +75,12 @@ M2.11 adds `docs/m2-stm32h753-resource-plan.md` and target resource metadata for
 
 USB, diagnostics, audio, watchdog, reset, and test PTT GPIO resources remain planning items. No real pin assignment is final, and the test PTT GPIO remains `TBD`.
 
+## M2.12 Target Check
+
+M2.12 adds opt-in target-local build metadata and a skip-safe compile wrapper for `stm32h753-nucleo`.
+
+The check object-compiles safe skeleton sources only when `arm-none-eabi-gcc` is available. It does not link firmware, produce ELF, BIN, or HEX output, add startup code, add a linker script, import vendor SDKs, access hardware registers, or flash a board.
+
 ## Sources Checked
 
 Sources checked on 2026-05-26:

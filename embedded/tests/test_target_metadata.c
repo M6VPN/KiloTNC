@@ -88,6 +88,10 @@ test_target_resource_flags(void)
 		return __LINE__;
 	if (KILOTNC_STM32H753_RESET_CAUSE_PLANNED != 1)
 		return __LINE__;
+	if (KILOTNC_STM32H753_CROSS_COMPILE_OPT_IN != 1)
+		return __LINE__;
+	if (KILOTNC_STM32H753_FLASHABLE_IMAGE_PLANNED != 0)
+		return __LINE__;
 
 	return 0;
 }
@@ -111,6 +115,9 @@ test_target_resource_strings(void)
 {
 	if (strcmp(KILOTNC_STM32H753_RESOURCE_TARGET_NAME,
 	    "stm32h753-nucleo") != 0)
+		return __LINE__;
+	if (strcmp(KILOTNC_STM32H753_COMPILE_GATE,
+	    "KILOTNC_TARGET_STM32H753_NUCLEO") != 0)
 		return __LINE__;
 	if (strcmp(KILOTNC_STM32H753_TEST_PTT_GPIO_PORT, "TBD") != 0)
 		return __LINE__;
