@@ -6,6 +6,8 @@ CFLAGS	+= -std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror
 CFLAGS	+= -I firmware/include -I daemon
 SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
 ENABLE_ALSA ?= 0
+ENABLE_SNDIO ?= 0
+ENABLE_OSS ?= 0
 
 BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
@@ -21,7 +23,9 @@ TOOL_SRCS = tools/kilotnc_cli.c \
 DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_audio.c \
 	  daemon/kilotncd_audio_alsa.c \
+	  daemon/kilotncd_audio_oss.c \
 	  daemon/kilotncd_audio_raw.c \
+	  daemon/kilotncd_audio_sndio.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_control.c \
 	  daemon/kilotncd_file.c \
@@ -157,6 +161,14 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-backend.conf --status; then exit 1; else exit 0; fi
 	printf 'mode=NINO_MODE=6\naudio_backend=alsa\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/alsa-stub.pcm\n' > ${BUILD}/daemon/audio-alsa-tx.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-alsa-tx.conf --once; then exit 1; else exit 0; fi
+	printf 'audio_backend=sndio\n' > ${BUILD}/daemon/audio-sndio-status.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-sndio-status.conf --status; then exit 1; else exit 0; fi
+	printf 'mode=NINO_MODE=6\naudio_backend=sndio\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/sndio-stub.pcm\n' > ${BUILD}/daemon/audio-sndio-tx.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-sndio-tx.conf --once; then exit 1; else exit 0; fi
+	printf 'audio_backend=oss\n' > ${BUILD}/daemon/audio-oss-status.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-oss-status.conf --status; then exit 1; else exit 0; fi
+	printf 'mode=NINO_MODE=6\naudio_backend=oss\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/oss-stub.pcm\n' > ${BUILD}/daemon/audio-oss-tx.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-oss-tx.conf --once; then exit 1; else exit 0; fi
 	printf 'audio_sample_rate=44100\n' > ${BUILD}/daemon/audio-bad-rate.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-rate.conf --status; then exit 1; else exit 0; fi
 	printf 'audio_channels=2\n' > ${BUILD}/daemon/audio-bad-channels.conf

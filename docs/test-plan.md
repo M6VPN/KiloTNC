@@ -448,6 +448,18 @@ M1.23 host-side checks on 2026-05-26:
 - Existing status, control, profile, foreground, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
 - No real ALSA, sndio, OSS, PulseAudio, PipeWire, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
 
+M1.24 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the compile-gated sndio and OSS stubs.
+- Raw PCM TX, RX, and loopback daemon tests still pass.
+- `audio_backend=alsa` remains a known backend name and is rejected as unsupported.
+- `audio_backend=sndio` parses as a known backend name.
+- `audio_backend=oss` parses as a known backend name.
+- Selecting sndio or OSS in the default build is rejected as unsupported.
+- Default build does not require ALSA, sndio, or OSS headers or libraries.
+- Existing status, control, profile, foreground, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
+- No real ALSA, sndio, OSS, PulseAudio, PipeWire, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

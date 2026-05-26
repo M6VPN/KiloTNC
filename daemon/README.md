@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton. M1.23 adds an ALSA planning boundary and compile-gated stub.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton. M1.23 adds an ALSA planning boundary and compile-gated stub. M1.24 adds sndio and OSS planning boundaries and compile-gated stubs.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.23 Scope
+## M1.24 Scope
 
 Implemented:
 
@@ -30,6 +30,8 @@ Implemented:
 - Dry-run foreground mode.
 - Periodic loop diagnostics to stderr.
 - ALSA backend name and compile-gated unsupported stub.
+- sndio backend name and compile-gated unsupported stub.
+- OSS backend name and compile-gated unsupported stub.
 
 Not implemented:
 
@@ -226,15 +228,20 @@ Raw backend format:
 
 Unsupported audio formats are rejected.
 
-M1.23 adds an ALSA planning stub:
+M1.23 and M1.24 add planned audio backend stubs:
 
 - `audio_backend=alsa` is recognized as a known backend name.
-- Default builds compile only an unsupported ALSA stub.
+- `audio_backend=sndio` is recognized as a known backend name.
+- `audio_backend=oss` is recognized as a known backend name.
+- Default builds compile only unsupported stubs for these backends.
 - Default builds do not require `alsa/asoundlib.h`.
+- Default builds do not require sndio headers.
+- Default builds do not require OSS headers such as `sys/soundcard.h`.
 - Default builds do not link `-lasound`.
-- `ENABLE_ALSA` is reserved for later work and does not enable real ALSA runtime support in M1.23.
+- Default builds do not link sndio or OSS libraries.
+- `ENABLE_ALSA`, `ENABLE_SNDIO`, and `ENABLE_OSS` are reserved for later work and do not enable real runtime support in M1.24.
 
-`audio_backend=sndio` and `audio_backend=oss` are planned names only and remain unsupported.
+ALSA, sndio, and OSS remain unsupported for active daemon use in M1.24.
 
 ## Radio Control Backend
 

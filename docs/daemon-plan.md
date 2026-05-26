@@ -24,6 +24,8 @@ M1.22 implements a bounded foreground daemon loop skeleton. It can initialize th
 
 M1.23 adds ALSA planning plus a compile-gated daemon audio stub. The default build recognizes `audio_backend=alsa` as a known backend but rejects it as unsupported, and it does not require ALSA headers or libraries.
 
+M1.24 adds sndio and OSS planning plus compile-gated daemon audio stubs. The default build recognizes `audio_backend=sndio` and `audio_backend=oss` as known backends but rejects them as unsupported, and it does not require sndio or OSS headers or libraries.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -78,8 +80,8 @@ Planned first-pass backends:
 - stdin/stdout file-stream mode for deterministic tests. Explicit bounded stdin/stdout handling exists in M1.16.
 - Raw PCM audio backend abstraction. Raw file/stdin/stdout backend exists in M1.18.
 - ALSA for Linux as the likely first real Linux audio backend. A compile-gated unsupported stub exists in M1.23.
-- sndio for OpenBSD as the likely BSD-friendly backend.
-- OSS as a possible fallback on BSDs where available.
+- sndio for OpenBSD as the likely BSD-friendly backend. A compile-gated unsupported stub exists in M1.24.
+- OSS as a possible fallback on BSDs where available. A compile-gated unsupported stub exists in M1.24.
 
 Optional future host integrations:
 

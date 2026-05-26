@@ -15,6 +15,17 @@ M1.18 implemented the raw PCM backend:
 
 This backend is used by deterministic daemon tests and generated host vectors.
 
+## Backend Support Matrix
+
+| Backend    | M1.24 state       | Default headers/libs required |
+| ---------- | ----------------- | ----------------------------- |
+| raw        | Implemented       | None                          |
+| ALSA       | Planned stub      | None                          |
+| sndio      | Planned stub      | None                          |
+| OSS        | Planned stub      | None                          |
+| PulseAudio | Future, not core  | None                          |
+| PipeWire   | Future, not core  | None                          |
+
 ## M1.23 ALSA Stub
 
 M1.23 adds a compile-gated ALSA boundary:
@@ -46,20 +57,43 @@ use the same format as the core modem path:
 The backend must not key PTT directly. TX still has to pass through mode
 validation, channel access, TX timeout, and the daemon radio-control backend.
 
-## Planned BSD Backends
+## M1.24 sndio Stub
 
-Planned host audio backends:
+M1.24 adds a compile-gated sndio boundary:
 
-- sndio.
-- OSS.
+- `audio_backend=sndio` is a known backend name.
+- Default builds compile a sndio stub only.
+- The stub returns unsupported for open, read, write, and close operations.
+- Default builds do not include sndio headers.
+- Default builds do not link sndio libraries.
+- `ENABLE_SNDIO` is reserved for a later implementation and does not enable real
+  sndio runtime support in M1.24.
 
-These remain planned only. They should follow the same compile-gated pattern as
-the ALSA stub so default CI does not require platform audio headers.
+Future sndio support should target OpenBSD-friendly audio first, with 48,000 Hz
+mono signed 16-bit PCM, explicit capture/playback device names, bounded latency
+planning, and deterministic error counters.
+
+## M1.24 OSS Stub
+
+M1.24 adds a compile-gated OSS boundary:
+
+- `audio_backend=oss` is a known backend name.
+- Default builds compile an OSS stub only.
+- The stub returns unsupported for open, read, write, and close operations.
+- Default builds do not include OSS headers such as `sys/soundcard.h`.
+- Default builds do not link OSS-specific libraries.
+- `ENABLE_OSS` is reserved for a later implementation and does not enable real
+  OSS runtime support in M1.24.
+
+Future OSS support should remain a BSD fallback path with 48,000 Hz mono signed
+16-bit PCM, explicit device path configuration, bounded buffer planning, and
+deterministic overrun/underrun diagnostics.
 
 ## Not Implemented
 
 - Real ALSA capture or playback.
-- sndio or OSS runtime support.
+- sndio runtime support.
+- OSS runtime support.
 - PulseAudio or PipeWire runtime support.
 - Audio device enumeration.
 - Audio clock drift handling.
@@ -71,3 +105,6 @@ the ALSA stub so default CI does not require platform audio headers.
 | Source title                     | Date checked | Note                                  |
 | -------------------------------- | ------------ | ------------------------------------- |
 | ALSA PCM interface documentation | 2026-05-26   | PCM parameters and backend planning   |
+| sndio project page               | 2026-05-26   | sndio platform scope                  |
+| sndio OpenBSD manual             | 2026-05-26   | OpenBSD audio backend planning        |
+| FreeBSD Architecture Handbook    | 2026-05-26   | OSS and pcm interface planning        |

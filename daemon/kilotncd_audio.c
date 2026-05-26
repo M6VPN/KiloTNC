@@ -9,7 +9,9 @@
 #include "afsk1200.h"
 #include "kilotncd_audio.h"
 #include "kilotncd_audio_alsa.h"
+#include "kilotncd_audio_oss.h"
 #include "kilotncd_audio_raw.h"
+#include "kilotncd_audio_sndio.h"
 
 enum kilotncd_audio_result
 kilotncd_audio_backend_name(enum kilotncd_audio_backend backend,
@@ -69,6 +71,10 @@ kilotncd_audio_open_input(struct kilotncd_audio *audio,
 		return KILOTNCD_AUDIO_ERR_UNSUPPORTED;
 	if (config->backend == KILOTNCD_AUDIO_BACKEND_ALSA)
 		return kilotncd_audio_alsa_open_input(audio, config);
+	if (config->backend == KILOTNCD_AUDIO_BACKEND_SNDIO)
+		return kilotncd_audio_sndio_open_input(audio, config);
+	if (config->backend == KILOTNCD_AUDIO_BACKEND_OSS)
+		return kilotncd_audio_oss_open_input(audio, config);
 	if (config->backend != KILOTNCD_AUDIO_BACKEND_RAW_FILE)
 		return KILOTNCD_AUDIO_ERR_UNSUPPORTED;
 	(void)memset(audio, 0, sizeof(*audio));
@@ -90,6 +96,10 @@ kilotncd_audio_open_output(struct kilotncd_audio *audio,
 		return KILOTNCD_AUDIO_ERR_UNSUPPORTED;
 	if (config->backend == KILOTNCD_AUDIO_BACKEND_ALSA)
 		return kilotncd_audio_alsa_open_output(audio, config);
+	if (config->backend == KILOTNCD_AUDIO_BACKEND_SNDIO)
+		return kilotncd_audio_sndio_open_output(audio, config);
+	if (config->backend == KILOTNCD_AUDIO_BACKEND_OSS)
+		return kilotncd_audio_oss_open_output(audio, config);
 	if (config->backend != KILOTNCD_AUDIO_BACKEND_RAW_FILE)
 		return KILOTNCD_AUDIO_ERR_UNSUPPORTED;
 	(void)memset(audio, 0, sizeof(*audio));
@@ -136,6 +146,10 @@ kilotncd_audio_read(struct kilotncd_audio *audio, int16_t *pcm,
 		return KILOTNCD_AUDIO_ERR_ARG;
 	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_ALSA)
 		return kilotncd_audio_alsa_read(audio, pcm, cap, samples);
+	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_SNDIO)
+		return kilotncd_audio_sndio_read(audio, pcm, cap, samples);
+	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_OSS)
+		return kilotncd_audio_oss_read(audio, pcm, cap, samples);
 	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_RAW_FILE)
 		return kilotncd_audio_raw_read(&audio->config, pcm, cap,
 		    samples);
@@ -167,6 +181,10 @@ kilotncd_audio_write(struct kilotncd_audio *audio, const int16_t *pcm,
 		return KILOTNCD_AUDIO_ERR_ARG;
 	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_ALSA)
 		return kilotncd_audio_alsa_write(audio, pcm, samples);
+	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_SNDIO)
+		return kilotncd_audio_sndio_write(audio, pcm, samples);
+	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_OSS)
+		return kilotncd_audio_oss_write(audio, pcm, samples);
 	if (audio->config.backend == KILOTNCD_AUDIO_BACKEND_RAW_FILE)
 		return kilotncd_audio_raw_write(&audio->config, pcm,
 		    samples);

@@ -43,6 +43,7 @@ Sources checked on 2026-05-26.
 | ALSA PCM interface documentation     | 2026-05-26   | https://www.alsa-project.org/alsa-doc/alsa-lib/pcm.html        | Linux PCM audio backend planning      |
 | sndio project page                   | 2026-05-26   | https://sndio.org/                                             | sndio platform scope                  |
 | sndio OpenBSD manual                 | 2026-05-26   | https://man.openbsd.org/sndio                                  | OpenBSD audio backend planning        |
+| OpenBSD sio_open manual              | 2026-05-26   | https://man.openbsd.org/sio_open                               | sndio audio API planning              |
 | OpenBSD posix_openpt manual          | 2026-05-26   | https://man.openbsd.org/man3/posix_openpt.3                    | PTY master allocation API             |
 | OpenBSD ptsname manual               | 2026-05-26   | https://man.openbsd.org/man3/ptsname.3                         | PTY slave path and unlock flow        |
 | FreeBSD Architecture Handbook, Sound | 2026-05-26   | https://docs.freebsd.org/en/books/arch-handbook/sound/         | FreeBSD pcm and OSS interface context |
