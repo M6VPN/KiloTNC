@@ -79,6 +79,26 @@ Portable core
 
 M1 host daemon code is not MCU firmware. It validates the portable core and host-side adapter boundaries. M2 starts separate dev-board firmware adapters around the same portable core.
 
+M2.0 embedded architecture boundary:
+
+```text
+Portable core
+	|
+	v
+Embedded app glue
+	|
+	v
+Platform adapters
+	|-- clock and tick adapter
+	|-- GPIO and test-only PTT adapter
+	|-- watchdog and reset adapter
+	|-- USB CDC byte-stream adapter
+	|-- audio loopback or test adapter
+	|-- diagnostics adapter
+```
+
+M2.0 does not implement these adapters. M2.1 should add the first embedded compile-only skeleton. M2.2 should add platform tick, watchdog, and GPIO test stubs. M2.3 should add USB CDC KISS echo or loopback.
+
 Before embedded use, adapter boundaries need review for:
 
 - No heap allocation in core modem, packet, and control paths.
@@ -109,7 +129,7 @@ The daemon groundwork is host-side only. The MCU firmware target starts in M2 an
 
 ## MCU Decision
 
-Primary target: STM32H743/STM32H753 class.
+Primary M2.0 target path: `stm32h753-nucleo`, based on NUCLEO-H753ZI or a current equivalent STM32H753 Nucleo-144 board.
 
 Reasons:
 
@@ -119,11 +139,12 @@ Reasons:
 - SAI/I2S support fits external audio codecs.
 - ADC/DAC are available for test hooks or fallback paths, but the main design prefers an external codec.
 - DMA, timers, independent watchdog, window watchdog, CRC engine, and brownout/reset features fit the reliability goals.
-- STM32H753 adds crypto acceleration, but no design requirement depends on it.
+- The NUCLEO-H753ZI product page currently lists the board as active and in volume production.
+- STM32CubeIDE is available locally, but normal host builds and M2.0 docs do not require proprietary IDE output.
 
 Secondary experimental target: RP2350.
 
-RP2350 can be used only if firmware modules stay portable and no capability is documented unless the RP2350 design can meet it with real peripherals or verified external parts. It is useful for host-side experiments and low-cost prototypes, but it has less CPU and peripheral margin than STM32H7 for the full native target.
+RP2350/Pico 2 can be used only if firmware modules stay portable and no capability is documented unless the RP2350 design can meet it with real peripherals or verified external parts. It is useful for portability and low-cost experiments, but it has less CPU and peripheral margin than STM32H7 for the full native target.
 
 ## Major Modules
 
@@ -161,9 +182,14 @@ PCB design starts only after:
 
 | Source title                                      | Date checked | Note                                         |
 | ------------------------------------------------- | ------------ | -------------------------------------------- |
+| NUCLEO-H753ZI product page, STMicroelectronics    | 2026-05-26   | Board status, Nucleo-144 features, ST-LINK   |
+| STM32H753ZI product page, STMicroelectronics      | 2026-05-26   | MCU CPU, RAM, USB, and peripheral class      |
+| STM32H753xI datasheet, STMicroelectronics         | 2026-05-26   | USB, SAI, I2S-capable SPI, memory details    |
+| STM32H7 Nucleo-144 board user manual, ST          | 2026-05-26   | Nucleo board family and H753 board details   |
 | STM32H743BG product page, STMicroelectronics      | 2026-05-26   | MCU CPU, RAM, USB, SAI/I2S, memory features  |
 | STM32H753BI product page, STMicroelectronics      | 2026-05-26   | MCU class and crypto-capable H753 variant    |
-| RP2350 documentation, Raspberry Pi                | 2026-05-26   | RP2350 CPU, USB, and experimental target fit |
+| Pico-series documentation, Raspberry Pi           | 2026-05-26   | Pico 2 board CPU, RAM, USB, and GPIO details |
+| RP2350 datasheet, Raspberry Pi                    | 2026-05-26   | RP2350 USB and PIO details                   |
 | TLV320AIC3204 product page, Texas Instruments     | 2026-05-26   | External codec capability candidate          |
 | The KISS TNC, Chepponis and Karn                  | 2026-05-26   | Host/TNC split and graceful packet drops     |
 | IL2P Specification Draft v0.6                     | 2026-05-26   | IL2P relationship to KISS and AX.25          |

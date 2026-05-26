@@ -40,6 +40,8 @@ M1.27 separates the daemon track from M2 dev-board firmware planning. The daemon
 
 M2 firmware can proceed separately while daemon work continues. Real ALSA, sndio, OSS, serial PTT, CAT, and persistent service modes remain daemon-track work for later milestones.
 
+M2.0 starts the embedded dev-board track with target selection and skeleton documentation only. It does not change the daemon architecture, and it does not move host file, socket, PTY, raw audio, or radio log adapters into firmware.
+
 ## Process Model
 
 - One foreground daemon process.

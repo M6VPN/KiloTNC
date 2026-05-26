@@ -516,6 +516,19 @@ M2 readiness gate:
 - GPIO-only PTT test path planned with no RF connected.
 - PCB work remains blocked until M2 and M3 review gates pass.
 
+M2.0 documentation gate on 2026-05-26:
+
+- Target-selection doc exists in `docs/m2-target-selection.md`.
+- Primary target path is `stm32h753-nucleo`.
+- RP2350/Pico 2 is documented as secondary and experimental only.
+- Embedded skeleton directories exist under `embedded/`.
+- Embedded build strategy exists in `docs/m2-embedded-build-strategy.md`.
+- Safety plan exists in `docs/m2-safety-plan.md`.
+- No embedded toolchain is required for host tests.
+- No vendor SDK or generated IDE project is committed.
+- Existing M1 host, tool, daemon, and compatibility checks still pass.
+- No PCB, RF transmit, real radio PTT, USB CDC implementation, codec driver, DMA audio, or GPIO driver work is started.
+
 Pending:
 
 - Full timing recovery loop.

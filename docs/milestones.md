@@ -2,9 +2,9 @@
 
 This document keeps detailed project milestones out of the README while preserving the current M1 host-side work record.
 
-## Completed and Current M1 Work
+## Completed M1 Work
 
-M1 is the portable host-side core, test, tool, and daemon groundwork stage.
+M1 is complete enough to start M2. It remains the portable host-side core, test, tool, and daemon groundwork stage.
 
 Protocol core:
 
@@ -61,6 +61,22 @@ Interoperability planning:
 ## M2 Dev-Board Firmware Prototype
 
 M2 starts firmware prototype work on a development board. It must keep the M1 portable core and host tests intact.
+
+M2.0 status:
+
+- Select `stm32h753-nucleo` as the primary dev-board path.
+- Keep RP2350/Pico 2 as a secondary experimental target only.
+- Add embedded workspace documentation under `embedded/`.
+- Document the embedded build strategy.
+- Document M2 safety gates before any PTT or RF path.
+
+Next planned M2 passes:
+
+- M2.1: embedded compile-only skeleton.
+- M2.2: platform tick, watchdog, and GPIO test stubs.
+- M2.3: USB CDC KISS echo or loopback.
+- M2.4: diagnostics bridge.
+- M2.5: audio loopback or test path.
 
 M2 scope:
 

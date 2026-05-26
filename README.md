@@ -17,9 +17,9 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.27 repository milestone cleanup and M2 readiness planning.
+Current stage: M2.0 dev-board target selection and embedded build skeleton planning.
 
-No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
+No PCB work, hardware build, RF transmit, real radio keying, real codec driver work, or embedded USB implementation has started.
 
 ## Scope
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, and external black-box interoperability planning placeholders.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, and the M2.0 embedded documentation skeleton.
 
 ## Milestones
 
@@ -61,7 +61,7 @@ These platform targets remain planning items except for the minimal host daemon 
 | M8    | Network and node services                                |
 | M9    | Future Ethernet or Wi-Fi hardware variants               |
 
-Detailed milestone notes are in [docs/milestones.md](docs/milestones.md). M2 dev-board readiness is in [docs/m2-devboard-readiness.md](docs/m2-devboard-readiness.md). Platform and daemon tracks are covered in [docs/platform-roadmap.md](docs/platform-roadmap.md) and [docs/daemon-plan.md](docs/daemon-plan.md).
+Detailed milestone notes are in [docs/milestones.md](docs/milestones.md). M2 dev-board readiness is in [docs/m2-devboard-readiness.md](docs/m2-devboard-readiness.md), target selection is in [docs/m2-target-selection.md](docs/m2-target-selection.md), the embedded build strategy is in [docs/m2-embedded-build-strategy.md](docs/m2-embedded-build-strategy.md), and the M2 safety plan is in [docs/m2-safety-plan.md](docs/m2-safety-plan.md). Platform and daemon tracks are covered in [docs/platform-roadmap.md](docs/platform-roadmap.md) and [docs/daemon-plan.md](docs/daemon-plan.md).
 
 ## Build and Test
 
@@ -119,6 +119,12 @@ Show optional external interoperability wrapper guidance:
 make interop-help
 ```
 
+Show embedded build planning guidance:
+
+```text
+make embedded-help
+```
+
 GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, `make kiss-compat-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
@@ -128,6 +134,7 @@ GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, 
 | `daemon/`               | Minimal host daemon skeleton and local IPC adapters      |
 | `daemon/examples/`      | Safe daemon profile examples for local test modes        |
 | `docs/`                 | Architecture, protocol, hardware, firmware               |
+| `embedded/`             | M2 dev-board firmware planning and skeleton workspace    |
 | `firmware/`             | Portable protocol library and future firmware workspace  |
 | `firmware/include/`     | Protocol library headers                                 |
 | `firmware/src/`         | Portable protocol source                                 |

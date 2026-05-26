@@ -4,9 +4,13 @@ M2 is the first dev-board firmware prototype stage. It starts embedded work with
 
 ## Candidate Board Criteria
 
+Primary M2.0 target:
+
+- `stm32h753-nucleo`, based on NUCLEO-H753ZI or a current equivalent STM32H753 Nucleo-144 board.
+
 Primary target class:
 
-- STM32H743 or STM32H753 class.
+- STM32H753 or STM32H743 class, with STM32H753 preferred for the first M2 path because the NUCLEO-H753ZI product page is currently active.
 
 Secondary experimental target:
 
@@ -36,6 +40,24 @@ The embedded firmware should keep the portable core separate from platform adapt
 
 Host daemon code is not MCU firmware. It shares the portable core and validates behavior before firmware adapters are added.
 
+M2.0 planned adapter stack:
+
+```text
+portable core
+	|
+	embedded app glue
+	|
+	platform adapters
+	|-- clock and tick adapter
+	|-- GPIO and test-only PTT adapter
+	|-- watchdog and reset adapter
+	|-- USB CDC byte-stream adapter
+	|-- audio loopback or test adapter
+	|-- diagnostics adapter
+```
+
+M2.0 does not implement these adapters. M2.1 should add the compile-only skeleton, M2.2 should add tick, watchdog, and GPIO test stubs, and M2.3 should add USB CDC KISS echo or loopback.
+
 ## Build Strategy
 
 - Keep the host build intact.
@@ -44,6 +66,7 @@ Host daemon code is not MCU firmware. It shares the portable core and validates 
 - Choose Makefile or CMake after the target board is selected.
 - Keep generated build output under `build/` or target-specific ignored directories.
 - Keep no-heap and fixed-buffer rules for core modem, protocol, and control code.
+- Keep STM32CubeIDE and vendor-generated output outside the repo unless a later milestone explicitly changes that policy.
 
 ## Safety Gates
 

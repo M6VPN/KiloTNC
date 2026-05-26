@@ -82,6 +82,7 @@ help:
 	@printf '%s\n' '  daemon-test       run deterministic daemon checks'
 	@printf '%s\n' '  kiss-compat-test  run local KISS compatibility checks'
 	@printf '%s\n' '  interop-help      show optional interop wrapper guidance'
+	@printf '%s\n' '  embedded-help     show M2 embedded skeleton guidance'
 	@printf '%s\n' '  clean             remove build outputs'
 
 ${TESTBIN}: ${SRCS}
@@ -131,6 +132,15 @@ interop-help:
 	@printf '%s\n' 'These helpers are not part of CI.'
 	@printf '%s\n' 'They skip safely unless prerequisites are present.'
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
+
+embedded-help:
+	@printf '%s\n' 'M2.0 embedded status: documentation and skeleton only.'
+	@printf '%s\n' 'No embedded build target is active yet.'
+	@printf '%s\n' 'Planned target: stm32h753-nucleo'
+	@printf '%s\n' 'Reserved future environment variables:'
+	@printf '%s\n' '  KILOTNC_EMBEDDED_TARGET=stm32h753-nucleo'
+	@printf '%s\n' '  STM32CUBE_PATH=/path/to/STM32Cube...'
+	@printf '%s\n' '  ARM_NONE_EABI_CC=arm-none-eabi-gcc'
 
 kiss-compat-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN} ${KISSTESTBIN}
 	mkdir -p ${BUILD}/kiss-compat
@@ -338,4 +348,4 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all help test sanitize tools tool-test daemon interop-help daemon-test kiss-compat-test clean
+.PHONY: all clean daemon daemon-test embedded-help help interop-help kiss-compat-test sanitize test tools tool-test

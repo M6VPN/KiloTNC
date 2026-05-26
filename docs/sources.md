@@ -32,7 +32,14 @@ Sources checked on 2026-05-26.
 | --------------------------------------------- | ------------ | ----------------------------------------------------------------------- | ---------------------------------------- |
 | STM32H743BG product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h743bg.html | CPU, RAM, USB, SAI/I2S, memory features  |
 | STM32H753BI product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753bi.html | H753 class and crypto-capable variant    |
+| NUCLEO-H753ZI product page, STMicroelectronics | 2026-05-26   | https://www.st.com/en/evaluation-tools/nucleo-h753zi.html               | Nucleo-144 board status and features     |
+| STM32H753ZI product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html | H753ZI memory, USB, and peripheral class |
+| STM32H753xI datasheet, STMicroelectronics     | 2026-05-26   | https://www.st.com/resource/en/datasheet/stm32h753zi.pdf                | USB, SAI, I2S-capable SPI, memory details |
+| STM32H7 Nucleo-144 boards user manual, ST     | 2026-05-26   | https://www.st.com/resource/en/user_manual/dm00499160-stm32h7-nucleo-144-boards-mb1364-stmicroelectronics.pdf | NUCLEO-H753ZI board family details |
+| NUCLEO-H743ZI2 CubeIDE community report, ST   | 2026-05-26   | https://community.st.com/t5/stm32cubeide-mcus/nucleo-h743zi2-board-not-supported-in-stm32cubeide-obsolete/td-p/823344 | H743ZI2 obsolete-status risk note |
 | RP2350 documentation, Raspberry Pi            | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/rp2350.html  | RP2350 experimental target features      |
+| Pico-series documentation, Raspberry Pi       | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html | Pico 2 board features                    |
+| RP2350 datasheet, Raspberry Pi                | 2026-05-26   | https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf          | RP2350 USB and PIO details               |
 | TLV320AIC3204 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3204                                | Codec sample rate, I2S, programmable I/O |
 | TLV320AIC3104 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3104                                | Codec sample rate, I2S, analog I/O       |
 
