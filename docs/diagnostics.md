@@ -51,6 +51,8 @@ M1.12 planning treats the same snapshot format as the status source for the host
 
 M1.21 exposes diagnostics through one-shot local control commands in `kilotncd --control diag` and `kilotnc_cli control --cmd diag`. The control command path is bounded text only and does not add a persistent control socket or remote listener.
 
+M1.22 foreground daemon dry-run mode can emit periodic `loop_diag` text snapshots to stderr. The loop diagnostics use the same bounded snapshot formatter.
+
 ## Limitations
 
 - No USB CDC CLI yet.

@@ -53,6 +53,10 @@ struct kilotncd_config {
 	uint8_t kiss_pty;
 	uint8_t kiss_pty_once;
 	uint32_t max_tx_ms;
+	uint32_t max_iterations;
+	uint32_t diag_interval;
+	uint8_t foreground;
+	uint8_t dry_run;
 	int have_mode;
 	int have_kiss_in;
 	int have_kiss_out;

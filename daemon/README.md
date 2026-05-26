@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.21 Scope
+## M1.22 Scope
 
 Implemented:
 
@@ -26,6 +26,9 @@ Implemented:
 - Safe example configs under `daemon/examples/`.
 - One-shot local control/status command parser.
 - `--control` status, diagnostics, mode, DCD, PTT, stats, abort, and help commands.
+- Foreground bounded loop skeleton.
+- Dry-run foreground mode.
+- Periodic loop diagnostics to stderr.
 
 Not implemented:
 
@@ -38,6 +41,7 @@ Not implemented:
 - Persistent PTY service.
 - Remote internet service.
 - Persistent control socket or interactive shell.
+- Background daemonization, PID files, and syslog.
 
 ## Config Format
 
@@ -72,6 +76,10 @@ audio_bits=16
 radio_backend=none
 radio_log=build/daemon/ptt.log
 control=status
+foreground=1
+dry_run=1
+max_iterations=3
+diag_interval=1
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -124,6 +132,15 @@ build/kilotncd --control abort-tx
 ```
 
 M1.21 control commands are one-shot only. They parse one bounded ASCII command, print one bounded response, and exit. There is no persistent control socket, remote listener, or interactive shell.
+
+Run a bounded foreground dry run:
+
+```text
+build/kilotncd --foreground --dry-run --max-iterations 1
+build/kilotncd --foreground --dry-run --max-iterations 10 --diag-interval 1
+```
+
+M1.22 foreground mode does not fork, write a PID file, use syslog, open real audio devices, or create persistent services. `--max-iterations` bounds test runs. `--diag-interval 0` disables periodic diagnostics.
 
 Run TX once:
 

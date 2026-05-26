@@ -20,6 +20,8 @@ M1.20 implements daemon config profiles and validation. It validates file, stdio
 
 M1.21 implements a one-shot local control/status command surface. It parses one bounded ASCII command, writes one bounded text response, and exits. It does not implement a persistent control socket, remote control listener, network API, or interactive shell.
 
+M1.22 implements a bounded foreground daemon loop skeleton. It can initialize the TNC path, tick channel-control timing, emit periodic diagnostics, exit by `max_iterations`, and run existing deterministic once-mode operations through the foreground entrypoint. It does not implement background daemonization, PID files, syslog, real audio devices, persistent sockets, or remote control.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -31,6 +33,7 @@ M1.21 implements a one-shot local control/status command surface. It parses one 
 ## Process Model
 
 - One foreground daemon process.
+- Bounded foreground loop skeleton exists in M1.22.
 - Optional test mode using stdin/stdout and raw PCM files.
 - Adapter threads or event loops may be added later only after the core interfaces are stable.
 - RF transmit decisions must pass through channel-access, DCD, operator policy, and max-TX safety logic.

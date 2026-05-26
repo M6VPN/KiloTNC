@@ -13,6 +13,7 @@
 #include "kilotncd_config.h"
 #include "kilotncd_control.h"
 #include "kilotncd_file.h"
+#include "kilotncd_loop.h"
 #include "kilotncd_profile.h"
 #include "kilotncd_pty.h"
 #include "kilotncd_radio.h"
@@ -33,7 +34,8 @@ enum kilotncd_operation {
 	KILOTNCD_OP_ONCE,
 	KILOTNCD_OP_LOOPBACK_ONCE,
 	KILOTNCD_OP_STATUS,
-	KILOTNCD_OP_CONTROL
+	KILOTNCD_OP_CONTROL,
+	KILOTNCD_OP_FOREGROUND
 };
 
 struct kilotncd_loopback_ctx {
@@ -81,6 +83,7 @@ static int kilotncd_run_unix_tx_once(const struct kilotncd_config *);
 static int kilotncd_run_rx_once(const struct kilotncd_config *);
 static int kilotncd_run_status(const struct kilotncd_config *);
 static int kilotncd_run_control(const struct kilotncd_config *);
+static int kilotncd_run_foreground(const struct kilotncd_config *);
 static int kilotncd_run_tx_once(const struct kilotncd_config *);
 static int kilotncd_pty_ready(const struct kilotncd_config *);
 static int kilotncd_tcp_ready(const struct kilotncd_config *);
@@ -107,6 +110,8 @@ main(int argc, char *argv[])
 		return kilotncd_run_status(&config);
 	if (op == KILOTNCD_OP_CONTROL)
 		return kilotncd_run_control(&config);
+	if (op == KILOTNCD_OP_FOREGROUND)
+		return kilotncd_run_foreground(&config);
 	if (op == KILOTNCD_OP_ONCE)
 		return kilotncd_run_once(&config);
 	if (op == KILOTNCD_OP_LOOPBACK_ONCE)
@@ -446,6 +451,27 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 			if (i + 1 >= argc ||
 			    kilotncd_config_apply_arg(config, "radio_log",
 			    argv[++i]) != KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--foreground") == 0) {
+			if (kilotncd_config_apply_arg(config, "foreground",
+			    "1") != KILOTNCD_CONFIG_OK)
+				return -1;
+			*op = KILOTNCD_OP_FOREGROUND;
+		} else if (strcmp(argv[i], "--dry-run") == 0) {
+			if (kilotncd_config_apply_arg(config, "dry_run",
+			    "1") != KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--max-iterations") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config,
+			    "max_iterations", argv[++i]) !=
+			    KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--diag-interval") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config,
+			    "diag_interval", argv[++i]) !=
+			    KILOTNCD_CONFIG_OK)
 				return -1;
 		} else if (strcmp(argv[i], "--once") == 0) {
 			*op = KILOTNCD_OP_ONCE;
@@ -834,6 +860,42 @@ kilotncd_run_control(const struct kilotncd_config *config)
 }
 
 static int
+kilotncd_run_foreground(const struct kilotncd_config *config)
+{
+	struct kilotncd_loop loop;
+	struct kilotncd_loop_config loop_config;
+	int res;
+
+	if (config == NULL || config->max_iterations == 0U)
+		return 1;
+	(void)memset(&loop_config, 0, sizeof(loop_config));
+	loop_config.max_iterations = config->max_iterations;
+	loop_config.diag_interval_ticks = config->diag_interval;
+	loop_config.tick_ms = 10U;
+	loop_config.once_mode = 0U;
+	loop_config.dry_run = config->dry_run;
+	if (kilotncd_loop_init(&loop, config, &loop_config) !=
+	    KILOTNCD_LOOP_OK)
+		return 1;
+	if (kilotncd_loop_run(&loop, stderr) != KILOTNCD_LOOP_OK)
+		return 1;
+	if (config->dry_run != 0U)
+		return kilotncd_loop_stop(&loop) == KILOTNCD_LOOP_OK ? 0 : 1;
+
+	res = 1;
+	if (config->profile == KILOTNCD_PROFILE_FILE_LOOPBACK)
+		res = kilotncd_run_loopback_once(config);
+	else if (config->profile == KILOTNCD_PROFILE_STATUS)
+		res = 0;
+	else
+		res = kilotncd_run_once(config);
+	if (kilotncd_loop_stop(&loop) != KILOTNCD_LOOP_OK)
+		return 1;
+
+	return res;
+}
+
+static int
 kilotncd_run_tx_once(const struct kilotncd_config *config)
 {
 	struct tnc1200 tnc;
@@ -908,9 +970,13 @@ kilotncd_validate_config(struct kilotncd_config *config,
 		return -1;
 	if (*op == KILOTNCD_OP_NONE && config->have_control)
 		*op = KILOTNCD_OP_CONTROL;
+	if (*op == KILOTNCD_OP_NONE && config->foreground != 0U)
+		*op = KILOTNCD_OP_FOREGROUND;
 	if (!config->have_profile) {
 		if (*op == KILOTNCD_OP_STATUS ||
-		    *op == KILOTNCD_OP_CONTROL) {
+		    *op == KILOTNCD_OP_CONTROL ||
+		    (*op == KILOTNCD_OP_FOREGROUND &&
+		    config->dry_run != 0U)) {
 			config->profile = KILOTNCD_PROFILE_STATUS;
 		} else {
 			pres = kilotncd_profile_infer(config,
@@ -935,6 +1001,8 @@ kilotncd_validate_config(struct kilotncd_config *config,
 	if (*op == KILOTNCD_OP_CONTROL &&
 	    config->profile == KILOTNCD_PROFILE_STATUS)
 		expected = KILOTNCD_OP_CONTROL;
+	if (*op == KILOTNCD_OP_FOREGROUND)
+		expected = KILOTNCD_OP_FOREGROUND;
 	if (*op != expected) {
 		(void)kilotncd_profile_error(KILOTNCD_PROFILE_ERR_CONFLICT,
 		    config->profile, daemon_error, sizeof(daemon_error));
@@ -946,6 +1014,12 @@ kilotncd_validate_config(struct kilotncd_config *config,
 		(void)kilotncd_profile_error(pres, config->profile,
 		    daemon_error, sizeof(daemon_error));
 		(void)fprintf(stderr, "error: %s\n", daemon_error);
+		return -1;
+	}
+	if (*op == KILOTNCD_OP_FOREGROUND &&
+	    config->max_iterations == 0U) {
+		(void)fprintf(stderr,
+		    "error: foreground requires max_iterations\n");
 		return -1;
 	}
 
@@ -994,6 +1068,7 @@ kilotncd_usage(void)
 	    "  kilotncd --status [--mode NINO_MODE=6]\n"
 	    "  kilotncd --control status\n"
 	    "  kilotncd --control \"mode NINO_MODE=6\"\n"
+	    "  kilotncd --foreground --dry-run --max-iterations 1\n"
 	    "  kilotncd --profile status\n"
 	    "  kilotncd --config daemon/example.conf --once\n"
 	    "  kilotncd --profile file-tx --mode NINO_MODE=6 "

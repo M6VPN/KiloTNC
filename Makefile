@@ -23,6 +23,7 @@ DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_control.c \
 	  daemon/kilotncd_file.c \
+	  daemon/kilotncd_loop.c \
 	  daemon/kilotncd_profile.c \
 	  daemon/kilotncd_pty.c \
 	  daemon/kilotncd_radio.c \
@@ -112,6 +113,11 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --control "mode NINO_MODE=6"
 	./${DAEMONBIN} --control "mode NINO_MODE=22"
 	if ./${DAEMONBIN} --control "mode NINO_MODE=0"; then exit 1; else exit 0; fi
+	./${DAEMONBIN} --foreground --dry-run --max-iterations 1
+	./${DAEMONBIN} --foreground --dry-run --max-iterations 3 --diag-interval 1 2> ${BUILD}/daemon/foreground-diag.log
+	test -s ${BUILD}/daemon/foreground-diag.log
+	if ./${DAEMONBIN} --foreground --dry-run --max-iterations 0; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --foreground --dry-run --max-iterations 1 --diag-interval bad; then exit 1; else exit 0; fi
 	./${DAEMONBIN} --profile status
 	./${DAEMONBIN} --status --mode NINO_MODE=6
 	./${DAEMONBIN} --status --mode NINO_MODE=22
@@ -133,6 +139,8 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --config daemon/examples/file-tx.conf
 	./${DAEMONBIN} --config daemon/examples/file-rx.conf
 	./${DAEMONBIN} --config daemon/examples/file-loopback.conf
+	./${DAEMONBIN} --config daemon/examples/foreground-dry-run.conf
+	./${DAEMONBIN} --foreground --profile file-loopback --max-iterations 1 --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --kiss-out ${BUILD}/daemon/foreground-loopback.kiss
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in - --pcm-out ${BUILD}/daemon/stdin-tx.pcm --once < ${BUILD}/daemon/input.kiss
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out - --once > ${BUILD}/daemon/stdout-tx.pcm 2> ${BUILD}/daemon/stdout-tx.diag
 	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out - --once > ${BUILD}/daemon/stdout-rx.kiss 2> ${BUILD}/daemon/stdout-rx.diag
@@ -187,6 +195,7 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	test -s ${BUILD}/daemon/example-file-tx.pcm
 	test -s ${BUILD}/daemon/example-file-rx.kiss
 	test -s ${BUILD}/daemon/example-file-loopback.kiss
+	test -s ${BUILD}/daemon/foreground-loopback.kiss
 	test -s ${BUILD}/daemon/stdin-tx.pcm
 	test -s ${BUILD}/daemon/stdout-tx.pcm
 	test -s ${BUILD}/daemon/stdout-tx.diag

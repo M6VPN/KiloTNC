@@ -55,6 +55,10 @@ kilotncd_config_init(struct kilotncd_config *config)
 	config->kiss_pty = 0U;
 	config->kiss_pty_once = 0U;
 	config->max_tx_ms = 30000U;
+	config->max_iterations = 0U;
+	config->diag_interval = 0U;
+	config->foreground = 0U;
+	config->dry_run = 0U;
 
 	return KILOTNCD_CONFIG_OK;
 }
@@ -264,6 +268,28 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 	}
 	if (strcmp(key, "max_tx_ms") == 0)
 		return kilotncd_config_parse_u32(value, &config->max_tx_ms);
+	if (strcmp(key, "max_iterations") == 0)
+		return kilotncd_config_parse_u32(value,
+		    &config->max_iterations);
+	if (strcmp(key, "diag_interval") == 0)
+		return kilotncd_config_parse_u32(value,
+		    &config->diag_interval);
+	if (strcmp(key, "foreground") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->foreground) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->foreground > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "dry_run") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->dry_run) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->dry_run > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
+	}
 
 	return KILOTNCD_CONFIG_ERR_UNKNOWN;
 }

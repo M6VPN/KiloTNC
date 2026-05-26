@@ -427,6 +427,17 @@ M1.21 host-side checks on 2026-05-26:
 - `kilotncd --control status`, `kilotncd --control diag`, and `kilotncd --control "mode NINO_MODE=6"` work.
 - No persistent control socket, remote control listener, network API, interactive shell, real audio API, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
 
+M1.22 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the foreground loop module.
+- `--foreground --dry-run --max-iterations 1` exits successfully.
+- `--foreground --dry-run --max-iterations 3 --diag-interval 1` emits periodic `loop_diag` text to stderr.
+- `max_iterations=0` is rejected for foreground mode.
+- Invalid `diag_interval` values are rejected.
+- Foreground file-loopback mode runs through the existing deterministic loopback path.
+- Existing status, control, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
+- No background daemonization, PID file, syslog, real audio API, persistent service, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.
