@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.4 adds a host-native embedded diagnostics bridge over the app, platform, USB stub, and KISS bridge counters. No real USB diagnostics channel, USB stack, descriptors, audio DMA, codec, real GPIO PTT, HAL, or board driver code is implemented here yet.
+M2.5 adds a host-native embedded audio adapter stub and sample loopback path. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, or board driver code is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -25,3 +25,5 @@ make embedded-test
 The USB CDC skeleton uses fixed buffers and the existing portable KISS parser. It can echo bytes or loop KISS data frames back in tests, but it does not call TinyUSB, STM32Cube, CMSIS, hardware registers, or endpoint drivers.
 
 The diagnostics bridge captures a bounded snapshot and formats it into caller-provided text buffers. It is intended for future USB CDC diagnostics, but M2.4 does not send diagnostics over USB.
+
+The audio loopback path uses fixed sample buffers and mono signed 16-bit 48 kHz format metadata. Tests can inject RX samples, capture TX samples, and verify overflow and underflow counters. M2.5 does not connect audio samples to a modem or transmitter path.

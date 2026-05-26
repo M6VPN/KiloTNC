@@ -17,9 +17,9 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M2.4 embedded diagnostics bridge.
+Current stage: M2.5 embedded audio loopback/test path.
 
-No PCB work, hardware build, RF transmit, real radio keying, real codec driver work, or embedded USB implementation has started.
+No PCB work, hardware build, RF transmit, real radio keying, real codec driver work, embedded USB implementation, or real audio driver work has started.
 
 ## Scope
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, the M2.1 embedded compile-only skeleton, M2.2 platform stubs, the M2.3 host-native USB CDC KISS bridge skeleton, and the M2.4 embedded diagnostics bridge.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, the M2.1 embedded compile-only skeleton, M2.2 platform stubs, the M2.3 host-native USB CDC KISS bridge skeleton, the M2.4 embedded diagnostics bridge, and the M2.5 host-native audio loopback/test path.
 
 ## Milestones
 

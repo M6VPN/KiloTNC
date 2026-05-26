@@ -104,6 +104,8 @@ test_app_null_args(void)
 		return __LINE__;
 	if (embedded_app_fault(NULL) != EMBEDDED_APP_ERR_ARG)
 		return __LINE__;
+	if (embedded_app_audio_bridge(NULL, NULL) != EMBEDDED_APP_ERR_ARG)
+		return __LINE__;
 	if (embedded_app_usb_bridge(NULL, NULL) != EMBEDDED_APP_ERR_ARG)
 		return __LINE__;
 
@@ -323,7 +325,7 @@ test_target_metadata(void)
 
 	features = KILOTNC_TARGET_FEATURES;
 	if (strcmp(KILOTNC_EMBEDDED_STAGE,
-	    "M2.4 embedded diagnostics bridge") !=
+	    "M2.5 embedded audio loopback path") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)

@@ -126,6 +126,8 @@ test_diag_format_stable_fields(void)
 		return __LINE__;
 	if (strstr(buf, "kiss_parse_errors=0") == NULL)
 		return __LINE__;
+	if (strstr(buf, "audio_rx_samples=0 audio_tx_samples=0") == NULL)
+		return __LINE__;
 	if (strstr(buf, "ptt=0 usb_connected=0") == NULL)
 		return __LINE__;
 

@@ -31,6 +31,13 @@ struct embedded_diag_snapshot {
 	uint32_t kiss_parse_errors;
 	uint32_t kiss_ignored_commands;
 	uint32_t kiss_overlength_frames;
+	uint32_t audio_rx_samples;
+	uint32_t audio_tx_samples;
+	uint32_t audio_rx_overflows;
+	uint32_t audio_tx_overflows;
+	uint32_t audio_rx_underflows;
+	uint32_t audio_tx_underflows;
+	uint32_t audio_loopback_blocks;
 	uint8_t app_state;
 	uint8_t reset_cause;
 	uint8_t ptt_state;

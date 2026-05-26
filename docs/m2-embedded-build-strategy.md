@@ -76,6 +76,23 @@ This remains host-native. It does not use TinyUSB, STM32 HAL, CMSIS, STM32Cube, 
 
 This remains host-native. It does not create a USB diagnostic channel or call a real USB device stack.
 
+## M2.5 Audio Loopback Coverage
+
+`make embedded-test` now also verifies:
+
+- 48 kHz mono signed 16-bit audio format metadata.
+- Fixed-buffer RX sample injection.
+- Fixed-buffer TX sample capture.
+- Audio loopback from RX samples to TX samples.
+- Partial-block loopback.
+- RX underflow counters.
+- TX overflow counters.
+- Audio counters in embedded diagnostics.
+- App step services audio loopback while kicking the watchdog.
+- PTT remains off during audio loopback.
+
+This remains host-native. It does not use ADC, DAC, SAI, I2S, DMA, codec drivers, hardware registers, or a transmitter audio path.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

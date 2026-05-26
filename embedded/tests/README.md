@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.4 expands the host-native embedded skeleton test with diagnostics snapshot and formatter coverage.
+M2.5 expands the host-native embedded skeleton test with audio stub and loopback coverage.
 
 Planned M2 test sequence:
 
@@ -12,6 +12,7 @@ Planned M2 test sequence:
 - KISS escaping and malformed input recovery.
 - Embedded diagnostics capture and formatting.
 - USB and KISS diagnostic counters.
+- Audio format, RX injection, TX capture, loopback, overflow, and underflow counters.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.

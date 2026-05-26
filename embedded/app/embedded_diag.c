@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "embedded_audio.h"
 #include "embedded_app.h"
 #include "embedded_diag.h"
 #include "embedded_usb_bridge.h"
@@ -27,7 +28,9 @@ embedded_diag_capture(const struct embedded_app *app,
 	struct embedded_diag_snapshot *snapshot)
 {
 	struct embedded_app_status app_status;
+	struct embedded_audio_stats audio_bridge_stats;
 	struct embedded_usb_bridge_stats bridge_stats;
+	struct kilotnc_audio_stats audio_stats;
 	struct kilotnc_usb_cdc_stats usb_stats;
 	size_t diag_writes;
 
@@ -53,7 +56,7 @@ embedded_diag_capture(const struct embedded_app *app,
 		    embedded_diag_size_to_u32(diag_writes);
 
 	if (app->usb_bridge == NULL)
-		return EMBEDDED_DIAG_OK;
+		goto audio;
 
 	if (embedded_usb_bridge_stats(app->usb_bridge, &bridge_stats) !=
 	    EMBEDDED_USB_BRIDGE_OK)
@@ -83,6 +86,33 @@ embedded_diag_capture(const struct embedded_app *app,
 	snapshot->kiss_overlength_frames =
 	    embedded_diag_size_to_u32(bridge_stats.kiss_overlength);
 
+audio:
+	if (app->audio_bridge == NULL)
+		return EMBEDDED_DIAG_OK;
+
+	if (embedded_audio_stats(app->audio_bridge, &audio_bridge_stats) !=
+	    EMBEDDED_AUDIO_OK)
+		return EMBEDDED_DIAG_ERR_ARG;
+	if (app->audio_bridge->audio != NULL &&
+	    app->audio_bridge->audio->stats != NULL &&
+	    app->audio_bridge->audio->stats(app->audio_bridge->audio->ctx,
+	    &audio_stats) == KILOTNC_AUDIO_OK) {
+		snapshot->audio_rx_samples =
+		    embedded_diag_size_to_u32(audio_stats.rx_samples_read);
+		snapshot->audio_tx_samples =
+		    embedded_diag_size_to_u32(audio_stats.tx_samples_written);
+		snapshot->audio_rx_overflows =
+		    embedded_diag_size_to_u32(audio_stats.rx_overflows);
+		snapshot->audio_tx_overflows =
+		    embedded_diag_size_to_u32(audio_stats.tx_overflows);
+		snapshot->audio_rx_underflows =
+		    embedded_diag_size_to_u32(audio_stats.rx_underflows);
+		snapshot->audio_tx_underflows =
+		    embedded_diag_size_to_u32(audio_stats.tx_underflows);
+	}
+	snapshot->audio_loopback_blocks =
+	    embedded_diag_size_to_u32(audio_bridge_stats.loopback_blocks);
+
 	return EMBEDDED_DIAG_OK;
 }
 
@@ -103,6 +133,10 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "usb_rx_bytes=%u usb_tx_bytes=%u usb_rx_overflows=%u "
 	    "usb_tx_overflows=%u kiss_frames_in=%u kiss_frames_out=%u "
 	    "kiss_parse_errors=%u kiss_ignored=%u kiss_overlength=%u "
+	    "audio_rx_samples=%u audio_tx_samples=%u "
+	    "audio_rx_overflows=%u audio_tx_overflows=%u "
+	    "audio_rx_underflows=%u audio_tx_underflows=%u "
+	    "audio_loopback_blocks=%u "
 	    "app_state=%u reset_cause=%u ptt=%u usb_connected=%u",
 	    snapshot->app_steps, snapshot->app_faults,
 	    snapshot->platform_ticks, snapshot->watchdog_kicks,
@@ -111,8 +145,11 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    snapshot->usb_tx_overflows, snapshot->kiss_frames_in,
 	    snapshot->kiss_frames_out, snapshot->kiss_parse_errors,
 	    snapshot->kiss_ignored_commands,
-	    snapshot->kiss_overlength_frames, snapshot->app_state,
-	    snapshot->reset_cause, snapshot->ptt_state,
+	    snapshot->kiss_overlength_frames, snapshot->audio_rx_samples,
+	    snapshot->audio_tx_samples, snapshot->audio_rx_overflows,
+	    snapshot->audio_tx_overflows, snapshot->audio_rx_underflows,
+	    snapshot->audio_tx_underflows, snapshot->audio_loopback_blocks,
+	    snapshot->app_state, snapshot->reset_cause, snapshot->ptt_state,
 	    snapshot->usb_connected);
 	if (ret < 0)
 		return EMBEDDED_DIAG_ERR_SMALL;

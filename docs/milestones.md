@@ -106,9 +106,18 @@ M2.4 status:
 - Test malformed KISS and unsupported KISS command counters.
 - Keep real USB diagnostics channel work out of the repo.
 
+M2.5 status:
+
+- Add embedded audio interface.
+- Add fixed-buffer audio stub.
+- Add host-native RX sample injection and TX sample capture.
+- Add app-level audio loopback path.
+- Add audio overflow and underflow counters to diagnostics.
+- Keep ADC, DAC, SAI, I2S, DMA, codec, and transmitter audio paths out of the repo.
+
 Next planned M2 passes:
 
-- M2.5: audio loopback or test path.
+- M2.6: embedded TNC core integration skeleton.
 
 M2 scope:
 

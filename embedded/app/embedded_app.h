@@ -10,6 +10,7 @@
 
 #include "kilotnc_platform.h"
 
+struct embedded_audio;
 struct embedded_usb_bridge;
 
 enum embedded_app_result {
@@ -41,10 +42,13 @@ struct embedded_app_status {
 
 struct embedded_app {
 	const struct kilotnc_platform *platform;
+	struct embedded_audio *audio_bridge;
 	struct embedded_usb_bridge *usb_bridge;
 	struct embedded_app_status status;
 };
 
+enum embedded_app_result embedded_app_audio_bridge(struct embedded_app *,
+	struct embedded_audio *);
 enum embedded_app_result embedded_app_fault(struct embedded_app *);
 enum embedded_app_result embedded_app_init(struct embedded_app *,
 	const struct kilotnc_platform *);

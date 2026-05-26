@@ -138,7 +138,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.4 embedded status: host-native diagnostics bridge.'
+	@printf '%s\n' 'M2.5 embedded status: host-native audio loopback/test path.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -354,11 +354,15 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 
 ${EMBEDBIN}: embedded/app/embedded_app.c \
+	  embedded/app/embedded_audio.c \
 	  embedded/app/embedded_diag.c \
 	  embedded/app/embedded_usb_bridge.c \
+	  embedded/platform/audio_stub.c \
 	  embedded/platform/platform_stub.c \
 	  embedded/platform/usb_cdc_stub.c \
+	  embedded/tests/test_audio_stub.c \
 	  embedded/tests/test_embedded_app.c \
+	  embedded/tests/test_embedded_audio.c \
 	  embedded/tests/test_embedded_diag.c \
 	  embedded/tests/test_embedded_main.c \
 	  embedded/tests/test_embedded_usb_bridge.c \
@@ -366,11 +370,15 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  firmware/src/kiss.c
 	mkdir -p ${BUILD}
 	${CC} ${EMBED_CFLAGS} -o $@ embedded/app/embedded_app.c \
+		embedded/app/embedded_audio.c \
 		embedded/app/embedded_diag.c \
 		embedded/app/embedded_usb_bridge.c \
+		embedded/platform/audio_stub.c \
 		embedded/platform/platform_stub.c \
 		embedded/platform/usb_cdc_stub.c \
+		embedded/tests/test_audio_stub.c \
 		embedded/tests/test_embedded_app.c \
+		embedded/tests/test_embedded_audio.c \
 		embedded/tests/test_embedded_diag.c \
 		embedded/tests/test_embedded_main.c \
 		embedded/tests/test_embedded_usb_bridge.c \

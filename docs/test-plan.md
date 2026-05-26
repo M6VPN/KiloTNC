@@ -587,6 +587,22 @@ M2.4 embedded diagnostics gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No real USB diagnostic channel, TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, endpoint code, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.5 embedded audio loopback gate:
+
+- `make embedded-test` covers audio format metadata.
+- `make embedded-test` covers RX sample injection.
+- `make embedded-test` covers TX sample capture.
+- `make embedded-test` covers audio loopback.
+- `make embedded-test` covers partial-block loopback.
+- `make embedded-test` covers RX underflow counters.
+- `make embedded-test` covers TX overflow counters.
+- `make embedded-test` covers audio counters in diagnostics.
+- `make embedded-test` verifies app step services audio and kicks watchdog.
+- `make embedded-test` verifies audio loopback does not change PTT state.
+- `make embedded-test` verifies watchdog fault still forces PTT off with audio enabled.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No ADC, DAC, SAI, I2S, DMA, codec, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

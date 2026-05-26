@@ -22,6 +22,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.2 host-native embedded tests verify simulated watchdog fault sets reset cause to watchdog, increments the platform fault counter, and forces the stub PTT state off.
 - M2.3 host-native USB CDC tests verify echo, KISS loopback, malformed KISS recovery, and unsupported KISS commands do not change the stub PTT state.
 - M2.4 host-native diagnostics tests verify PTT state, reset cause, watchdog fault state, USB counters, and KISS parse counters are visible through a bounded snapshot.
+- M2.5 host-native audio tests verify audio loopback and audio error counters do not change the stub PTT state.
 
 ## Watchdog And Timeout
 
@@ -31,6 +32,7 @@ M2 firmware planning must include:
 - Watchdog reset path that returns PTT to off.
 - Max TX timeout carried into embedded control state.
 - Abort path that forces TX inactive and PTT off.
+- Audio loopback errors that do not bypass watchdog or PTT safe-off.
 
 ## Diagnostics Visibility
 
@@ -40,6 +42,7 @@ M2 must expose enough diagnostics for board tests:
 - Watchdog event counter where available.
 - PTT state.
 - USB/KISS parse error state.
+- Audio overflow and underflow counters.
 - TX active state.
 - Max TX timeout event.
 - Fault counter snapshot.
