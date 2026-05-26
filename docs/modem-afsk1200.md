@@ -1,10 +1,10 @@
 # AFSK1200 Modem
 
-This document covers the M1.2 host-side 1200 baud Bell 202 AFSK simulator. It is for deterministic clean-vector tests only.
+This document covers the host-side 1200 baud Bell 202 AFSK simulator. It is for deterministic generated-vector tests only.
 
 ## Scope
 
-M1.2 adds portable host-side tone generation and clean-vector decode. It does not add STM32 firmware, USB CDC, codec drivers, DMA audio, DCD, squelch/COS, timing recovery, clock drift handling, noisy decode, or real-radio testing.
+M1.2 added portable host-side tone generation and clean-vector decode. M1.3 adds synthetic impairment tests and simple decoder metrics. This does not add STM32 firmware, USB CDC, codec drivers, DMA audio, squelch/COS, full timing recovery, real DCD, or real-radio testing.
 
 ## Verified Parameters
 
@@ -54,16 +54,28 @@ signed 16-bit mono PCM samples
 	AX.25 UI frame
 ```
 
-The M1.2 decoder uses fixed 40-sample windows and simple tone detection. It is expected to decode clean internally generated vectors and mild amplitude scaling only.
+The M1.3 decoder uses fixed 40-sample windows, leading/trailing silence trimming, per-window DC removal, simple tone detection, and best-offset selection across one bit period. It is expected to decode deterministic generated vectors with mild synthetic impairments.
+
+## Metrics
+
+The metrics API reports:
+
+- Total decoded bits.
+- Mark and space bit counts.
+- Total mark and space detector energy.
+- Total, minimum, and average tone-decision confidence.
+- DCD score, currently equal to average confidence.
+
+These metrics are diagnostic only. They do not yet represent production DCD behavior.
 
 ## Limitations
 
-- Clean generated vectors only.
-- No timing recovery.
-- No DCD.
+- Generated host vectors only.
+- Best-offset selection only, not a full timing recovery loop.
+- Diagnostic DCD score only, not production DCD.
 - No squelch/COS integration.
-- No noisy decode claim.
-- No sample clock drift tolerance claim.
+- Mild synthetic noise only.
+- No real sample clock drift tolerance claim.
 - No real-radio test claim.
 - No embedded audio DMA.
 - No production modem filtering.

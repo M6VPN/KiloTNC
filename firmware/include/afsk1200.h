@@ -27,8 +27,22 @@ enum afsk1200_result {
 	AFSK1200_ERR_BIT
 };
 
+struct afsk1200_metrics {
+	size_t bits_total;
+	size_t mark_bits;
+	size_t space_bits;
+	uint32_t energy_mark_total;
+	uint32_t energy_space_total;
+	uint32_t confidence_total;
+	uint16_t confidence_min;
+	uint16_t confidence_avg;
+	uint16_t dcd_score;
+};
+
 enum afsk1200_result afsk1200_decode_pcm(const int16_t *, size_t,
 	uint8_t *, size_t, size_t *);
+enum afsk1200_result afsk1200_decode_pcm_metrics(const int16_t *, size_t,
+	uint8_t *, size_t, size_t *, struct afsk1200_metrics *);
 enum afsk1200_result afsk1200_encode_pcm(const uint8_t *, size_t,
 	int16_t *, size_t, size_t *);
 enum afsk1200_result afsk1200_nrzi_decode(const uint8_t *, size_t,

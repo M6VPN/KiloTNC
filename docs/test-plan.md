@@ -119,13 +119,23 @@ M1.2 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Truncated sample count rejection.
 - PCM int16_t range check.
 
+M1.3 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- Leading and trailing silence around generated AFSK1200 audio.
+- Small bit-window phase offset through leading silence.
+- Mild amplitude reduction.
+- DC offset.
+- Mild deterministic additive noise.
+- Mild clipping.
+- Decoder metrics for bit counts, tone counts, detector energy, confidence, and diagnostic DCD score.
+
 Pending:
 
-- Timing recovery.
-- DCD.
+- Full timing recovery loop.
+- Production DCD.
 - Squelch/COS integration.
-- Noisy decode.
-- Clock drift handling.
+- Real noisy decode.
+- Real sample clock drift handling.
 - Real-radio testing.
 - Embedded audio DMA.
 

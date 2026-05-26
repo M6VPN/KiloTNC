@@ -15,6 +15,7 @@
 #define TEST_PCM_MAX	(TEST_BITS_MAX * AFSK1200_SAMPLES_PER_BIT)
 
 static int test_afsk1200_full_chain(void);
+static int test_afsk1200_impairments(void);
 static int test_afsk1200_null_args(void);
 static int test_afsk1200_pcm(void);
 static int test_afsk1200_put_bit(uint8_t *, size_t, size_t *, uint8_t);
@@ -32,6 +33,7 @@ test_afsk1200(void)
 	uint8_t nrzi[16];
 	uint8_t decoded[16];
 	size_t count;
+	int subres;
 	enum afsk1200_result res;
 
 	CHECK(AFSK1200_SAMPLE_RATE == 48000U);
@@ -56,9 +58,18 @@ test_afsk1200(void)
 	CHECK(count == 6U);
 	CHECK(memcmp(decoded, bits, 6U) == 0);
 
-	CHECK(test_afsk1200_pcm() == 0);
-	CHECK(test_afsk1200_full_chain() == 0);
-	CHECK(test_afsk1200_null_args() == 0);
+	subres = test_afsk1200_pcm();
+	if (subres != 0)
+		return subres;
+	subres = test_afsk1200_full_chain();
+	if (subres != 0)
+		return subres;
+	subres = test_afsk1200_impairments();
+	if (subres != 0)
+		return subres;
+	subres = test_afsk1200_null_args();
+	if (subres != 0)
+		return subres;
 
 	return 0;
 }
@@ -163,12 +174,70 @@ test_afsk1200_full_chain(void)
 }
 
 static int
+test_afsk1200_impairments(void)
+{
+	uint8_t data_bits[] = {
+		1U, 0U, 1U, 1U, 0U, 0U, 1U, 0U,
+		1U, 1U, 0U, 1U, 0U, 1U, 1U, 0U
+	};
+	uint8_t nrzi[32];
+	uint8_t decoded_nrzi[32];
+	int16_t pcm[AFSK1200_SAMPLES_PER_BIT * 32U];
+	int16_t impaired[(AFSK1200_SAMPLES_PER_BIT * 32U) + 96U];
+	struct afsk1200_metrics metrics;
+	size_t count;
+	size_t samples;
+	size_t impaired_samples;
+	size_t i;
+	uint32_t noise;
+	int32_t sample;
+	enum afsk1200_result res;
+
+	res = afsk1200_nrzi_encode(data_bits, 16U, nrzi, sizeof(nrzi), &count);
+	CHECK(res == AFSK1200_OK);
+	res = afsk1200_encode_pcm(nrzi, count, pcm, sizeof(pcm) /
+	    sizeof(pcm[0]), &samples);
+	CHECK(res == AFSK1200_OK);
+
+	(void)memset(impaired, 0, sizeof(impaired));
+	for (i = 0U; i < samples; i++) {
+		noise = (uint32_t)((i * 1103515245U) + 12345U);
+		sample = pcm[i];
+		sample = (sample * 3) / 4;
+		sample += 350;
+		sample += (int32_t)(noise % 401U) - 200;
+		if (sample > 9000)
+			sample = 9000;
+		if (sample < -9000)
+			sample = -9000;
+		impaired[i + 13U] = (int16_t)sample;
+	}
+	impaired_samples = samples + 53U;
+
+	res = afsk1200_decode_pcm_metrics(impaired, impaired_samples,
+	    decoded_nrzi, sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(count == 16U);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
+	CHECK(metrics.bits_total == 16U);
+	CHECK(metrics.mark_bits + metrics.space_bits == 16U);
+	CHECK(metrics.energy_mark_total != 0U);
+	CHECK(metrics.energy_space_total != 0U);
+	CHECK(metrics.confidence_min != 0U);
+	CHECK(metrics.confidence_avg != 0U);
+	CHECK(metrics.dcd_score == metrics.confidence_avg);
+
+	return 0;
+}
+
+static int
 test_afsk1200_null_args(void)
 {
 	uint8_t bits[] = { 1U, 0U };
 	uint8_t out_bits[2];
 	int16_t pcm[AFSK1200_SAMPLES_PER_BIT * 2U];
 	size_t count;
+	size_t samples;
 	enum afsk1200_result res;
 
 	res = afsk1200_nrzi_encode(NULL, 1U, out_bits, sizeof(out_bits),
@@ -207,6 +276,12 @@ test_afsk1200_null_args(void)
 	res = afsk1200_decode_pcm(pcm, AFSK1200_SAMPLES_PER_BIT, out_bits,
 	    sizeof(out_bits), NULL);
 	CHECK(res == AFSK1200_ERR_ARG);
+	res = afsk1200_encode_pcm(bits, 1U, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &samples);
+	CHECK(res == AFSK1200_OK);
+	res = afsk1200_decode_pcm_metrics(pcm, AFSK1200_SAMPLES_PER_BIT,
+	    out_bits, sizeof(out_bits), &count, NULL);
+	CHECK(res == AFSK1200_OK);
 
 	return 0;
 }

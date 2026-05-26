@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.2 host-side 1200 baud Bell 202 AFSK simulator and clean-vector tests.
+Current stage: M1.3 AFSK1200 decoder realism, DCD metrics, and impaired host-vector tests.
 
 PCB work is blocked until protocol and architecture documents are reviewed.
 
