@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.26 external black-box interoperability planning.
+Current stage: M1.27 repository milestone cleanup and M2 readiness planning.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -48,18 +48,20 @@ These platform targets remain planning items except for the minimal host daemon 
 
 ## Milestones
 
-| Stage | Target                                                             |
-| ----- | ------------------------------------------------------------------ |
-| M0    | Research matrix, architecture docs, protocol scope                 |
-| M1    | Host-side simulator: KISS parser, AX.25 encode/decode, FCS tests   |
-| M2    | Dev-board prototype: USB CDC KISS plus loopback modem test harness |
-| M3    | 1200 baud Bell 202 AFSK TX/RX with WAV/golden-vector tests         |
-| M4    | Radio bench test with dummy audio/radio interface, PTT safety      |
-| M5    | 9600 baud G3RUH-like/GFSK mode                                     |
-| M6    | IL2Pc research implementation and interop testing                  |
-| M7    | KiCad rev A schematic and PCB                                      |
-| M8    | 72-hour burn-in, USB reconnect, brownout, malformed KISS fuzzing   |
-| M9    | Optional bridge mode for VARA/Mercury/ARDOP via host software      |
+| Stage | Target                                                   |
+| ----- | -------------------------------------------------------- |
+| M0    | Initial research and project scope                       |
+| M1    | Portable host-side core and daemon groundwork            |
+| M2    | Dev-board firmware prototype                             |
+| M3    | Hardware audio and PTT bench validation                  |
+| M4    | Rev A schematic and PCB                                  |
+| M5    | Rev A bring-up and burn-in                               |
+| M6    | Additional modem modes and NinoTNC compatibility growth  |
+| M7    | Linux/BSD daemon real audio backends                     |
+| M8    | Network and node services                                |
+| M9    | Future Ethernet or Wi-Fi hardware variants               |
+
+Detailed milestone notes are in [docs/milestones.md](docs/milestones.md). M2 dev-board readiness is in [docs/m2-devboard-readiness.md](docs/m2-devboard-readiness.md). Platform and daemon tracks are covered in [docs/platform-roadmap.md](docs/platform-roadmap.md) and [docs/daemon-plan.md](docs/daemon-plan.md).
 
 ## Build and Test
 

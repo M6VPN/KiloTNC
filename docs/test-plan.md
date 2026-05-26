@@ -487,6 +487,35 @@ M1.26 documentation gate on 2026-05-26:
 - No RF transmit path is enabled by default.
 - `make interop-help` prints optional local wrapper guidance.
 
+M1.27 documentation gate on 2026-05-26:
+
+- M1 host-side protocol, modem, TNC, CLI, daemon, compatibility, and planning work is grouped in `docs/milestones.md`.
+- M2 dev-board firmware scope is documented separately from daemon and hardware tracks.
+- M2 readiness gates are documented in `docs/m2-devboard-readiness.md`.
+- README milestone table separates M1 groundwork from M2 dev-board firmware, M3 bench validation, and M4 PCB work.
+- M2 must keep all M1 host checks passing unless a skipped target has a documented reason.
+- M2 must not skip sanitizer, tool, daemon, or compatibility targets without explanation.
+- No STM32 firmware, USB CDC device code, PCB, real audio, real PTT, or RF transmit work is started by M1.27.
+
+M1 regression suite before M2:
+
+- `make clean && make test`.
+- `make sanitize`.
+- `make tools`.
+- `make tool-test`.
+- `make daemon`.
+- `make daemon-test`.
+- `make kiss-compat-test`.
+
+M2 readiness gate:
+
+- Dev-board target selected.
+- Embedded build is separate from host daemon build.
+- USB CDC KISS loopback test planned before modem or PTT hardware tests.
+- Watchdog and reset safe-off tests planned.
+- GPIO-only PTT test path planned with no RF connected.
+- PCB work remains blocked until M2 and M3 review gates pass.
+
 Pending:
 
 - Full timing recovery loop.

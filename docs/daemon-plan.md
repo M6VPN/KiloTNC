@@ -28,6 +28,8 @@ M1.24 adds sndio and OSS planning plus compile-gated daemon audio stubs. The def
 
 M1.26 adds external black-box interoperability planning and optional harness placeholders. It does not make external tools part of daemon CI.
 
+M1.27 separates the daemon track from M2 dev-board firmware planning. The daemon remains a host-side target that shares the portable core with future firmware, but it is not the firmware platform layer.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -35,6 +37,8 @@ M1.26 adds external black-box interoperability planning and optional harness pla
 - Use portable KiloTNC modules for KISS, AX.25, HDLC, FCS, AFSK1200, modes, diagnostics, and channel-access logic.
 - Keep OS audio, PTY, sockets, serial, CAT, and config parsing outside the portable core.
 - Provide a host-side role similar to a software TNC concept, without copying Dire Wolf code or behavior text.
+
+M2 firmware can proceed separately while daemon work continues. Real ALSA, sndio, OSS, serial PTT, CAT, and persistent service modes remain daemon-track work for later milestones.
 
 ## Process Model
 

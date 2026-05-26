@@ -2,6 +2,8 @@
 
 KiloTNC is a multi-target TNC project. The shared core should stay portable while each target owns its platform adapters.
 
+M1 is mostly complete as host-side groundwork. M2 starts dev-board firmware only. Real daemon audio backends, network services, and network-capable hardware are later tracks.
+
 ## Project Targets
 
 ### MCU Firmware
@@ -14,7 +16,7 @@ The MCU firmware target is the physical KiloTNC hardware:
 - Fail-safe continuous operation.
 - Watchdog, timeout, and fault-counter behavior.
 
-This target is not implemented yet.
+This target starts in M2 as a dev-board firmware prototype. It does not include PCB work, RF transmit, or real radio keying.
 
 ### Linux/BSD Daemon
 
@@ -27,7 +29,7 @@ Planned daemon functions:
 - Serial/CAT/PTT adapters where available.
 - Linux, OpenBSD, FreeBSD, and NetBSD support where practical.
 
-The full daemon target is planned. The current implementation is a minimal host-side skeleton with config profile validation, raw PCM audio backend abstraction, ALSA, sndio, and OSS stub boundaries, file, stdin/stdout, localhost TCP once-mode, local Unix socket once-mode, and local PTY once-mode adapters.
+The full daemon target is planned. The current implementation is a minimal host-side skeleton with config profile validation, raw PCM audio backend abstraction, ALSA, sndio, and OSS stub boundaries, file, stdin/stdout, localhost TCP once-mode, local Unix socket once-mode, and local PTY once-mode adapters. Real ALSA, sndio, and OSS runtime backends are later daemon-track work.
 
 ### Network-Capable Hardware
 
@@ -40,7 +42,7 @@ Possible network hardware options:
 - External Wi-Fi module.
 - MCU or SBC companion.
 
-This target is planned only.
+This target is later than Rev A.
 
 ### Internet and Node Services
 

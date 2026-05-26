@@ -72,6 +72,18 @@ SRCS	= ${CORE_SRCS} ${TEST_SRCS} daemon/kilotncd_control.c
 
 all: ${TESTBIN}
 
+help:
+	@printf '%s\n' 'KiloTNC targets:'
+	@printf '%s\n' '  test              build and run host tests'
+	@printf '%s\n' '  sanitize          run sanitizer host tests'
+	@printf '%s\n' '  tools             build host CLI tools'
+	@printf '%s\n' '  tool-test         run deterministic CLI checks'
+	@printf '%s\n' '  daemon            build kilotncd and local test clients'
+	@printf '%s\n' '  daemon-test       run deterministic daemon checks'
+	@printf '%s\n' '  kiss-compat-test  run local KISS compatibility checks'
+	@printf '%s\n' '  interop-help      show optional interop wrapper guidance'
+	@printf '%s\n' '  clean             remove build outputs'
+
 ${TESTBIN}: ${SRCS}
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} -o $@ ${SRCS}
@@ -326,4 +338,4 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test sanitize tools tool-test daemon interop-help daemon-test kiss-compat-test clean
+.PHONY: all help test sanitize tools tool-test daemon interop-help daemon-test kiss-compat-test clean

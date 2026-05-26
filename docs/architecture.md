@@ -57,6 +57,35 @@ Codec audio path, PTT safety, CAT bridge, radio connector
 
 VARA native modulation is not planned. VARA support means host-side external software using KiloTNC audio, PTT, and CAT facilities where the host software supports that arrangement.
 
+## Layered Architecture
+
+```text
+Applications and tests
+	|
+	| KISS, files, CLI, local IPC, future USB CDC
+	v
+Target adapters
+	|-- Host daemon adapters: file, TCP, Unix socket, PTY, raw PCM
+	|-- Future MCU adapters: USB CDC, timers, watchdog, GPIO, audio
+	|-- Future hardware board: codec, PTT, COS, radio connector
+	|
+	v
+Portable core
+	|-- KISS
+	|-- AX.25, HDLC, FCS
+	|-- AFSK1200 RX/TX
+	|-- TNC control, diagnostics, modes
+```
+
+M1 host daemon code is not MCU firmware. It validates the portable core and host-side adapter boundaries. M2 starts separate dev-board firmware adapters around the same portable core.
+
+Before embedded use, adapter boundaries need review for:
+
+- No heap allocation in core modem, packet, and control paths.
+- Fixed-size queues and buffers at platform boundaries.
+- Clear ownership of timing ticks, watchdog service, and PTT fail-safe state.
+- Diagnostics that can be exposed without file or socket APIs.
+
 ## Shared Core and Platform Targets
 
 The portable core is shared by firmware, host tools, and planned daemon work:
@@ -76,7 +105,7 @@ Target-specific adapters are planned around that core:
 - Network/node target: optional local KISS-over-TCP, future node services, and remote diagnostics behind explicit safety gates.
 - Future network-capable hardware target: Ethernet or Wi-Fi variants after the Rev A USB/audio/PTT design is proven.
 
-The daemon, network node, and network-capable hardware targets are planned only. They are not implemented in M1.12.
+The daemon groundwork is host-side only. The MCU firmware target starts in M2 and must not depend on host daemon file, socket, PTY, or raw-file audio code.
 
 ## MCU Decision
 
