@@ -683,6 +683,17 @@ M2.9 embedded full host-test loopback gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.10 compile-gated STM32H753 target skeleton gate:
+
+- `make embedded-test` includes the target metadata host test.
+- `make embedded-target-help` prints opt-in STM32H753 target guidance.
+- `make embedded-target-check` exits success with a skip message when `arm-none-eabi-gcc` is absent.
+- If `arm-none-eabi-gcc` is present, `make embedded-target-check` syntax-checks only safe target skeleton sources.
+- Target-specific C files are excluded from normal host builds.
+- Target-specific C files contain no STM32 HAL, CMSIS, TinyUSB, or vendor includes.
+- Target-specific C files contain no hardware register access and no pin assignments.
+- No linker script, startup vector table, vendor project, or flashable firmware image is committed.
+
 Pending:
 
 - Full timing recovery loop.

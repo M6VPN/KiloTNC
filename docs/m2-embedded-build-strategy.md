@@ -180,6 +180,31 @@ DAC, SAI, I2S, DMA, codec drivers, GPIO PTT, or hardware registers.
 This remains host-native. It does not use real USB, ADC, DAC, SAI, I2S,
 DMA, codec drivers, GPIO PTT, RF receive, RF transmit, or hardware registers.
 
+## M2.10 STM32H753 Target Skeleton
+
+M2.10 adds a compile-gated target skeleton under:
+
+```text
+embedded/targets/stm32h753-nucleo/
+```
+
+Normal host CI still uses:
+
+```text
+make embedded-test
+```
+
+The opt-in target guidance and syntax check are:
+
+```text
+make embedded-target-help
+make embedded-target-check
+```
+
+`make embedded-target-check` exits success with a skip message when `arm-none-eabi-gcc` is absent. If the compiler is available, it syntax-checks only safe target skeleton files with `KILOTNC_TARGET_STM32H753_NUCLEO` defined.
+
+The target skeleton does not require STM32Cube, CMSIS, STM32 HAL, TinyUSB, startup code, linker scripts, hardware registers, pin assignments, or a vendor IDE project. It does not link firmware and does not produce a flashable image.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:
@@ -191,7 +216,7 @@ Candidate approaches for M2.1 and later:
 
 ## Future Environment Variables
 
-These names are reserved for later embedded work. They are not required in M2.0.
+These names are reserved for later embedded work. They are not required for normal host builds.
 
 ```text
 KILOTNC_EMBEDDED_TARGET=stm32h753-nucleo

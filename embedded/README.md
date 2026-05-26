@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.9 adds a host-native full embedded loopback skeleton. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, or hardware audio path is implemented here yet.
+M2.10 adds a compile-gated STM32H753 target skeleton. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -22,6 +22,18 @@ Run the host-native skeleton test with:
 make embedded-test
 ```
 
+Show target skeleton guidance with:
+
+```text
+make embedded-target-help
+```
+
+Run the opt-in skip-safe target skeleton check with:
+
+```text
+make embedded-target-check
+```
+
 The USB CDC skeleton uses fixed buffers and the existing portable KISS parser. It can echo bytes or loop KISS data frames back in tests, but it does not call TinyUSB, STM32Cube, CMSIS, hardware registers, or endpoint drivers.
 
 The diagnostics bridge captures a bounded snapshot and formats it into caller-provided text buffers. It is intended for future USB CDC diagnostics, but M2.4 does not send diagnostics over USB.
@@ -35,3 +47,5 @@ The embedded modem boundary can accept AX.25 frames with FCS from the embedded T
 The embedded RX modem boundary reads generated test samples from the audio RX stub, feeds them through the portable AFSK1200 streaming RX path, and emits decoded AX.25 frames as KISS data frames to the USB CDC stub when RX is explicitly enabled. It is host-tested only and does not use receiver hardware or key PTT.
 
 The embedded full host-test loopback coordinates the USB CDC stub, embedded TNC, embedded modem TX, audio TX stub, audio RX stub, modem RX, and USB KISS output in one bounded run. Tests copy generated TX samples into the RX stub, verify the decoded KISS output, enforce a max iteration timeout, and keep PTT off.
+
+The STM32H753 target skeleton under `embedded/targets/stm32h753-nucleo/` contains metadata, compile-gated placeholder source files, and planning notes for future linker, startup, USB, watchdog, GPIO, and audio work. The target source files do not include STM32 HAL, CMSIS, TinyUSB, vendor headers, hardware registers, pin assignments, or real drivers.

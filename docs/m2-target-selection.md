@@ -59,6 +59,16 @@ M2.0 selects:
 
 No purchase or hardware order is made in this pass. No vendor code, STM32Cube project, CMSIS tree, Pico SDK, TinyUSB tree, or generated IDE output is committed.
 
+## M2.10 Target Skeleton
+
+The `stm32h753-nucleo` target path now has a compile-gated skeleton under:
+
+```text
+embedded/targets/stm32h753-nucleo/
+```
+
+The skeleton records target metadata and planned feature flags for the NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board path. It does not include STM32 HAL, CMSIS, TinyUSB, startup vectors, linker scripts, pin assignments, hardware register access, or a flashable firmware image.
+
 ## Sources Checked
 
 Sources checked on 2026-05-26:

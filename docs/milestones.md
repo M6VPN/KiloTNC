@@ -155,9 +155,18 @@ M2.9 status:
 - Test max iteration timeout and watchdog-fault abort behavior.
 - Keep PTT off and keep real USB, audio, GPIO PTT, and RF out of the repo.
 
+M2.10 status:
+
+- Add compile-gated STM32H753 target skeleton files.
+- Add target metadata and planned feature flags for `stm32h753-nucleo`.
+- Add placeholder target platform hooks that return safe defaults or unsupported.
+- Add linker, startup, USB, watchdog, GPIO, and audio planning notes.
+- Add skip-safe `make embedded-target-check`.
+- Keep startup code, linker script, HAL, CMSIS, TinyUSB, pin assignments, hardware registers, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.10: compile-gated STM32H753 target skeleton.
+- M2.11: STM32H753 pin and resource planning.
 
 M2 scope:
 

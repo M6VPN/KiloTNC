@@ -6,7 +6,7 @@ Board path:
 
 - NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board.
 
-M2.9 status:
+M2.10 status:
 
 - Compile-only skeleton.
 - Host-native platform stub tests.
@@ -20,9 +20,16 @@ M2.9 status:
 - Decoded AX.25 frames emitted as KISS to the USB stub.
 - Host-native full USB KISS to simulated audio TX/RX to USB KISS loopback tests.
 - Timeout and watchdog-fault loopback tests.
+- Compile-gated STM32H753 target skeleton files.
+- Opt-in target syntax check through `make embedded-target-check`.
+- Placeholder target platform hooks that return safe defaults or unsupported.
+- Linker, startup, USB, watchdog, GPIO, and audio planning notes.
 - No vendor project committed.
 - No STM32 HAL or Cube code committed.
 - No CMSIS tree committed.
+- No TinyUSB tree committed.
+- No startup vector table committed.
+- No linker script committed.
 - No real USB implementation.
 - No codec driver.
 - No real audio peripheral implementation.
@@ -32,4 +39,4 @@ M2.9 status:
 - No pinout finalized.
 - No clock tree finalized.
 
-The target header contains metadata and planned feature flags only.
+The target headers contain metadata, planned feature flags, and safe compile-gated placeholders only. The target C files are not part of normal host builds and do not produce flashable firmware.

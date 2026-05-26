@@ -39,5 +39,8 @@ jobs:
       - name: Embedded Skeleton Test
         run: make embedded-test
 
+      - name: Embedded Target Check
+        run: make embedded-target-check
+
       - name: Sanitizers
         run: make sanitize

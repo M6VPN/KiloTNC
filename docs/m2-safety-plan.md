@@ -27,6 +27,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.7 host-native modem boundary tests verify simulated AFSK sample generation does not change the stub PTT state.
 - M2.8 host-native RX modem tests verify audio RX processing and KISS output do not change the stub PTT state.
 - M2.9 host-native full loopback tests verify USB KISS input, simulated audio TX/RX, and USB KISS output keep the stub PTT state off.
+- M2.10 target skeleton files contain no pin assignments, no real PTT pin, no real watchdog hardware path, no startup code, and no flashable firmware image.
 
 ## Watchdog And Timeout
 
