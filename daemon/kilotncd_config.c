@@ -42,6 +42,7 @@ kilotncd_config_init(struct kilotncd_config *config)
 		return KILOTNCD_CONFIG_ERR_PARSE;
 	kilotncd_audio_default_format(&config->audio_format);
 	config->audio_backend = KILOTNCD_AUDIO_BACKEND_RAW_FILE;
+	config->radio_backend = KILOTNCD_RADIO_BACKEND_NONE;
 	config->mode_temporary = 0;
 	config->p = 255U;
 	config->slottime_10ms = 10U;
@@ -159,6 +160,17 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 	if (strcmp(key, "audio_bits") == 0)
 		return kilotncd_config_parse_u8(value,
 		    &config->audio_format.bits_per_sample);
+	if (strcmp(key, "radio_backend") == 0) {
+		if (kilotncd_radio_parse_backend(value,
+		    &config->radio_backend) != KILOTNCD_RADIO_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "radio_log") == 0) {
+		config->have_radio_log = 1;
+		return kilotncd_config_copy_path(config->radio_log,
+		    sizeof(config->radio_log), value);
+	}
 	if (strcmp(key, "kiss_tcp_listen") == 0) {
 		if (kilotncd_tcp_parse_listen(value,
 		    &config->kiss_tcp_addr) != KILOTNCD_TCP_OK)

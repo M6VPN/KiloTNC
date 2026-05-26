@@ -22,6 +22,9 @@ DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_file.c \
 	  daemon/kilotncd_pty.c \
+	  daemon/kilotncd_radio.c \
+	  daemon/kilotncd_radio_log.c \
+	  daemon/kilotncd_radio_none.c \
 	  daemon/kilotncd_tcp.c \
 	  daemon/kilotncd_unix.c
 
@@ -99,7 +102,11 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --status
 	./${DAEMONBIN} --status --mode NINO_MODE=6
 	./${DAEMONBIN} --status --mode NINO_MODE=22
+	./${DAEMONBIN} --status --radio-backend none
+	printf 'radio_backend=none\n' > ${BUILD}/daemon/radio-none.conf
+	./${DAEMONBIN} --config ${BUILD}/daemon/radio-none.conf --status
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/tx.pcm --once
+	./${DAEMONBIN} --mode NINO_MODE=6 --radio-backend log --radio-log ${BUILD}/daemon/ptt.log --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/radio-log-tx.pcm --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out ${BUILD}/daemon/rx.kiss --once
 	printf 'mode=NINO_MODE=6\naudio_backend=raw\naudio_sample_rate=48000\naudio_channels=1\naudio_bits=16\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/audio-raw.pcm\n' > ${BUILD}/daemon/audio-raw.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/audio-raw.conf --once
@@ -123,6 +130,8 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-channels.conf --status; then exit 1; else exit 0; fi
 	printf 'audio_bits=24\n' > ${BUILD}/daemon/audio-bad-bits.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-bits.conf --status; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --radio-backend serial-rts --status; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --radio-backend bad-radio --status; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --mode NINO_MODE=0 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/bad.pcm --once; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --kiss-tcp-listen 0.0.0.0:18015 --kiss-tcp-once --pcm-out ${BUILD}/daemon/nonlocal.pcm --once; then exit 1; else exit 0; fi
 	printf 'mode=NINO_MODE=6\nkiss_tcp_listen=127.0.0.1:18016\nkiss_tcp_once=1\nallow_nonlocal_bind=0\npcm_out=${BUILD}/daemon/config-tcp.pcm\n' > ${BUILD}/daemon/tcp.conf
@@ -137,6 +146,10 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	test -s ${BUILD}/daemon/input.kiss
 	test -s ${BUILD}/daemon/input.pcm
 	test -s ${BUILD}/daemon/tx.pcm
+	test -s ${BUILD}/daemon/radio-log-tx.pcm
+	test -s ${BUILD}/daemon/ptt.log
+	awk '/^ptt=on$$/ { found=1 } END { exit found ? 0 : 1 }' ${BUILD}/daemon/ptt.log
+	awk '/^ptt=off$$/ { found=1 } END { exit found ? 0 : 1 }' ${BUILD}/daemon/ptt.log
 	test -s ${BUILD}/daemon/rx.kiss
 	test -s ${BUILD}/daemon/audio-raw.pcm
 	test -s ${BUILD}/daemon/loop.kiss

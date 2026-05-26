@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "kilotncd_audio.h"
+#include "kilotncd_radio.h"
 #include "kilotncd_tcp.h"
 #include "tnc_mode.h"
 
@@ -32,8 +33,10 @@ struct kilotncd_config {
 	char pcm_out[KILOTNCD_PATH_MAX];
 	char kiss_unix_listen[KILOTNCD_PATH_MAX];
 	char pty_path_out[KILOTNCD_PATH_MAX];
+	char radio_log[KILOTNCD_PATH_MAX];
 	struct kilotncd_tcp_addr kiss_tcp_addr;
 	enum kilotncd_audio_backend audio_backend;
+	enum kilotncd_radio_backend radio_backend;
 	struct kilotncd_audio_format audio_format;
 	enum tnc_mode_id mode;
 	int mode_temporary;
@@ -55,6 +58,7 @@ struct kilotncd_config {
 	int have_kiss_tcp_listen;
 	int have_kiss_unix_listen;
 	int have_pty_path_out;
+	int have_radio_log;
 };
 
 enum kilotncd_config_result kilotncd_config_apply_arg(

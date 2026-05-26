@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends.
 
-It is not a background service yet. It does not use real audio devices, serial PTT, CAT, GPIO, USB, or radio hardware.
+It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.18 Scope
+## M1.19 Scope
 
 Implemented:
 
@@ -19,12 +19,15 @@ Implemented:
 - Local Unix socket single-client once mode.
 - Local PTY KISS single-client once mode.
 - Daemon audio backend interface with raw PCM file/stdin/stdout backend.
+- Daemon radio-control backend interface.
+- No-PTT and simulated PTT backends.
+- Log PTT backend for deterministic tests.
 
 Not implemented:
 
 - Daemonization, fork, PID files, or syslog.
 - ALSA, sndio, OSS, PulseAudio, PipeWire, or real audio devices.
-- Serial PTT, CAT, GPIO, or hardware PTT.
+- Real serial PTT, CAT, GPIO, or hardware PTT.
 - Real radio receive or transmit.
 - Multi-client TCP server.
 - Persistent Unix socket server.
@@ -60,6 +63,8 @@ audio_backend=raw
 audio_sample_rate=48000
 audio_channels=1
 audio_bits=16
+radio_backend=none
+radio_log=build/daemon/ptt.log
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -119,6 +124,12 @@ build/kilotncd --kiss-pty --kiss-pty-once --pty-path-out build/daemon/kilotnc.pt
 
 The PTY path file contains the slave device path that a local client can open as a serial-like KISS port.
 
+Log simulated PTT changes during TX once:
+
+```text
+build/kilotncd --radio-backend log --radio-log build/daemon/ptt.log --kiss-in build/vectors/kilotnc.kiss --pcm-out build/daemon/radio_log_tx.pcm --once
+```
+
 Use `-` for stdin or stdout on file-like inputs and outputs. Diagnostics are printed to stderr when binary output is written to stdout.
 
 Read KISS from stdin and write generated PCM to a file:
@@ -152,6 +163,23 @@ Raw backend format:
 
 Unsupported audio formats are rejected. `audio_backend=alsa`, `audio_backend=sndio`, and `audio_backend=oss` are planned names only and are rejected in M1.18.
 
+## Radio Control Backend
+
+M1.19 adds a daemon-side radio-control backend boundary. Only host-safe backends are implemented:
+
+- `radio_backend=none` accepts PTT changes and does not control hardware.
+- `radio_backend=sim` tracks PTT state in memory and does not control hardware.
+- `radio_backend=log` writes bounded `ptt=on` and `ptt=off` lines to `radio_log`.
+
+Planned real backends are recognized as names but rejected if selected:
+
+- `serial-rts`.
+- `serial-dtr`.
+- `cat`.
+- `gpio`.
+
+PTT starts off. TX once asserts the selected daemon radio backend before PCM emission and forces it off after TX finishes or an error path is taken where possible. The log backend must not write to stdout.
+
 ## Safety Defaults
 
 - Mode defaults to `1200 AFSK AX.25`.
@@ -164,6 +192,7 @@ Unsupported audio formats are rejected. `audio_backend=alsa`, `audio_backend=snd
 - Unix socket listeners start only when explicitly requested.
 - PTY adapters start only when explicitly requested.
 - No hardware PTT.
+- Radio backend defaults to no-PTT.
 - No real audio device.
 - No internet-to-RF path.
 
@@ -175,5 +204,6 @@ Planned later adapters:
 - sndio.
 - OSS.
 - Serial PTT and CAT.
+- GPIO PTT.
 
 Future adapters must keep mode validation, DCD/channel access, diagnostics, and max TX timeout in the path.

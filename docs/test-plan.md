@@ -386,6 +386,19 @@ M1.18 host-side checks on 2026-05-26:
 - Existing file-mode, stdin/stdout, localhost TCP, Unix socket, and PTY daemon checks still pass.
 - No real audio API, remote internet service, persistent multi-client server, serial PTT, CAT, USB, GPIO, or hardware path is implemented.
 
+M1.19 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the radio-control backend abstraction.
+- Config parser accepts `radio_backend=none`.
+- CLI accepts `--radio-backend none`.
+- TX once works with the default no-PTT backend.
+- TX once with `--radio-backend log` and `--radio-log` writes non-empty PCM.
+- Log backend records at least one `ptt=on` and one `ptt=off`.
+- Unsupported real radio backends such as `serial-rts` are rejected.
+- Unknown radio backend names are rejected.
+- Existing raw audio, file-mode, stdin/stdout, localhost TCP, Unix socket, and PTY daemon checks still pass.
+- No real serial PTT, CAT, GPIO, hardware PTT, real audio API, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

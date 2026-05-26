@@ -71,7 +71,7 @@ The current implementation is host-side C. It does not include MCU HAL, host aud
 
 M1.13 generated vectors provide repeatable KISS, PCM, WAV, loopback, and diagnostics outputs for later MCU firmware, daemon, and hardware validation.
 
-M1.14 adds the first `kilotncd` skeleton around the shared core. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds a local Unix socket once-mode adapter and explicit stdin/stdout file-stream behavior. M1.17 adds a local PTY KISS once-mode adapter. M1.18 adds a raw-only audio backend abstraction. The daemon still has no real audio, remote network service, real serial, USB, or hardware adapters.
+M1.14 adds the first `kilotncd` skeleton around the shared core. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds a local Unix socket once-mode adapter and explicit stdin/stdout file-stream behavior. M1.17 adds a local PTY KISS once-mode adapter. M1.18 adds a raw-only audio backend abstraction. M1.19 adds a radio-control backend boundary with no-PTT, simulated, and log backends only. The daemon still has no real audio, remote network service, real serial, USB, or hardware adapters.
 
 ## Target-Specific Adapters
 
@@ -82,7 +82,7 @@ Platform adapters should wrap the shared core:
 | MCU HAL             | Timers, USB device, GPIO, watchdog, DMA, reset     |
 | Host audio          | ALSA, sndio, OSS, raw file, or test audio backend  |
 | Host KISS           | TCP, Unix socket, PTY, stdin/stdout, file I/O      |
-| Host PTT/CAT        | Serial RTS/DTR, CAT commands, platform GPIO        |
+| Host PTT/CAT        | No-PTT, simulated/log, serial RTS/DTR, CAT, GPIO   |
 | Network             | Local services, allowlists, remote diagnostics     |
 | Persistence/config  | Versioned settings, operator policy, rollback      |
 

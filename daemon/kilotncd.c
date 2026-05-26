@@ -13,6 +13,7 @@
 #include "kilotncd_config.h"
 #include "kilotncd_file.h"
 #include "kilotncd_pty.h"
+#include "kilotncd_radio.h"
 #include "kilotncd_tcp.h"
 #include "kilotncd_unix.h"
 #include "tnc1200.h"
@@ -48,6 +49,8 @@ static int kilotncd_audio_config_path(const struct kilotncd_config *,
 	const char *, struct kilotncd_audio_config *);
 static int kilotncd_collect_tx(struct tnc1200 *, int16_t *, size_t,
 	size_t *);
+static int kilotncd_collect_tx_radio(const struct kilotncd_config *,
+	struct tnc1200 *, int16_t *, size_t, size_t *);
 static int kilotncd_diag(FILE *, const char *, const struct tnc1200 *);
 static int kilotncd_init_tnc(struct tnc1200 *,
 	const struct kilotncd_config *);
@@ -61,6 +64,8 @@ static int kilotncd_parse_args(int, char **, struct kilotncd_config *,
 	enum kilotncd_operation *);
 static int kilotncd_read_pcm(const struct kilotncd_config *, const char *,
 	int16_t *, size_t, size_t *);
+static int kilotncd_radio_config_path(const struct kilotncd_config *,
+	struct kilotncd_radio_config *);
 static int kilotncd_run_loopback_once(const struct kilotncd_config *);
 static int kilotncd_run_once(const struct kilotncd_config *);
 static int kilotncd_run_pty_tx_once(const struct kilotncd_config *);
@@ -178,6 +183,36 @@ kilotncd_collect_tx(struct tnc1200 *tnc, int16_t *pcm, size_t pcm_cap,
 }
 
 static int
+kilotncd_collect_tx_radio(const struct kilotncd_config *config,
+	struct tnc1200 *tnc, int16_t *pcm, size_t pcm_cap, size_t *samples)
+{
+	struct kilotncd_radio radio;
+	struct kilotncd_radio_config radio_config;
+	int ok;
+
+	if (kilotncd_radio_config_path(config, &radio_config) != 0)
+		return -1;
+	if (kilotncd_radio_open(&radio, &radio_config) !=
+	    KILOTNCD_RADIO_OK)
+		return -1;
+	if (kilotncd_radio_set_ptt(&radio, KILOTNCD_RADIO_PTT_ON) !=
+	    KILOTNCD_RADIO_OK) {
+		(void)kilotncd_radio_close(&radio);
+		return -1;
+	}
+	ok = 0;
+	if (kilotncd_collect_tx(tnc, pcm, pcm_cap, samples) != 0)
+		ok = -1;
+	if (kilotncd_radio_set_ptt(&radio, KILOTNCD_RADIO_PTT_OFF) !=
+	    KILOTNCD_RADIO_OK)
+		ok = -1;
+	if (kilotncd_radio_close(&radio) != KILOTNCD_RADIO_OK)
+		ok = -1;
+
+	return ok;
+}
+
+static int
 kilotncd_diag(FILE *fp, const char *prefix, const struct tnc1200 *tnc)
 {
 	struct tnc_diag diag;
@@ -274,7 +309,7 @@ kilotncd_loopback_handler(const uint8_t *kiss, size_t kiss_len, uint8_t *out,
 		return (size_t)-1;
 	if (tnc1200_host_input(&ctx->tx_tnc, kiss, kiss_len) != TNC1200_OK)
 		return (size_t)-1;
-	if (kilotncd_collect_tx(&ctx->tx_tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(ctx->config, &ctx->tx_tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return (size_t)-1;
 	if (tnc1200_rx_process(&ctx->rx_tnc, daemon_pcm, samples, out,
@@ -380,6 +415,17 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 			    "pty_path_out", argv[++i]) !=
 			    KILOTNCD_CONFIG_OK)
 				return -1;
+		} else if (strcmp(argv[i], "--radio-backend") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config,
+			    "radio_backend", argv[++i]) !=
+			    KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--radio-log") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config, "radio_log",
+			    argv[++i]) != KILOTNCD_CONFIG_OK)
+				return -1;
 		} else if (strcmp(argv[i], "--once") == 0) {
 			*op = KILOTNCD_OP_ONCE;
 		} else if (strcmp(argv[i], "--loopback-once") == 0) {
@@ -390,6 +436,29 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 			return -1;
 		}
 	}
+
+	return 0;
+}
+
+static int
+kilotncd_radio_config_path(const struct kilotncd_config *config,
+	struct kilotncd_radio_config *radio_config)
+{
+	size_t len;
+
+	if (config == NULL || radio_config == NULL)
+		return -1;
+	(void)memset(radio_config, 0, sizeof(*radio_config));
+	radio_config->backend = config->radio_backend;
+	if (config->radio_backend != KILOTNCD_RADIO_BACKEND_LOG)
+		return 0;
+	if (!config->have_radio_log)
+		return -1;
+	len = strlen(config->radio_log);
+	if (len == 0U || len >= sizeof(radio_config->path))
+		return -1;
+	(void)memcpy(radio_config->path, config->radio_log, len);
+	radio_config->path[len] = '\0';
 
 	return 0;
 }
@@ -445,7 +514,7 @@ kilotncd_run_loopback_once(const struct kilotncd_config *config)
 	if (tnc1200_host_input(&tx_tnc, daemon_kiss_in, kiss_len) !=
 	    TNC1200_OK)
 		return 1;
-	if (kilotncd_collect_tx(&tx_tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(config, &tx_tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (tnc1200_rx_process(&rx_tnc, daemon_pcm, samples,
@@ -512,7 +581,7 @@ kilotncd_run_pty_tx_once(const struct kilotncd_config *config)
 		return 1;
 	if (tnc1200_host_input(&tnc, daemon_kiss_in, kiss_len) != TNC1200_OK)
 		return 1;
-	if (kilotncd_collect_tx(&tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(config, &tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
@@ -570,7 +639,7 @@ kilotncd_run_tcp_tx_once(const struct kilotncd_config *config)
 		return 1;
 	if (tnc1200_host_input(&tnc, daemon_kiss_in, kiss_len) != TNC1200_OK)
 		return 1;
-	if (kilotncd_collect_tx(&tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(config, &tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
@@ -631,7 +700,7 @@ kilotncd_run_unix_tx_once(const struct kilotncd_config *config)
 		return 1;
 	if (tnc1200_host_input(&tnc, daemon_kiss_in, kiss_len) != TNC1200_OK)
 		return 1;
-	if (kilotncd_collect_tx(&tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(config, &tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
@@ -649,14 +718,19 @@ kilotncd_run_status(const struct kilotncd_config *config)
 {
 	struct tnc1200 tnc;
 	const struct tnc_mode_desc *desc;
+	const char *radio_name;
 
 	if (tnc_mode_get(config->mode, &desc) != TNC_MODE_OK)
+		return 1;
+	if (kilotncd_radio_backend_name(config->radio_backend,
+	    &radio_name) != KILOTNCD_RADIO_OK)
 		return 1;
 	if (kilotncd_init_tnc(&tnc, config) != 0)
 		return 1;
 	(void)printf("mode=%s\n", desc->name);
 	(void)printf("support=%s\n", kilotncd_support_name(desc->support));
 	(void)printf("temporary=%d\n", config->mode_temporary);
+	(void)printf("radio_backend=%s\n", radio_name);
 	if (kilotncd_diag(stdout, "diag", &tnc) != 0)
 		return 1;
 
@@ -680,7 +754,7 @@ kilotncd_run_tx_once(const struct kilotncd_config *config)
 		return 1;
 	if (tnc1200_host_input(&tnc, daemon_kiss_in, kiss_len) != TNC1200_OK)
 		return 1;
-	if (kilotncd_collect_tx(&tnc, daemon_pcm,
+	if (kilotncd_collect_tx_radio(config, &tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
@@ -750,6 +824,13 @@ kilotncd_validate_config(const struct kilotncd_config *config)
 	if (kilotncd_audio_validate_format(&config->audio_format) !=
 	    KILOTNCD_AUDIO_OK)
 		return -1;
+	if (config->radio_backend != KILOTNCD_RADIO_BACKEND_NONE &&
+	    config->radio_backend != KILOTNCD_RADIO_BACKEND_SIM &&
+	    config->radio_backend != KILOTNCD_RADIO_BACKEND_LOG)
+		return -1;
+	if (config->radio_backend == KILOTNCD_RADIO_BACKEND_LOG &&
+	    !config->have_radio_log)
+		return -1;
 
 	return 0;
 }
@@ -807,5 +888,7 @@ kilotncd_usage(void)
 	    "--kiss-unix-once --pcm-out tx.pcm --once\n"
 	    "  kilotncd --kiss-pty --kiss-pty-once "
 	    "--pty-path-out build/daemon/kilotnc.pty "
-	    "--pcm-out tx.pcm --once\n");
+	    "--pcm-out tx.pcm --once\n"
+	    "  kilotncd --radio-backend log --radio-log ptt.log "
+	    "--kiss-in frame.kiss --pcm-out tx.pcm --once\n");
 }

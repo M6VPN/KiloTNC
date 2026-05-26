@@ -14,6 +14,8 @@ M1.17 implements a local PTY KISS once-mode adapter. It does not implement persi
 
 M1.18 implements a daemon audio backend abstraction with only a raw signed 16-bit little-endian mono PCM file/stdin/stdout backend. It does not implement ALSA, sndio, OSS, PulseAudio, PipeWire, or real audio devices.
 
+M1.19 implements a daemon radio-control backend abstraction with no-PTT, simulated, and log backends only. It does not implement real serial RTS/DTR PTT, CAT, GPIO, or hardware control.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -75,6 +77,12 @@ Planned interfaces:
 KISS-over-TCP, Unix sockets, and PTYs are host interfaces, not on-air protocols.
 
 ## Radio Control
+
+M1.19 implemented boundary:
+
+- No-PTT backend.
+- Simulated PTT backend.
+- Log backend for deterministic `ptt=on` and `ptt=off` records.
 
 Planned adapters:
 
