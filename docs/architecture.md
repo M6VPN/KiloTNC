@@ -97,7 +97,7 @@ Platform adapters
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the first embedded compile-only skeleton and host-native platform stub test. M2.2 adds host-native platform tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. It does not implement real platform adapters. M2.3 should add USB CDC KISS echo or loopback.
+M2.1 adds the first embedded compile-only skeleton and host-native platform stub test. M2.2 adds host-native platform tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. It does not implement a real USB stack, TinyUSB, STM32 HAL, descriptors, endpoint code, or hardware adapters.
 
 Before embedded use, adapter boundaries need review for:
 

@@ -46,6 +46,22 @@ The target verifies:
 - Diagnostic write counter.
 - Platform fault counter.
 
+## M2.3 USB CDC Skeleton Coverage
+
+`make embedded-test` now also verifies:
+
+- USB CDC stub connection state.
+- Bounded RX and TX byte-stream buffers.
+- RX and TX overflow rejection.
+- USB echo mode.
+- KISS data-frame loopback.
+- KISS FEND and FESC escaping.
+- Malformed KISS recovery counters.
+- Unsupported KISS command ignore counters.
+- App step services the USB bridge while keeping PTT off.
+
+This remains host-native. It does not use TinyUSB, STM32 HAL, CMSIS, STM32Cube, descriptors, endpoints, hardware registers, or a USB device controller.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

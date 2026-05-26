@@ -23,4 +23,6 @@ M2.2 adds host-native platform stubs for:
 - Diagnostic write counter.
 - Platform fault counter.
 
-The future STM32 adapter should implement the same interface. M2.2 does not add hardware drivers or register access.
+M2.3 adds a separate host-native USB CDC stub. The stub models a CDC byte stream with fixed RX/TX buffers, connection state, read/write counters, and safe overflow rejection.
+
+The future STM32 adapter should implement the same interface. M2.3 does not add hardware drivers, USB descriptors, endpoint code, TinyUSB, HAL calls, or register access.

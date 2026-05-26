@@ -10,6 +10,8 @@
 
 #include "kilotnc_platform.h"
 
+struct embedded_usb_bridge;
+
 enum embedded_app_result {
 	EMBEDDED_APP_OK = 0,
 	EMBEDDED_APP_ERR_ARG,
@@ -39,6 +41,7 @@ struct embedded_app_status {
 
 struct embedded_app {
 	const struct kilotnc_platform *platform;
+	struct embedded_usb_bridge *usb_bridge;
 	struct embedded_app_status status;
 };
 
@@ -49,5 +52,7 @@ enum embedded_app_result embedded_app_shutdown(struct embedded_app *);
 enum embedded_app_result embedded_app_status(const struct embedded_app *,
 	struct embedded_app_status *);
 enum embedded_app_result embedded_app_step(struct embedded_app *);
+enum embedded_app_result embedded_app_usb_bridge(struct embedded_app *,
+	struct embedded_usb_bridge *);
 
 #endif

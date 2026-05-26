@@ -104,6 +104,8 @@ test_app_null_args(void)
 		return __LINE__;
 	if (embedded_app_fault(NULL) != EMBEDDED_APP_ERR_ARG)
 		return __LINE__;
+	if (embedded_app_usb_bridge(NULL, NULL) != EMBEDDED_APP_ERR_ARG)
+		return __LINE__;
 
 	return 0;
 }
@@ -320,7 +322,7 @@ test_target_metadata(void)
 	uint32_t features;
 
 	features = KILOTNC_TARGET_FEATURES;
-	if (strcmp(KILOTNC_EMBEDDED_STAGE, "M2.2 platform stub skeleton") !=
+	if (strcmp(KILOTNC_EMBEDDED_STAGE, "M2.3 USB CDC skeleton") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)
@@ -340,7 +342,7 @@ test_target_metadata(void)
 }
 
 int
-main(void)
+test_embedded_app(void)
 {
 	int line;
 

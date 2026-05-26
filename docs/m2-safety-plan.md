@@ -20,6 +20,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - Failures force the test PTT state off where the platform permits it.
 - M2.1 host-native embedded tests verify app init, shutdown, and fault paths force the stub PTT state off.
 - M2.2 host-native embedded tests verify simulated watchdog fault sets reset cause to watchdog, increments the platform fault counter, and forces the stub PTT state off.
+- M2.3 host-native USB CDC tests verify echo, KISS loopback, malformed KISS recovery, and unsupported KISS commands do not change the stub PTT state.
 
 ## Watchdog And Timeout
 
@@ -55,5 +56,6 @@ Before any future real radio PTT connection:
 6. Abort forces PTT test pin off.
 7. Diagnostics show the tested state transitions.
 8. USB KISS loopback is tested without any RF path.
+9. Malformed USB/KISS input is tested without changing PTT state.
 
 Only after these gates should a later milestone consider hardware PTT connection planning.

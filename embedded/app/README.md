@@ -11,4 +11,6 @@ Planned responsibilities:
 - Publish diagnostics and fault counters.
 - Enforce watchdog and max TX timeout policy.
 
-M2.2 extends the application skeleton with app state, reset cause, 10 ms tick count, watchdog kick count, PTT state, and fault count in status. It does not process real USB or audio data yet.
+M2.3 adds an optional USB bridge hook. Tests can attach the host-native USB CDC stub so `embedded_app_step()` services byte echo or KISS data-frame loopback while still kicking the watchdog and keeping PTT off.
+
+The bridge is not a USB device stack. It has no descriptors, endpoints, TinyUSB calls, HAL calls, or hardware access.

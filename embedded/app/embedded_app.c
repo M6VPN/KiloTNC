@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "embedded_app.h"
+#include "embedded_usb_bridge.h"
 
 static enum embedded_app_result embedded_app_ptt_off(struct embedded_app *);
 static enum embedded_app_result embedded_app_refresh_status(
@@ -176,9 +177,27 @@ embedded_app_step(struct embedded_app *app)
 		(void)embedded_app_set_fault(app);
 		return EMBEDDED_APP_ERR_FAULT;
 	}
+	if (app->usb_bridge != NULL &&
+	    embedded_usb_bridge_service(app->usb_bridge) !=
+	    EMBEDDED_USB_BRIDGE_OK) {
+		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+			return EMBEDDED_APP_ERR_PLATFORM;
+		return EMBEDDED_APP_ERR_FAULT;
+	}
 
 	app->status.control_ticks_10ms = control_ticks;
 	app->status.steps++;
 	app->status.watchdog_kicks++;
 	return embedded_app_refresh_status(app);
+}
+
+enum embedded_app_result
+embedded_app_usb_bridge(struct embedded_app *app,
+	struct embedded_usb_bridge *bridge)
+{
+	if (app == NULL || !embedded_app_platform_ready(app->platform))
+		return EMBEDDED_APP_ERR_ARG;
+
+	app->usb_bridge = bridge;
+	return EMBEDDED_APP_OK;
 }

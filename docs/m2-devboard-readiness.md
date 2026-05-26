@@ -56,7 +56,7 @@ portable core
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 should add USB CDC KISS echo or loopback.
+M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. Real USB stack integration remains future work.
 
 ## Build Strategy
 

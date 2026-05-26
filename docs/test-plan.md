@@ -554,6 +554,22 @@ M2.2 platform stub gate:
 - `make embedded-test` covers platform fault counter.
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 
+M2.3 USB CDC skeleton gate:
+
+- `make embedded-test` covers USB CDC stub disconnected and connected state.
+- `make embedded-test` covers bounded USB RX and TX buffers.
+- `make embedded-test` rejects USB RX and TX overflow safely.
+- `make embedded-test` covers USB echo mode.
+- `make embedded-test` covers KISS data-frame loopback.
+- `make embedded-test` covers KISS FEND and FESC escaping.
+- `make embedded-test` covers repeated FEND handling.
+- `make embedded-test` covers malformed KISS recovery counters.
+- `make embedded-test` covers unsupported KISS command counters.
+- `make embedded-test` verifies app step services USB and kicks watchdog.
+- `make embedded-test` verifies USB input does not change PTT state.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, endpoint code, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

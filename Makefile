@@ -138,7 +138,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.2 embedded status: host-native platform tick/watchdog/GPIO stubs.'
+	@printf '%s\n' 'M2.3 embedded status: host-native USB CDC KISS echo/loopback skeleton.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -354,11 +354,24 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 
 ${EMBEDBIN}: embedded/app/embedded_app.c \
+	  embedded/app/embedded_usb_bridge.c \
 	  embedded/platform/platform_stub.c \
-	  embedded/tests/test_embedded_app.c
+	  embedded/platform/usb_cdc_stub.c \
+	  embedded/tests/test_embedded_app.c \
+	  embedded/tests/test_embedded_main.c \
+	  embedded/tests/test_embedded_usb_bridge.c \
+	  embedded/tests/test_usb_cdc_stub.c \
+	  firmware/src/kiss.c
 	mkdir -p ${BUILD}
 	${CC} ${EMBED_CFLAGS} -o $@ embedded/app/embedded_app.c \
-		embedded/platform/platform_stub.c embedded/tests/test_embedded_app.c
+		embedded/app/embedded_usb_bridge.c \
+		embedded/platform/platform_stub.c \
+		embedded/platform/usb_cdc_stub.c \
+		embedded/tests/test_embedded_app.c \
+		embedded/tests/test_embedded_main.c \
+		embedded/tests/test_embedded_usb_bridge.c \
+		embedded/tests/test_usb_cdc_stub.c \
+		firmware/src/kiss.c
 
 clean:
 	rm -rf ${BUILD}

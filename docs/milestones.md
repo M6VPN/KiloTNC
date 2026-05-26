@@ -88,9 +88,18 @@ M2.2 status:
 - Add diagnostic write and platform fault counters.
 - Keep all behavior host-testable with no STM32 HAL or hardware register access.
 
+M2.3 status:
+
+- Add a host-native USB CDC byte-stream interface.
+- Add a fixed-buffer USB CDC stub.
+- Add embedded USB echo mode.
+- Add embedded KISS data-frame loopback mode.
+- Test KISS escaping and malformed input recovery.
+- Keep PTT off during USB/KISS tests.
+- Keep real USB stack integration, descriptors, endpoints, TinyUSB, and HAL out of the repo.
+
 Next planned M2 passes:
 
-- M2.3: USB CDC KISS echo or loopback.
 - M2.4: diagnostics bridge.
 - M2.5: audio loopback or test path.
 
