@@ -11,6 +11,8 @@
 static enum kilotnc_usb_result usb_cdc_stub_connected(void *, int *);
 static enum kilotnc_usb_result usb_cdc_stub_read(void *, uint8_t *,
 	size_t, size_t *);
+static enum kilotnc_usb_result usb_cdc_stub_stats(void *,
+	struct kilotnc_usb_cdc_stats *);
 static enum kilotnc_usb_result usb_cdc_stub_write(void *, const uint8_t *,
 	size_t, size_t *);
 
@@ -60,6 +62,23 @@ usb_cdc_stub_read(void *ctx, uint8_t *buf, size_t buflen, size_t *out_len)
 		stub->rx_len = 0;
 	}
 
+	return KILOTNC_USB_OK;
+}
+
+static enum kilotnc_usb_result
+usb_cdc_stub_stats(void *ctx, struct kilotnc_usb_cdc_stats *stats)
+{
+	struct usb_cdc_stub *stub;
+
+	if (ctx == NULL || stats == NULL)
+		return KILOTNC_USB_ERR_ARG;
+
+	stub = ctx;
+	stats->rx_bytes = stub->rx_injected;
+	stats->tx_bytes = stub->tx_written;
+	stats->rx_overflows = stub->rx_overflows;
+	stats->tx_overflows = stub->tx_overflows;
+	stats->connected = stub->connected;
 	return KILOTNC_USB_OK;
 }
 
@@ -116,6 +135,7 @@ usb_cdc_stub_init(struct usb_cdc_stub *stub)
 	stub->usb.read = usb_cdc_stub_read;
 	stub->usb.write = usb_cdc_stub_write;
 	stub->usb.connected = usb_cdc_stub_connected;
+	stub->usb.stats = usb_cdc_stub_stats;
 }
 
 enum kilotnc_usb_result

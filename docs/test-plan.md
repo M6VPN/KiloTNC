@@ -570,6 +570,23 @@ M2.3 USB CDC skeleton gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, endpoint code, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.4 embedded diagnostics gate:
+
+- `make embedded-test` covers diagnostic capture from a fresh app.
+- `make embedded-test` covers diagnostic formatting.
+- `make embedded-test` rejects too-small diagnostic format buffers.
+- `make embedded-test` covers app step, platform tick, and watchdog counters.
+- `make embedded-test` covers PTT state reporting.
+- `make embedded-test` covers reset-cause reporting.
+- `make embedded-test` covers watchdog fault state reporting.
+- `make embedded-test` covers USB RX/TX byte counters.
+- `make embedded-test` covers USB RX/TX overflow counters.
+- `make embedded-test` covers KISS frame counters.
+- `make embedded-test` covers malformed KISS parse error counters.
+- `make embedded-test` covers unsupported KISS command counters.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No real USB diagnostic channel, TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, endpoint code, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

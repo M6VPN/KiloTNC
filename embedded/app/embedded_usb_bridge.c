@@ -87,6 +87,8 @@ embedded_usb_bridge_usb_ready(const struct kilotnc_usb_cdc *usb)
 		return 0;
 	if (usb->connected == NULL)
 		return 0;
+	if (usb->stats == NULL)
+		return 0;
 
 	return 1;
 }

@@ -98,9 +98,16 @@ M2.3 status:
 - Keep PTT off during USB/KISS tests.
 - Keep real USB stack integration, descriptors, endpoints, TinyUSB, and HAL out of the repo.
 
+M2.4 status:
+
+- Add embedded diagnostics snapshot.
+- Add bounded diagnostics formatter.
+- Capture app, platform, watchdog, reset, PTT, USB, and KISS bridge counters.
+- Test malformed KISS and unsupported KISS command counters.
+- Keep real USB diagnostics channel work out of the repo.
+
 Next planned M2 passes:
 
-- M2.4: diagnostics bridge.
 - M2.5: audio loopback or test path.
 
 M2 scope:

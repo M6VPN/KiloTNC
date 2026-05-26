@@ -7,6 +7,6 @@
 #include "kilotnc_board.h"
 #include "kilotnc_platform.h"
 
-#define KILOTNC_EMBEDDED_STAGE	"M2.3 USB CDC skeleton"
+#define KILOTNC_EMBEDDED_STAGE	"M2.4 embedded diagnostics bridge"
 
 #endif

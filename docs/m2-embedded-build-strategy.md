@@ -62,6 +62,20 @@ The target verifies:
 
 This remains host-native. It does not use TinyUSB, STM32 HAL, CMSIS, STM32Cube, descriptors, endpoints, hardware registers, or a USB device controller.
 
+## M2.4 Embedded Diagnostics Coverage
+
+`make embedded-test` now also verifies:
+
+- Diagnostic snapshot capture from a fresh app.
+- App step, platform tick, watchdog, and diagnostic write counters.
+- USB RX/TX byte counters.
+- USB RX/TX overflow counters.
+- KISS frame, parse error, ignored command, and overlength counters.
+- Watchdog fault state, reset cause, and PTT-off state.
+- Bounded text formatting and truncation rejection.
+
+This remains host-native. It does not create a USB diagnostic channel or call a real USB device stack.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

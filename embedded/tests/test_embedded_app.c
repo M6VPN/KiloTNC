@@ -322,7 +322,8 @@ test_target_metadata(void)
 	uint32_t features;
 
 	features = KILOTNC_TARGET_FEATURES;
-	if (strcmp(KILOTNC_EMBEDDED_STAGE, "M2.3 USB CDC skeleton") !=
+	if (strcmp(KILOTNC_EMBEDDED_STAGE,
+	    "M2.4 embedded diagnostics bridge") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)

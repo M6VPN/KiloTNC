@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.3 expands the host-native embedded skeleton test with USB CDC stub and KISS bridge coverage.
+M2.4 expands the host-native embedded skeleton test with diagnostics snapshot and formatter coverage.
 
 Planned M2 test sequence:
 
@@ -10,6 +10,9 @@ Planned M2 test sequence:
 - USB echo mode.
 - KISS data-frame loopback.
 - KISS escaping and malformed input recovery.
+- Embedded diagnostics capture and formatting.
+- USB and KISS diagnostic counters.
+- Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.
 - Watchdog safe-off check.
