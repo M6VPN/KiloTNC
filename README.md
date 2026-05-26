@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.13 generated vector export and CLI vector tooling.
+Current stage: M1.14 minimal kilotncd daemon skeleton.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -93,12 +93,25 @@ Run deterministic CLI vector checks:
 make tool-test
 ```
 
-GitHub Actions runs `make test`, `make tools`, `make tool-test`, and `make sanitize` on push and pull request.
+Build the minimal host daemon skeleton:
+
+```text
+make daemon
+```
+
+Run deterministic daemon file-mode checks:
+
+```text
+make daemon-test
+```
+
+GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
 
 | Path                    | Purpose                                                  |
 | ----------------------- | -------------------------------------------------------- |
+| `daemon/`               | Minimal host daemon skeleton and file adapters           |
 | `docs/`                 | Architecture, protocol, hardware, firmware               |
 | `firmware/`             | Portable protocol library and future firmware workspace  |
 | `firmware/include/`     | Protocol library headers                                 |

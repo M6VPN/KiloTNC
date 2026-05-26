@@ -27,5 +27,11 @@ jobs:
       - name: Tool Test
         run: make tool-test
 
+      - name: Daemon
+        run: make daemon
+
+      - name: Daemon Test
+        run: make daemon-test
+
       - name: Sanitizers
         run: make sanitize

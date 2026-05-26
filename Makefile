@@ -10,8 +10,12 @@ BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
 SANBIN	= ${BUILD}/kilotnc_tests_sanitize
 TOOLBIN	= ${BUILD}/kilotnc_cli
+DAEMONBIN = ${BUILD}/kilotncd
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  tools/wav_writer.c
+DAEMON_SRCS = daemon/kilotncd.c \
+	  daemon/kilotncd_config.c \
+	  daemon/kilotncd_file.c
 
 CORE_SRCS = firmware/src/afsk1200.c \
 	  firmware/src/afsk1200_rx.c \
@@ -78,6 +82,29 @@ tool-test: ${TOOLBIN}
 	test "$$(od -An -tx1 -j34 -N2 ${BUILD}/vectors/kilotnc.wav | tr -d ' \n')" = "1000"
 	if ./${TOOLBIN} generate-pcm --out ${BUILD}/vectors/bad.pcm --mode NINO_MODE=0; then exit 1; else exit 0; fi
 
+daemon: ${DAEMONBIN}
+
+daemon-test: ${DAEMONBIN} ${TOOLBIN}
+	mkdir -p ${BUILD}/daemon
+	./${TOOLBIN} generate-kiss --out ${BUILD}/daemon/input.kiss --dst APZKTN --src M6VPN --info "KiloTNC daemon"
+	./${TOOLBIN} generate-pcm --out ${BUILD}/daemon/input.pcm --dst APZKTN --src M6VPN --info "KiloTNC daemon" --mode NINO_MODE=6
+	./${DAEMONBIN} --status
+	./${DAEMONBIN} --status --mode NINO_MODE=6
+	./${DAEMONBIN} --status --mode NINO_MODE=22
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/tx.pcm --once
+	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out ${BUILD}/daemon/rx.kiss --once
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --kiss-out ${BUILD}/daemon/loop.kiss --loopback-once
+	./${DAEMONBIN} --config daemon/example.conf --once
+	printf 'unknown=1\n' > ${BUILD}/daemon/invalid.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/invalid.conf --status; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --mode NINO_MODE=0 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/bad.pcm --once; then exit 1; else exit 0; fi
+	test -s ${BUILD}/daemon/input.kiss
+	test -s ${BUILD}/daemon/input.pcm
+	test -s ${BUILD}/daemon/tx.pcm
+	test -s ${BUILD}/daemon/rx.kiss
+	test -s ${BUILD}/daemon/loop.kiss
+	test -s ${BUILD}/daemon/config-tx.pcm
+
 ${SANBIN}: ${SRCS}
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} ${SANFLAGS} -o $@ ${SRCS}
@@ -86,7 +113,11 @@ ${TOOLBIN}: ${CORE_SRCS} ${TOOL_SRCS}
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} ${TOOL_SRCS}
 
+${DAEMONBIN}: ${CORE_SRCS} ${DAEMON_SRCS}
+	mkdir -p ${BUILD}
+	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} ${DAEMON_SRCS}
+
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test sanitize tools tool-test clean
+.PHONY: all test sanitize tools tool-test daemon daemon-test clean

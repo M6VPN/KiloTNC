@@ -315,6 +315,20 @@ M1.13 host-side checks on 2026-05-26:
 - CLI rejects unimplemented modes for PCM vector generation.
 - Generated files stay under `build/`.
 
+M1.14 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd`.
+- `make daemon-test` exercises deterministic file-mode daemon operations.
+- Config parser accepts `mode=NINO_MODE=6`.
+- Config parser rejects unknown keys.
+- `--status` prints mode and diagnostics.
+- TX once writes non-empty PCM.
+- RX once writes non-empty KISS.
+- Loopback once writes non-empty KISS.
+- `NINO_MODE=6` and `NINO_MODE=22` are accepted.
+- Unimplemented modes are rejected for TX/RX.
+- No audio backend, socket, PTY, serial, USB, GPIO, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

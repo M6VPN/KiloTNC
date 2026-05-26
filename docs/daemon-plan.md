@@ -2,7 +2,9 @@
 
 Working name: `kilotncd`.
 
-`kilotncd` is a planned hardware-independent Linux/BSD daemon. It should use the portable KiloTNC core where practical and provide a KISS TNC service through host audio and host radio-control interfaces. It is not implemented in M1.12.
+`kilotncd` is a planned hardware-independent Linux/BSD daemon. It should use the portable KiloTNC core where practical and provide a KISS TNC service through host audio and host radio-control interfaces.
+
+M1.14 implements a minimal deterministic daemon skeleton. It supports config parsing, file/stdin-style adapters, status output, TX once, RX once, and loopback once. It does not implement real audio, sockets, PTYs, serial PTT, CAT, daemonization, or hardware access.
 
 ## Scope
 
@@ -33,13 +35,13 @@ Planned configuration fields:
 
 No persistent daemon config parser is implemented yet.
 
-M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regression fixtures before real audio or socket adapters are added.
+M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regression fixtures before real audio or socket adapters are added. M1.14 uses those fixtures for the first `make daemon-test` flow.
 
 ## Audio Backends
 
 Planned first-pass backends:
 
-- POSIX raw device/file backend for deterministic tests.
+- POSIX raw device/file backend for deterministic tests. File mode exists in M1.14.
 - ALSA for Linux as the likely first real Linux audio backend.
 - sndio for OpenBSD as the likely BSD-friendly backend.
 - OSS as a possible fallback on BSDs where available.
