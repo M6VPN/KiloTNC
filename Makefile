@@ -12,12 +12,14 @@ SANBIN	= ${BUILD}/kilotnc_tests_sanitize
 
 SRCS	= firmware/src/afsk1200.c \
 	  firmware/src/afsk1200_rx.c \
+	  firmware/src/afsk1200_stream.c \
 	  firmware/src/ax25.c \
 	  firmware/src/fcs.c \
 	  firmware/src/hdlc.c \
 	  firmware/src/kiss.c \
 	  firmware/test/test_afsk1200.c \
 	  firmware/test/test_afsk1200_rx.c \
+	  firmware/test/test_afsk1200_stream.c \
 	  firmware/test/test_ax25.c \
 	  firmware/test/test_fcs.c \
 	  firmware/test/test_fuzz.c \

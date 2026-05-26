@@ -8,6 +8,7 @@
 int test_ax25(void);
 int test_afsk1200(void);
 int test_afsk1200_rx(void);
+int test_afsk1200_stream(void);
 int test_fcs(void);
 int test_fuzz(void);
 int test_hdlc(void);
@@ -23,6 +24,7 @@ main(void)
 	failures = 0;
 	failures += test_run("afsk1200", test_afsk1200);
 	failures += test_run("afsk1200_rx", test_afsk1200_rx);
+	failures += test_run("afsk1200_stream", test_afsk1200_stream);
 	failures += test_run("fcs", test_fcs);
 	failures += test_run("hdlc", test_hdlc);
 	failures += test_run("ax25", test_ax25);

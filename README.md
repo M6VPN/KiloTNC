@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.4 AFSK1200 continuous frame acquisition.
+Current stage: M1.5 AFSK1200 streaming RX state machine.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 

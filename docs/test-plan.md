@@ -152,12 +152,33 @@ M1.4 host-side tests checked with `make clean && make test` and `make sanitize` 
 - NULL argument handling.
 - Mild deterministic additive noise, DC offset, and leading phase offset on a generated packet.
 
+M1.5 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- Streaming decode of one valid frame in one PCM chunk.
+- Streaming decode of one valid frame one sample at a time.
+- Streaming decode with chunks smaller than 40 samples.
+- Streaming decode with irregular deterministic chunk sizes.
+- Two valid frames decoded across chunk boundaries.
+- HDLC flags split across chunk boundaries.
+- Candidate frame ending at a chunk boundary.
+- Leading and trailing silence around a frame.
+- Repeated flags only produce no frames.
+- Valid frame, bad-FCS frame, valid frame recovery across chunks.
+- Oversize frame drop and counter update.
+- Output frame array full behavior and dropped-frame counter.
+- `flush()` with partial sample and partial frame state.
+- `init()` reset behavior.
+- `stats()` counters for samples, bits, flags, frames, chunks, DCD, and confidence.
+- NULL argument handling.
+- Whole-buffer and streaming decode comparison for the same generated PCM.
+- Mild deterministic additive noise and DC offset through streaming chunks.
+
 Pending:
 
 - Full timing recovery loop.
 - Production DCD.
 - Squelch/COS integration.
-- Streaming RX state machine and ring-buffer API.
+- Embedded ring-buffer integration.
 - Real noisy decode.
 - Real sample clock drift handling.
 - Real-radio testing.

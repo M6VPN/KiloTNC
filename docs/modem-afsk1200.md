@@ -137,12 +137,59 @@ Frame acquisition stats report:
 - Malformed frame count.
 - DCD score and average confidence from the AFSK decoder.
 
+## M1.5 Streaming RX State Machine
+
+M1.5 adds an incremental host-side RX state machine:
+
+```text
+afsk1200_stream_init()
+afsk1200_stream_process()
+afsk1200_stream_flush()
+afsk1200_stream_stats()
+```
+
+The streaming path is needed because later embedded audio will arrive in chunks from an audio buffer or DMA ring. The M1.4 whole-buffer API is still useful for tests, but it requires a complete PCM buffer before frame acquisition starts.
+
+The M1.5 receive pipeline is:
+
+```text
+PCM chunks
+	|
+	40-sample bit-window accumulator
+	|
+	tone decision and metrics
+	|
+	NRZI decode
+	|
+	HDLC flag state machine
+	|
+	frame bit accumulation
+	|
+	HDLC unstuff
+	|
+	AX.25 FCS validation
+	|
+	raw AX.25 UI frame bytes with FCS
+```
+
+The state machine states are:
+
+- `SEARCH_FLAG`: ignore decoded bits until an HDLC flag appears.
+- `IN_FRAME`: collect stuffed frame bits after a flag.
+- `DROP_OVERSIZE`: discard an oversize candidate until the next flag.
+
+`afsk1200_stream_process()` accepts arbitrary chunk sizes, including chunks smaller than one bit window. Partial 40-sample windows are retained between calls. Repeated flags are treated as idle or preamble. A candidate frame is emitted only after a closing flag and a valid AX.25 FCS check.
+
+If the caller output frame array fills, additional valid frames in that call are dropped, `frames_dropped` is incremented, and the call returns `AFSK1200_STREAM_ERR_FRAME_DROPPED`. Scanning continues after bad FCS, malformed HDLC, oversize frames, and output drops.
+
+Streaming stats report sample count, decoded bits, flags, candidate frames, valid frames, bad FCS, oversize frames, malformed frames, dropped frames, processed chunks, DCD score, and average confidence.
+
 ## Limitations
 
 - Generated host vectors only.
 - Best-offset selection only, not a full timing recovery loop.
 - Diagnostic DCD score only, not production DCD.
-- Whole-buffer frame acquisition only, not a streaming ring-buffer API.
+- Streaming host-side state only, not an embedded HAL or DMA integration.
 - No squelch/COS integration.
 - Mild synthetic noise only.
 - No real sample clock drift tolerance claim.
