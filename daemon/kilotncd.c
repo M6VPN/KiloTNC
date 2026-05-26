@@ -9,6 +9,7 @@
 
 #include "afsk1200.h"
 #include "kiss.h"
+#include "kilotncd_audio.h"
 #include "kilotncd_config.h"
 #include "kilotncd_file.h"
 #include "kilotncd_pty.h"
@@ -43,6 +44,8 @@ static int16_t daemon_pcm[KILOTNCD_PCM_MAX_SAMPLES];
 static char daemon_diag[KILOTNCD_DIAG_MAX];
 
 static int kilotncd_apply_mode(struct tnc1200 *, enum tnc_mode_id, int);
+static int kilotncd_audio_config_path(const struct kilotncd_config *,
+	const char *, struct kilotncd_audio_config *);
 static int kilotncd_collect_tx(struct tnc1200 *, int16_t *, size_t,
 	size_t *);
 static int kilotncd_diag(FILE *, const char *, const struct tnc1200 *);
@@ -56,6 +59,8 @@ static size_t kilotncd_loopback_handler(const uint8_t *, size_t, uint8_t *,
 static int kilotncd_mode_implemented(enum tnc_mode_id);
 static int kilotncd_parse_args(int, char **, struct kilotncd_config *,
 	enum kilotncd_operation *);
+static int kilotncd_read_pcm(const struct kilotncd_config *, const char *,
+	int16_t *, size_t, size_t *);
 static int kilotncd_run_loopback_once(const struct kilotncd_config *);
 static int kilotncd_run_once(const struct kilotncd_config *);
 static int kilotncd_run_pty_tx_once(const struct kilotncd_config *);
@@ -69,6 +74,8 @@ static int kilotncd_pty_ready(const struct kilotncd_config *);
 static int kilotncd_tcp_ready(const struct kilotncd_config *);
 static int kilotncd_unix_ready(const struct kilotncd_config *);
 static int kilotncd_validate_config(const struct kilotncd_config *);
+static int kilotncd_write_pcm(const struct kilotncd_config *, const char *,
+	const int16_t *, size_t);
 static const char *kilotncd_support_name(enum tnc_mode_support);
 static void kilotncd_usage(void);
 
@@ -110,6 +117,26 @@ kilotncd_apply_mode(struct tnc1200 *tnc, enum tnc_mode_id mode,
 		return -1;
 	if (tnc1200_host_input(tnc, frame, frame_len) != TNC1200_OK)
 		return -1;
+
+	return 0;
+}
+
+static int
+kilotncd_audio_config_path(const struct kilotncd_config *config,
+	const char *path, struct kilotncd_audio_config *audio_config)
+{
+	size_t len;
+
+	if (config == NULL || path == NULL || audio_config == NULL)
+		return -1;
+	len = strlen(path);
+	if (len == 0U || len >= sizeof(audio_config->path))
+		return -1;
+	(void)memset(audio_config, 0, sizeof(*audio_config));
+	audio_config->backend = config->audio_backend;
+	audio_config->format = config->audio_format;
+	(void)memcpy(audio_config->path, path, len);
+	audio_config->path[len] = '\0';
 
 	return 0;
 }
@@ -368,6 +395,28 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 }
 
 static int
+kilotncd_read_pcm(const struct kilotncd_config *config, const char *path,
+	int16_t *pcm, size_t cap, size_t *samples)
+{
+	struct kilotncd_audio audio;
+	struct kilotncd_audio_config audio_config;
+	enum kilotncd_audio_result res;
+
+	if (kilotncd_audio_config_path(config, path, &audio_config) != 0)
+		return -1;
+	res = kilotncd_audio_open_input(&audio, &audio_config);
+	if (res != KILOTNCD_AUDIO_OK)
+		return -1;
+	res = kilotncd_audio_read(&audio, pcm, cap, samples);
+	if (kilotncd_audio_close(&audio) != KILOTNCD_AUDIO_OK)
+		return -1;
+	if (res != KILOTNCD_AUDIO_OK)
+		return -1;
+
+	return 0;
+}
+
+static int
 kilotncd_run_loopback_once(const struct kilotncd_config *config)
 {
 	struct tnc1200 tx_tnc;
@@ -466,8 +515,8 @@ kilotncd_run_pty_tx_once(const struct kilotncd_config *config)
 	if (kilotncd_collect_tx(&tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
-	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
-	    samples) != KILOTNCD_FILE_OK)
+	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
+	    samples) != 0)
 		return 1;
 	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
 	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
@@ -524,8 +573,8 @@ kilotncd_run_tcp_tx_once(const struct kilotncd_config *config)
 	if (kilotncd_collect_tx(&tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
-	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
-	    samples) != KILOTNCD_FILE_OK)
+	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
+	    samples) != 0)
 		return 1;
 	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
 	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
@@ -544,9 +593,8 @@ kilotncd_run_rx_once(const struct kilotncd_config *config)
 
 	if (kilotncd_mode_implemented(config->mode) != 0)
 		return 1;
-	if (kilotncd_file_read_pcm16(config->pcm_in, daemon_pcm,
-	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) !=
-	    KILOTNCD_FILE_OK)
+	if (kilotncd_read_pcm(config, config->pcm_in, daemon_pcm,
+	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
 	if (kilotncd_init_tnc(&tnc, config) != 0)
 		return 1;
@@ -586,8 +634,8 @@ kilotncd_run_unix_tx_once(const struct kilotncd_config *config)
 	if (kilotncd_collect_tx(&tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
-	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
-	    samples) != KILOTNCD_FILE_OK)
+	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
+	    samples) != 0)
 		return 1;
 	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
 	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
@@ -635,8 +683,8 @@ kilotncd_run_tx_once(const struct kilotncd_config *config)
 	if (kilotncd_collect_tx(&tnc, daemon_pcm,
 	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
 		return 1;
-	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
-	    samples) != KILOTNCD_FILE_OK)
+	if (kilotncd_write_pcm(config, config->pcm_out, daemon_pcm,
+	    samples) != 0)
 		return 1;
 	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
 	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
@@ -696,6 +744,33 @@ kilotncd_validate_config(const struct kilotncd_config *config)
 	if (config->have_kiss_out && config->have_pcm_out &&
 	    strcmp(config->kiss_out, "-") == 0 &&
 	    strcmp(config->pcm_out, "-") == 0)
+		return -1;
+	if (config->audio_backend != KILOTNCD_AUDIO_BACKEND_RAW_FILE)
+		return -1;
+	if (kilotncd_audio_validate_format(&config->audio_format) !=
+	    KILOTNCD_AUDIO_OK)
+		return -1;
+
+	return 0;
+}
+
+static int
+kilotncd_write_pcm(const struct kilotncd_config *config, const char *path,
+	const int16_t *pcm, size_t samples)
+{
+	struct kilotncd_audio audio;
+	struct kilotncd_audio_config audio_config;
+	enum kilotncd_audio_result res;
+
+	if (kilotncd_audio_config_path(config, path, &audio_config) != 0)
+		return -1;
+	res = kilotncd_audio_open_output(&audio, &audio_config);
+	if (res != KILOTNCD_AUDIO_OK)
+		return -1;
+	res = kilotncd_audio_write(&audio, pcm, samples);
+	if (kilotncd_audio_close(&audio) != KILOTNCD_AUDIO_OK)
+		return -1;
+	if (res != KILOTNCD_AUDIO_OK)
 		return -1;
 
 	return 0;

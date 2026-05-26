@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction.
 
 It is not a background service yet. It does not use real audio devices, serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.17 Scope
+## M1.18 Scope
 
 Implemented:
 
@@ -18,11 +18,12 @@ Implemented:
 - Localhost KISS TCP single-client once mode.
 - Local Unix socket single-client once mode.
 - Local PTY KISS single-client once mode.
+- Daemon audio backend interface with raw PCM file/stdin/stdout backend.
 
 Not implemented:
 
 - Daemonization, fork, PID files, or syslog.
-- ALSA, sndio, OSS, PulseAudio, or PipeWire.
+- ALSA, sndio, OSS, PulseAudio, PipeWire, or real audio devices.
 - Serial PTT, CAT, GPIO, or hardware PTT.
 - Real radio receive or transmit.
 - Multi-client TCP server.
@@ -55,6 +56,10 @@ unlink_stale_socket=0
 kiss_pty=1
 kiss_pty_once=1
 pty_path_out=build/daemon/kilotnc.pty
+audio_backend=raw
+audio_sample_rate=48000
+audio_channels=1
+audio_bits=16
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -133,6 +138,19 @@ TCP KISS in M1.15 is localhost-only by default. Binding to anything other than `
 Unix socket KISS in M1.16 is local IPC only. The server accepts one client, processes bounded KISS input, exits, and removes the socket path on clean exit. Stale socket unlink is allowed under `build/` for tests, or when `--unlink-stale-socket` is explicitly set. TCP and Unix socket listeners cannot both be enabled in M1.16.
 
 PTY KISS in M1.17 is local-only and serial-like. It opens a pseudoterminal, writes the slave path to `--pty-path-out` when provided, processes one bounded KISS input transaction, exits, and does not access real serial hardware. TCP, Unix socket, and PTY listeners cannot be enabled together in M1.17.
+
+## Audio Backend
+
+M1.18 adds a daemon-side audio backend boundary. Only the raw backend is implemented.
+
+Raw backend format:
+
+- Signed 16-bit little-endian PCM.
+- Mono.
+- 48,000 Hz.
+- File, stdin, or stdout paths through existing `-` semantics.
+
+Unsupported audio formats are rejected. `audio_backend=alsa`, `audio_backend=sndio`, and `audio_backend=oss` are planned names only and are rejected in M1.18.
 
 ## Safety Defaults
 

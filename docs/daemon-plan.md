@@ -12,6 +12,8 @@ M1.16 implements a local Unix socket KISS once-mode adapter and explicit stdin/s
 
 M1.17 implements a local PTY KISS once-mode adapter. It does not implement persistent PTY service, real serial hardware, serial PTT, real audio, CAT, daemonization, or hardware access.
 
+M1.18 implements a daemon audio backend abstraction with only a raw signed 16-bit little-endian mono PCM file/stdin/stdout backend. It does not implement ALSA, sndio, OSS, PulseAudio, PipeWire, or real audio devices.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -49,6 +51,7 @@ Planned first-pass backends:
 
 - POSIX raw device/file backend for deterministic tests. File mode exists in M1.14.
 - stdin/stdout file-stream mode for deterministic tests. Explicit bounded stdin/stdout handling exists in M1.16.
+- Raw PCM audio backend abstraction. Raw file/stdin/stdout backend exists in M1.18.
 - ALSA for Linux as the likely first real Linux audio backend.
 - sndio for OpenBSD as the likely BSD-friendly backend.
 - OSS as a possible fallback on BSDs where available.

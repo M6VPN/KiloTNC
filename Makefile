@@ -17,6 +17,8 @@ PTYCLIENTBIN = ${BUILD}/kilotncd_pty_client
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  tools/wav_writer.c
 DAEMON_SRCS = daemon/kilotncd.c \
+	  daemon/kilotncd_audio.c \
+	  daemon/kilotncd_audio_raw.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_file.c \
 	  daemon/kilotncd_pty.c \
@@ -99,6 +101,8 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --status --mode NINO_MODE=22
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/tx.pcm --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out ${BUILD}/daemon/rx.kiss --once
+	printf 'mode=NINO_MODE=6\naudio_backend=raw\naudio_sample_rate=48000\naudio_channels=1\naudio_bits=16\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/audio-raw.pcm\n' > ${BUILD}/daemon/audio-raw.conf
+	./${DAEMONBIN} --config ${BUILD}/daemon/audio-raw.conf --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --kiss-out ${BUILD}/daemon/loop.kiss --loopback-once
 	./${DAEMONBIN} --config daemon/example.conf --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in - --pcm-out ${BUILD}/daemon/stdin-tx.pcm --once < ${BUILD}/daemon/input.kiss
@@ -111,6 +115,14 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --kiss-pty --kiss-pty-once --pty-path-out ${BUILD}/daemon/kilotnc.pty --pcm-out ${BUILD}/daemon/pty-tx.pcm --once > ${BUILD}/daemon/pty.log 2> ${BUILD}/daemon/pty.err & pid=$$!; sleep 1; test -s ${BUILD}/daemon/kilotnc.pty; ./${PTYCLIENTBIN} ${BUILD}/daemon/kilotnc.pty ${BUILD}/daemon/input.kiss; wait $$pid
 	printf 'unknown=1\n' > ${BUILD}/daemon/invalid.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/invalid.conf --status; then exit 1; else exit 0; fi
+	printf 'audio_backend=alsa\n' > ${BUILD}/daemon/audio-bad-backend.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-backend.conf --status; then exit 1; else exit 0; fi
+	printf 'audio_sample_rate=44100\n' > ${BUILD}/daemon/audio-bad-rate.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-rate.conf --status; then exit 1; else exit 0; fi
+	printf 'audio_channels=2\n' > ${BUILD}/daemon/audio-bad-channels.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-channels.conf --status; then exit 1; else exit 0; fi
+	printf 'audio_bits=24\n' > ${BUILD}/daemon/audio-bad-bits.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-bits.conf --status; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --mode NINO_MODE=0 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/bad.pcm --once; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --kiss-tcp-listen 0.0.0.0:18015 --kiss-tcp-once --pcm-out ${BUILD}/daemon/nonlocal.pcm --once; then exit 1; else exit 0; fi
 	printf 'mode=NINO_MODE=6\nkiss_tcp_listen=127.0.0.1:18016\nkiss_tcp_once=1\nallow_nonlocal_bind=0\npcm_out=${BUILD}/daemon/config-tcp.pcm\n' > ${BUILD}/daemon/tcp.conf
@@ -126,6 +138,7 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	test -s ${BUILD}/daemon/input.pcm
 	test -s ${BUILD}/daemon/tx.pcm
 	test -s ${BUILD}/daemon/rx.kiss
+	test -s ${BUILD}/daemon/audio-raw.pcm
 	test -s ${BUILD}/daemon/loop.kiss
 	test -s ${BUILD}/daemon/config-tx.pcm
 	test -s ${BUILD}/daemon/stdin-tx.pcm

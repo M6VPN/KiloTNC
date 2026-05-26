@@ -370,6 +370,22 @@ M1.17 host-side checks on 2026-05-26:
 - Existing file-mode, stdin/stdout, localhost TCP, and Unix socket daemon checks still pass.
 - No remote internet service, persistent multi-client server, real audio, serial PTT, CAT, USB, GPIO, or hardware path is implemented.
 
+M1.18 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the audio backend abstraction.
+- TX once writes non-empty raw PCM through the audio backend.
+- RX once reads raw PCM through the audio backend.
+- Config parser accepts `audio_backend=raw`.
+- Config parser accepts `audio_sample_rate=48000`.
+- Config parser accepts `audio_channels=1`.
+- Config parser accepts `audio_bits=16`.
+- Config parser rejects unsupported active backends such as `alsa`.
+- Config parser rejects sample rates other than 48,000 Hz.
+- Config parser rejects channel counts other than 1.
+- Config parser rejects sample widths other than 16 bits.
+- Existing file-mode, stdin/stdout, localhost TCP, Unix socket, and PTY daemon checks still pass.
+- No real audio API, remote internet service, persistent multi-client server, serial PTT, CAT, USB, GPIO, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

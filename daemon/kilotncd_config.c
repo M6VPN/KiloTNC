@@ -40,6 +40,8 @@ kilotncd_config_init(struct kilotncd_config *config)
 	(void)memset(config, 0, sizeof(*config));
 	if (tnc_mode_default(&config->mode) != TNC_MODE_OK)
 		return KILOTNCD_CONFIG_ERR_PARSE;
+	kilotncd_audio_default_format(&config->audio_format);
+	config->audio_backend = KILOTNCD_AUDIO_BACKEND_RAW_FILE;
 	config->mode_temporary = 0;
 	config->p = 255U;
 	config->slottime_10ms = 10U;
@@ -142,6 +144,21 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 		return kilotncd_config_copy_path(config->pcm_out,
 		    sizeof(config->pcm_out), value);
 	}
+	if (strcmp(key, "audio_backend") == 0) {
+		if (kilotncd_audio_parse_backend(value,
+		    &config->audio_backend) != KILOTNCD_AUDIO_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "audio_sample_rate") == 0)
+		return kilotncd_config_parse_u32(value,
+		    &config->audio_format.sample_rate);
+	if (strcmp(key, "audio_channels") == 0)
+		return kilotncd_config_parse_u8(value,
+		    &config->audio_format.channels);
+	if (strcmp(key, "audio_bits") == 0)
+		return kilotncd_config_parse_u8(value,
+		    &config->audio_format.bits_per_sample);
 	if (strcmp(key, "kiss_tcp_listen") == 0) {
 		if (kilotncd_tcp_parse_listen(value,
 		    &config->kiss_tcp_addr) != KILOTNCD_TCP_OK)

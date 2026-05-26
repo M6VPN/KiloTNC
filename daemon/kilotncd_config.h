@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include "kilotncd_audio.h"
 #include "kilotncd_tcp.h"
 #include "tnc_mode.h"
 
@@ -32,6 +33,8 @@ struct kilotncd_config {
 	char kiss_unix_listen[KILOTNCD_PATH_MAX];
 	char pty_path_out[KILOTNCD_PATH_MAX];
 	struct kilotncd_tcp_addr kiss_tcp_addr;
+	enum kilotncd_audio_backend audio_backend;
+	struct kilotncd_audio_format audio_format;
 	enum tnc_mode_id mode;
 	int mode_temporary;
 	uint8_t p;
