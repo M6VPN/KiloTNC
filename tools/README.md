@@ -10,11 +10,22 @@ Build it with:
 make tools
 ```
 
+Run deterministic vector checks:
+
+```text
+make tool-test
+```
+
 The CLI uses raw signed 16-bit little-endian mono PCM for audio files:
 
 - 48,000 Hz sample rate.
 - 1200 baud Bell 202 AFSK generated audio.
-- No WAV header in M1.11.
+
+The CLI can also write RIFF/WAVE files:
+
+- Mono signed 16-bit PCM.
+- 48,000 Hz sample rate.
+- Generated under `build/` during `make tool-test`.
 
 Only `1200 AFSK AX.25` is implemented. Other Nino-compatible modes are registry entries only and are rejected for TX/RX operations.
 
@@ -25,7 +36,17 @@ Parse NinoTNC-compatible modes:
 ```text
 build/kilotnc_cli mode --mode NINO_MODE=6
 build/kilotnc_cli mode --mode NINO_MODE=22
+build/kilotnc_cli inspect-mode --mode NINO_MODE=6
 build/kilotnc_cli mode --mode KILOTNC_MODE=1200-afsk-ax25
+```
+
+Generate vectors:
+
+```text
+build/kilotnc_cli generate-kiss --out build/vectors/kilotnc.kiss --dst APZKTN --src M6VPN --info "KiloTNC test"
+build/kilotnc_cli generate-pcm --out build/vectors/kilotnc.pcm --dst APZKTN --src M6VPN --info "KiloTNC test" --mode NINO_MODE=6
+build/kilotnc_cli generate-wav --out build/vectors/kilotnc.wav --dst APZKTN --src M6VPN --info "KiloTNC test" --mode NINO_MODE=22
+build/kilotnc_cli vector-loopback --prefix build/vectors/kilotnc --mode NINO_MODE=6
 ```
 
 Convert KISS to raw PCM:

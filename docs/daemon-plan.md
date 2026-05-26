@@ -33,6 +33,8 @@ Planned configuration fields:
 
 No persistent daemon config parser is implemented yet.
 
+M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regression fixtures before real audio or socket adapters are added.
+
 ## Audio Backends
 
 Planned first-pass backends:

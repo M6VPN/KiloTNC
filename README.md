@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.12 platform roadmap and daemon/network planning.
+Current stage: M1.13 generated vector export and CLI vector tooling.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets are planning items. They are not implemented in M1.12.
+These platform targets are planning items. They are not implemented in M1.13.
 
 ## Milestones
 
@@ -87,7 +87,13 @@ Build host-side debug tools:
 make tools
 ```
 
-GitHub Actions runs `make test`, `make tools`, and `make sanitize` on push and pull request.
+Run deterministic CLI vector checks:
+
+```text
+make tool-test
+```
+
+GitHub Actions runs `make test`, `make tools`, `make tool-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
 

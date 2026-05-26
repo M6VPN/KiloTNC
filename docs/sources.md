@@ -46,6 +46,13 @@ Sources checked on 2026-05-26.
 | FreeBSD Architecture Handbook, Sound | 2026-05-26   | https://docs.freebsd.org/en/books/arch-handbook/sound/         | FreeBSD pcm and OSS interface context |
 | NetBSD audio(4) manual               | 2026-05-26   | https://man.netbsd.org/NetBSD-10.0/audio.4                     | NetBSD audio device interface context |
 
+## File Formats
+
+| Source title                                  | Date checked | URL                                                                                  | Note                                  |
+| --------------------------------------------- | ------------ | ------------------------------------------------------------------------------------ | ------------------------------------- |
+| Microsoft RIFF documentation                  | 2026-05-26   | https://learn.microsoft.com/en-us/windows/win32/xaudio2/resource-interchange-file-format--riff- | RIFF/WAVE chunk layout                |
+| Microsoft waveform audio data types reference | 2026-05-26   | https://learn.microsoft.com/is-is/windows/win32/multimedia/devices-and-data-types    | 16-bit PCM sample representation      |
+
 ## Use Restrictions
 
 Dire Wolf may be used as an external interoperability reference and test tool only. No Dire Wolf source code is copied into this repository in this pass.

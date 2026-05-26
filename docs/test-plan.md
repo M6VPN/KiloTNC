@@ -305,6 +305,16 @@ M1.12 documentation gate on 2026-05-26:
 - Architecture, protocol, mode, diagnostics, tool, and README docs reference planned platform targets without marking them implemented.
 - Safety defaults for remote clients, DCD/channel access, max TX timeout, and PTT separation are documented.
 
+M1.13 host-side checks on 2026-05-26:
+
+- `make tool-test` builds `build/kilotnc_cli`.
+- CLI generates non-empty `.kiss`, `.pcm`, `.wav`, `.out.kiss`, and `.diag.txt` files under `build/vectors/`.
+- WAV header fields are checked for RIFF, WAVE, PCM format, mono channel count, 48,000 Hz sample rate, and 16-bit samples.
+- CLI vector loopback decodes generated PCM back to KISS.
+- CLI accepts `NINO_MODE=6` and `NINO_MODE=22`.
+- CLI rejects unimplemented modes for PCM vector generation.
+- Generated files stay under `build/`.
+
 Pending:
 
 - Full timing recovery loop.

@@ -69,6 +69,8 @@ The shared core is the code intended to move between host tools, the future daem
 
 The current implementation is host-side C. It does not include MCU HAL, host audio backends, sockets, or hardware drivers.
 
+M1.13 generated vectors provide repeatable KISS, PCM, WAV, loopback, and diagnostics outputs for later MCU firmware, daemon, and hardware validation.
+
 ## Target-Specific Adapters
 
 Platform adapters should wrap the shared core:
