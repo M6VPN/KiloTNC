@@ -11,12 +11,13 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 - [Status](#status)
 - [Scope](#scope)
 - [Milestones](#milestones)
+- [Build and Test](#build-and-test)
 - [Repository Layout](#repository-layout)
 - [License](#license)
 
 ## Status
 
-Current stage: M0 research matrix, architecture docs, and protocol scope.
+Current stage: M1 host-side protocol simulator and test scaffold.
 
 PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -52,21 +53,35 @@ Bridge targets:
 | M8    | 72-hour burn-in, USB reconnect, brownout, malformed KISS fuzzing   |
 | M9    | Optional bridge mode for VARA/Mercury/ARDOP via host software      |
 
+## Build and Test
+
+Build and run the host-side protocol tests:
+
+```text
+make test
+```
+
+Clean generated files:
+
+```text
+make clean
+```
+
 ## Repository Layout
 
-| Path                   | Purpose                                      |
-| ---------------------- | -------------------------------------------- |
-| `docs/`                | Architecture, protocol, hardware, firmware   |
-| `firmware/`            | Future embedded firmware workspace           |
-| `firmware/include/`    | Future firmware headers                      |
-| `firmware/src/`        | Future firmware source                       |
-| `firmware/test/`       | Future firmware tests                        |
-| `hardware/`            | Hardware planning and PCB assets             |
-| `hardware/kicad/`      | Future KiCad project files                   |
-| `hardware/datasheets/` | Local datasheet references if redistribution permits |
-| `hardware/simulations/` | Future analog and signal simulations        |
-| `tools/`               | Future host tools and scripts                |
-| `lab/`                 | Bench notes, measurements, and test records  |
+| Path                    | Purpose                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `docs/`                 | Architecture, protocol, hardware, firmware               |
+| `firmware/`             | Portable protocol library and future firmware workspace  |
+| `firmware/include/`     | Protocol library headers                                 |
+| `firmware/src/`         | Portable protocol source                                 |
+| `firmware/test/`        | Host-side protocol tests                                 |
+| `hardware/`             | Hardware planning and PCB assets                         |
+| `hardware/kicad/`       | Future KiCad project files                               |
+| `hardware/datasheets/`  | Local datasheet references if redistribution permits     |
+| `hardware/simulations/` | Future analog and signal simulations                     |
+| `tools/`                | Future host tools and scripts                            |
+| `lab/`                  | Bench notes, measurements, and test records              |
 
 ## License
 

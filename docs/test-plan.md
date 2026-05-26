@@ -17,6 +17,14 @@ No PCB order is allowed until the tests in this file are reviewed and the applic
 | T8   | Audio path level and filter plan measured         |
 | T9   | Radio connector protection plan reviewed          |
 
+M1 host-side status checked with `make clean && make test` on 2026-05-26:
+
+| Gate | Status |
+| ---- | ------ |
+| T1   | Pass   |
+| T2   | Pass   |
+| T3   | Pass   |
+
 ## KISS Tests
 
 - Encode and decode FEND, FESC, TFEND, and TFESC.
@@ -28,6 +36,17 @@ No PCB order is allowed until the tests in this file are reviewed and the applic
 - Drop packet on full queue and increment counter.
 - Fuzz malformed byte streams without crash.
 
+M1 implemented tests:
+
+- Plain payload encode/decode.
+- Escaped FEND and FESC encode/decode.
+- Repeated FEND handling.
+- Invalid escape recovery.
+- Overlength frame drop.
+- Unsupported command ignore.
+- SetHardware bounded payload.
+- TXDELAY, P, SlotTime, TXtail, FullDuplex, and Return command parsing.
+
 ## AX.25 and HDLC Tests
 
 - Encode destination and source callsign/SSID fields.
@@ -38,6 +57,21 @@ No PCB order is allowed until the tests in this file are reviewed and the applic
 - Apply HDLC bit-stuffing after five contiguous one bits.
 - Remove stuffed bits on receive.
 - Keep AX.25 byte handling separate from modem sample handling.
+
+M1 implemented tests:
+
+- FCS known vector.
+- FCS append and validate round trip.
+- FCS modified-frame rejection.
+- HDLC stuffing after five contiguous one bits.
+- HDLC unstuffing round trip.
+- HDLC output buffer overflow rejection.
+- HDLC malformed six-one sequence rejection.
+- AX.25 UI encode/decode.
+- AX.25 invalid callsign rejection.
+- AX.25 invalid SSID rejection.
+- AX.25 corrupted FCS rejection.
+- AX.25 address extension bit handling.
 
 ## Modem Tests
 
@@ -124,4 +158,3 @@ Mercury:
 | ARDOP Specification Revision 0.3.1         | 2026-05-26   | Bridge, host interface, PTT/radio control context   |
 | Mercury GitHub README, Rhizomatica         | 2026-05-26   | TCP TNC and external modem bridge context           |
 | VARA Modem official site                   | 2026-05-26   | VARA host software modem scope                      |
-

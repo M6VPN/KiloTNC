@@ -1,22 +1,21 @@
 # Firmware
 
-Firmware is not implemented in M0.
+M1 contains portable host-side protocol code for KISS, AX.25 UI frames, HDLC bit helpers, and AX.25/HDLC FCS helpers.
 
-This directory is reserved for embedded firmware after the protocol matrix, architecture, hardware plan, firmware safety rules, and test plan are reviewed.
+No STM32 HAL, board support, USB driver, codec driver, or modem DSP code is implemented yet.
 
-Planned layout:
+Layout:
 
 | Path       | Purpose                         |
 | ---------- | ------------------------------- |
-| `include/` | Public firmware headers         |
-| `src/`     | Firmware source files           |
-| `test/`    | Host and target firmware tests  |
+| `include/` | Portable protocol headers       |
+| `src/`     | Portable protocol source files  |
+| `test/`    | Host-side protocol tests        |
 
-Rules before code starts:
+Rules for protocol code:
 
 - No dynamic allocation in the real-time audio path.
 - KISS parser must recover from malformed frames.
 - Queue overflow must drop and count, not crash.
 - PTT must fail safe.
 - Watchdog heartbeat must depend on main loop, USB, audio, and PTT safety progress.
-
