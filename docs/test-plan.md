@@ -102,6 +102,33 @@ M1.1 deterministic fuzz tests:
 
 The fuzz harness uses a fixed seed, bounded iterations, fixed-size buffers, and no heap allocation.
 
+## AFSK1200 Host Vector Tests
+
+M1.2 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- AFSK1200 constants for 48 kHz, 1200 baud, 40 samples per bit, 1200 Hz mark, and 2200 Hz space.
+- Mark-only and space-only tone generation.
+- Encoded sample count.
+- Output buffer-too-small handling.
+- NULL public argument handling.
+- NRZI known short pattern.
+- NRZI decode round trip.
+- Clean AFSK encode/decode round trip for a short bit pattern.
+- Clean generated AX.25 UI frame through FCS, HDLC bit-stuffing, NRZI, AFSK PCM, decode, NRZI decode, HDLC unstuff, and AX.25 FCS validation.
+- Mild amplitude-scaled generated audio decode.
+- Truncated sample count rejection.
+- PCM int16_t range check.
+
+Pending:
+
+- Timing recovery.
+- DCD.
+- Squelch/COS integration.
+- Noisy decode.
+- Clock drift handling.
+- Real-radio testing.
+- Embedded audio DMA.
+
 ## Modem Tests
 
 1200 baud Bell 202 AFSK:

@@ -10,10 +10,12 @@ BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
 SANBIN	= ${BUILD}/kilotnc_tests_sanitize
 
-SRCS	= firmware/src/ax25.c \
+SRCS	= firmware/src/afsk1200.c \
+	  firmware/src/ax25.c \
 	  firmware/src/fcs.c \
 	  firmware/src/hdlc.c \
 	  firmware/src/kiss.c \
+	  firmware/test/test_afsk1200.c \
 	  firmware/test/test_ax25.c \
 	  firmware/test/test_fcs.c \
 	  firmware/test/test_fuzz.c \

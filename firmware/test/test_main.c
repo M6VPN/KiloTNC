@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 int test_ax25(void);
+int test_afsk1200(void);
 int test_fcs(void);
 int test_fuzz(void);
 int test_hdlc(void);
@@ -19,6 +20,7 @@ main(void)
 	int failures;
 
 	failures = 0;
+	failures += test_run("afsk1200", test_afsk1200);
 	failures += test_run("fcs", test_fcs);
 	failures += test_run("hdlc", test_hdlc);
 	failures += test_run("ax25", test_ax25);

@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.1 host-side protocol hardening, fuzzing, and CI.
+Current stage: M1.2 host-side 1200 baud Bell 202 AFSK simulator and clean-vector tests.
 
 PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -55,7 +55,7 @@ Bridge targets:
 
 ## Build and Test
 
-Build and run the host-side protocol tests:
+Build and run the host-side protocol and AFSK1200 tests:
 
 ```text
 make test

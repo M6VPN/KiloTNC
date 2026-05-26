@@ -4,15 +4,17 @@ Sources checked on 2026-05-26.
 
 ## Protocols
 
-| Source title                               | Date checked | URL                                                                 | Note                                                |
-| ------------------------------------------ | ------------ | ------------------------------------------------------------------- | --------------------------------------------------- |
-| The KISS TNC, Chepponis and Karn           | 2026-05-26   | https://www.ka9q.net/papers/kiss.html                              | KISS framing, command byte, commands, drop behavior |
-| AX.25 Link Access Protocol v2.2, TAPR/ARRL | 2026-05-26   | https://hamgate.ampr.org/docs/AX25.2.2-Jul%2098-2.pdf              | AX.25 fields, HDLC bit-stuffing, FCS, UI frames     |
-| IL2P Specification Draft v0.6              | 2026-05-26   | https://tarpn.net/t/il2p/il2p-specification_draft_v0-6.pdf         | IL2P FEC, scrambling, sync word, CRC, AX.25 mapping |
-| TARPN IL2P overview                        | 2026-05-26   | https://tarpn.net/t/il2p/il2p.html                                  | IL2P spec link and revision notes                   |
-| OARC NinoTNC page                          | 2026-05-26   | https://wiki.oarc.uk/packet%3Aninotnc                               | NinoTNC modes and SETHW mode control notes          |
-| TARPN Protocols and Modulation page        | 2026-05-26   | https://tarpn.net/t/builder/builders_tarpn_protocols.html          | NinoTNC modulation and bitrate overview             |
-| FX.25 Forward Error Correction page        | 2026-05-26   | https://en.wikipedia.org/wiki/FX.25_Forward_Error_Correction       | FX.25 research context and archived spec pointer    |
+| Source title                                             | Date checked | URL                                                                                                      | Note                                                |
+| -------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| The KISS TNC, Chepponis and Karn                         | 2026-05-26   | https://www.ka9q.net/papers/kiss.html                                                                   | KISS framing, command byte, commands, drop behavior |
+| AX.25 Link Access Protocol v2.2, TAPR/ARRL               | 2026-05-26   | https://hamgate.ampr.org/docs/AX25.2.2-Jul%2098-2.pdf                                                   | AX.25 fields, HDLC bit-stuffing, FCS, UI frames     |
+| APRS Protocol Reference 1.0.1, APRS Working Group        | 2026-05-26   | https://web.tapr.org/software_library/aprs/aprsspec/spec/aprs101/APRS101.pdf                            | APRS over AX.25 context                             |
+| Clarifying the Amateur Bell 202 Modem, TAPR DCC 2014     | 2026-05-26   | https://tapr.org/wp-content/uploads/DCC2014-Amateur-Bell-202-Modem-W6KWF-and-Bridget-Benson.pdf         | Amateur Bell 202/APRS modem context                 |
+| IL2P Specification Draft v0.6                            | 2026-05-26   | https://tarpn.net/t/il2p/il2p-specification_draft_v0-6.pdf                                              | IL2P FEC, scrambling, sync word, CRC, AX.25 mapping |
+| TARPN IL2P overview                                      | 2026-05-26   | https://tarpn.net/t/il2p/il2p.html                                                                       | IL2P spec link and revision notes                   |
+| OARC NinoTNC page                                        | 2026-05-26   | https://wiki.oarc.uk/packet%3Aninotnc                                                                    | NinoTNC modes and SETHW mode control notes          |
+| TARPN Protocols and Modulation page                      | 2026-05-26   | https://tarpn.net/t/builder/builders_tarpn_protocols.html                                               | NinoTNC modulation and bitrate overview             |
+| FX.25 Forward Error Correction page                      | 2026-05-26   | https://en.wikipedia.org/wiki/FX.25_Forward_Error_Correction                                            | FX.25 research context and archived spec pointer    |
 
 ## External Modems
 
