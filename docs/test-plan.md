@@ -264,6 +264,28 @@ M1.9 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Snapshot formatter stable text output.
 - Snapshot formatter truncation handling.
 
+M1.10 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- Default mode is 1200 AFSK AX.25.
+- Mode descriptor lookup for implemented 1200 AFSK AX.25.
+- Mode descriptor lookup for planned and research Nino-compatible modes.
+- Nino switch mode 6 maps to 1200 AFSK AX.25.
+- Nino switch mode 15 reports set-from-KISS as not an on-air mode.
+- Nino SETHW 6 maps to 1200 AFSK AX.25 as persistent-style.
+- Nino SETHW 22 maps to 1200 AFSK AX.25 as temporary-style.
+- Nino SETHW 0 maps to 9600 GFSK AX.25 as known but unimplemented.
+- Nino SETHW 12 maps to 300 AFSK AX.25 as known but unimplemented.
+- Invalid high Nino SETHW values are rejected.
+- `NINO_MODE=6`, `NINO_MODE=22`, `KILOTNC_MODE=1200-afsk-ax25`, and `1200-afsk-ax25` parse correctly.
+- Malformed mode options are rejected.
+- Mode name formatting detects too-small buffers.
+- KISS SETHW mode 6 and 22 are accepted through TNC1200.
+- Known but unimplemented SETHW mode requests are counted and current mode remains safe.
+- Invalid SETHW mode requests are counted and current mode remains safe.
+- KISS-to-PCM TX still works after mode set to 6.
+- Diagnostics include current mode and mode request counters.
+- Diagnostics formatter includes stable mode fields.
+
 Pending:
 
 - Full timing recovery loop.

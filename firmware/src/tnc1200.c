@@ -15,6 +15,7 @@ static void tnc1200_apply_kiss_settings(struct tnc1200 *);
 static void tnc1200_clear_pending(struct tnc1200 *);
 static enum tnc1200_result tnc1200_map_tx(enum afsk1200_tx_result);
 static enum tnc1200_result tnc1200_maybe_start_audio(struct tnc1200 *);
+static void tnc1200_process_sethw_mode(struct tnc1200 *);
 static enum tnc1200_result tnc1200_start_tx(struct tnc1200 *,
 	const struct kiss_frame *);
 static void tnc1200_sync_control_config(struct tnc1200 *);
@@ -121,6 +122,9 @@ tnc1200_init(struct tnc1200 *tnc, const struct tnc1200_config *config)
 	tnc->p = tnc->kiss.p;
 	tnc->slottime = tnc->kiss.slottime;
 	tnc->fullduplex = tnc->kiss.fullduplex ? 1U : 0U;
+	tnc->current_mode = TNC_MODE_1200_AFSK_AX25;
+	tnc->last_requested_mode = TNC_MODE_UNSUPPORTED;
+	tnc->last_nino_sethw = TNC_MODE_NINO_NONE;
 
 	return TNC1200_OK;
 }
@@ -230,6 +234,10 @@ tnc1200_status(const struct tnc1200 *tnc, struct tnc1200_status *status)
 	status->tx_active = active != 0 ? 1U : 0U;
 	status->audio_ready = can_emit != 0 ? 1U : 0U;
 	status->dcd_busy = tnc->control.dcd_busy ? 1U : 0U;
+	status->last_nino_sethw = tnc->last_nino_sethw;
+	status->last_mode_temporary = tnc->last_mode_temporary;
+	status->current_mode = tnc->current_mode;
+	status->last_requested_mode = tnc->last_requested_mode;
 
 	return TNC1200_OK;
 }
@@ -303,6 +311,7 @@ tnc1200_apply_kiss_settings(struct tnc1200 *tnc)
 	if (tnc->kiss.sethw_len != 0U) {
 		(void)memcpy(tnc->sethw, tnc->kiss.sethw, tnc->kiss.sethw_len);
 		tnc->sethw_len = tnc->kiss.sethw_len;
+		tnc1200_process_sethw_mode(tnc);
 	}
 
 	if (!tnc->pending_frame_valid && !tnc->tx_started &&
@@ -362,6 +371,39 @@ tnc1200_maybe_start_audio(struct tnc1200 *tnc)
 	return TNC1200_OK;
 }
 
+static void
+tnc1200_process_sethw_mode(struct tnc1200 *tnc)
+{
+	const struct tnc_mode_desc *desc;
+	enum tnc_mode_id mode;
+	enum tnc_mode_result res;
+	int temporary;
+
+	if (tnc->sethw_len == 0U)
+		return;
+
+	tnc->stats.mode_set_requests++;
+	tnc->last_nino_sethw = tnc->sethw[0];
+	temporary = 0;
+	res = tnc_mode_from_nino_sethw(tnc->sethw[0], &mode, &temporary);
+	tnc->last_mode_temporary = temporary ? 1U : 0U;
+	if (res != TNC_MODE_OK) {
+		tnc->last_requested_mode = TNC_MODE_UNSUPPORTED;
+		tnc->stats.mode_set_invalid++;
+		return;
+	}
+	tnc->last_requested_mode = mode;
+	if (tnc_mode_get(mode, &desc) != TNC_MODE_OK) {
+		tnc->stats.mode_set_invalid++;
+		return;
+	}
+	if (desc->support != TNC_MODE_SUPPORT_IMPLEMENTED) {
+		tnc->stats.mode_set_unsupported++;
+		return;
+	}
+	tnc->current_mode = mode;
+}
+
 static enum tnc1200_result
 tnc1200_start_tx(struct tnc1200 *tnc, const struct kiss_frame *frame)
 {
@@ -372,6 +414,10 @@ tnc1200_start_tx(struct tnc1200 *tnc, const struct kiss_frame *frame)
 	    tnc->control.state != TNC_CONTROL_IDLE) {
 		tnc->stats.tx_frames_rejected++;
 		return TNC1200_ERR_BUSY;
+	}
+	if (tnc->current_mode != TNC_MODE_1200_AFSK_AX25) {
+		tnc->stats.tx_frames_rejected++;
+		return TNC1200_OK;
 	}
 	if (frame->len > sizeof(tnc->pending_frame) ||
 	    ax25_decode_ui_fcs(frame->data, frame->len, &decoded) != AX25_OK) {

@@ -216,6 +216,8 @@ test_tnc_diag_capture_states(void)
 	CHECK(snapshot.slottime_10ms == 10U);
 	CHECK(snapshot.fullduplex == 0U);
 	CHECK(snapshot.ptt_state == TNC_CONTROL_PTT_OFF);
+	CHECK(snapshot.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(snapshot.last_requested_mode == TNC_MODE_UNSUPPORTED);
 
 	cmd[0] = KISS_FEND;
 	cmd[1] = KISS_CMD_P;
@@ -238,6 +240,18 @@ test_tnc_diag_capture_states(void)
 	CHECK(snapshot.slottime_10ms == 7U);
 	CHECK(snapshot.fullduplex == 1U);
 	CHECK(snapshot.dcd_busy == 1U);
+	cmd[1] = KISS_CMD_SETHARDWARE;
+	cmd[2] = 0U;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	cmd[2] = 31U;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	CHECK(tnc_diag_capture_tnc1200(&diag, &tnc) == TNC_DIAG_OK);
+	CHECK(tnc_diag_snapshot(&diag, &snapshot) == TNC_DIAG_OK);
+	CHECK(snapshot.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(snapshot.last_requested_mode == TNC_MODE_UNSUPPORTED);
+	CHECK(snapshot.mode_set_requests == 2U);
+	CHECK(snapshot.mode_set_unsupported == 1U);
+	CHECK(snapshot.mode_set_invalid == 1U);
 	cmd[1] = KISS_CMD_P;
 	cmd[2] = 255U;
 	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
@@ -333,8 +347,10 @@ test_tnc_diag_format(void)
 	    "tx_samples=8 rx_ok=9 rx_bad_fcs=10 rx_malformed=11 "
 	    "rx_dropped=12 rx_samples=13 chan_req=14 chan_grant=15 "
 	    "chan_busy=16 chan_defers=17 chan_timeouts=18 chan_aborts=19 "
-	    "ptt_on=20 ptt_off=21 rx_dcd=22 rx_conf=23 p=24 slot=25 "
+	    "ptt_on=20 ptt_off=21 mode_req=22 mode_unsup=23 "
+	    "mode_invalid=24 rx_dcd=25 rx_conf=26 p=27 slot=28 "
 	    "fullduplex=1 ptt=1 tx_active=1 audio_ready=0 dcd=1 "
+	    "current_mode=6 last_mode=0 last_nino=31 mode_temp=1 "
 	    "last_fault=3";
 
 	(void)memset(&snapshot, 0, sizeof(snapshot));
@@ -359,15 +375,22 @@ test_tnc_diag_format(void)
 	snapshot.channel_tx_aborts = 19U;
 	snapshot.ptt_on_events = 20U;
 	snapshot.ptt_off_events = 21U;
-	snapshot.rx_dcd_score = 22U;
-	snapshot.rx_confidence_avg = 23U;
-	snapshot.p = 24U;
-	snapshot.slottime_10ms = 25U;
+	snapshot.mode_set_requests = 22U;
+	snapshot.mode_set_unsupported = 23U;
+	snapshot.mode_set_invalid = 24U;
+	snapshot.rx_dcd_score = 25U;
+	snapshot.rx_confidence_avg = 26U;
+	snapshot.p = 27U;
+	snapshot.slottime_10ms = 28U;
 	snapshot.fullduplex = 1U;
 	snapshot.ptt_state = 1U;
 	snapshot.tx_active = 1U;
 	snapshot.audio_ready = 0U;
 	snapshot.dcd_busy = 1U;
+	snapshot.last_nino_sethw = 31U;
+	snapshot.last_mode_temporary = 1U;
+	snapshot.current_mode = TNC_MODE_1200_AFSK_AX25;
+	snapshot.last_requested_mode = TNC_MODE_9600_GFSK_AX25;
 	snapshot.last_fault = TNC_DIAG_FAULT_TX_BUSY_DROP;
 
 	CHECK(tnc_diag_format_snapshot(NULL, buf, sizeof(buf), &out_len) ==
@@ -420,6 +443,8 @@ test_tnc_diag_init_args(void)
 	CHECK(snapshot.kiss_frames_in == 0U);
 	CHECK(snapshot.p == 255U);
 	CHECK(snapshot.slottime_10ms == 10U);
+	CHECK(snapshot.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(snapshot.last_requested_mode == TNC_MODE_UNSUPPORTED);
 	CHECK(snapshot.last_fault == TNC_DIAG_FAULT_NONE);
 
 	return 0;

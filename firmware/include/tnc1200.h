@@ -13,6 +13,7 @@
 #include "afsk1200_tx.h"
 #include "kiss.h"
 #include "tnc_control.h"
+#include "tnc_mode.h"
 
 enum tnc1200_result {
 	TNC1200_OK = 0,
@@ -57,6 +58,9 @@ struct tnc1200_stats {
 	size_t channel_tx_aborts;
 	size_t ptt_on_events;
 	size_t ptt_off_events;
+	size_t mode_set_requests;
+	size_t mode_set_unsupported;
+	size_t mode_set_invalid;
 };
 
 struct tnc1200_status {
@@ -69,6 +73,10 @@ struct tnc1200_status {
 	uint8_t tx_active;
 	uint8_t audio_ready;
 	uint8_t dcd_busy;
+	uint8_t last_nino_sethw;
+	uint8_t last_mode_temporary;
+	enum tnc_mode_id current_mode;
+	enum tnc_mode_id last_requested_mode;
 };
 
 struct tnc1200 {
@@ -83,9 +91,13 @@ struct tnc1200 {
 	size_t pending_frame_len;
 	bool pending_frame_valid;
 	bool tx_started;
+	enum tnc_mode_id current_mode;
+	enum tnc_mode_id last_requested_mode;
 	uint8_t p;
 	uint8_t slottime;
 	uint8_t fullduplex;
+	uint8_t last_nino_sethw;
+	uint8_t last_mode_temporary;
 	uint8_t sethw[KILOTNC_SETHW_MAX_PAYLOAD];
 	size_t sethw_len;
 };

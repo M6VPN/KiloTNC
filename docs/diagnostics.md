@@ -17,8 +17,10 @@ A diagnostic snapshot contains:
 - RX frame and sample counters.
 - Channel-access counters.
 - PTT transition counters.
+- Mode set request counters.
 - RX DCD score and confidence average.
 - Current P, SlotTime, FullDuplex, PTT, TX active, audio-ready, and DCD busy state.
+- Current mode, last requested mode, last NinoTNC SETHW value, and temporary/no-flash flag.
 - Last explicitly recorded fault.
 
 Snapshots are copied into caller-provided structs. No strings are allocated during capture.

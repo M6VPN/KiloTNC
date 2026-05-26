@@ -73,6 +73,18 @@ Command handling:
 | `0x06`  | SetHardware | Limited hardware-specific command namespace       |
 | `0xFF`  | Return     | No-op; stay in KISS mode                           |
 
+## Mode Registry and SETHW Scope
+
+M1.10 adds a KiloTNC internal mode registry and a NinoTNC-compatible boundary mapping. KiloTNC uses its own mode IDs internally.
+
+NinoTNC-compatible KISS SETHW mode values are accepted only as compatibility input:
+
+- SETHW payload values 0 through 14 map to known NinoTNC modes.
+- Values 16 through 30 map to the same modes as 0 through 14 and are treated as temporary/no-flash requests.
+- Switch mode 15 is treated as the NinoTNC set-from-KISS switch state, not as an on-air mode.
+- Only 1200 AFSK AX.25 is implemented in KiloTNC M1.10.
+- Known but unimplemented modes are counted and leave the current safe mode unchanged.
+
 ## AX.25 Scope
 
 AX.25 v2.2 is a link-layer protocol. It is documented separately from modem DSP.
@@ -150,10 +162,10 @@ Mercury:
 | AX.25 Link Access Protocol v2.2, TAPR/ARRL        | 2026-05-26   | AX.25 fields, UI scope, bit-stuffing, FCS           |
 | IL2P Specification Draft v0.6                     | 2026-05-26   | IL2P FEC, scrambling, sync word, CRC, AX.25 mapping |
 | TARPN IL2P overview                              | 2026-05-26   | IL2P publication history and current spec link      |
-| OARC NinoTNC page                                | 2026-05-26   | NinoTNC mode table and IL2Pc naming                 |
+| OARC NinoTNC page                                | 2026-05-26   | NinoTNC mode table, BrdSwchMod, SETHW behavior      |
+| TARPN NinoTNC N9600A Operator Manual             | 2026-05-26   | NinoTNC modes and SETHW +16 behavior                |
 | TARPN Protocols and Modulation page              | 2026-05-26   | NinoTNC 300, 1200, 4800, 9600 mode context          |
 | FX.25 Forward Error Correction page              | 2026-05-26   | FX.25 wrapper research context                      |
 | VARA Modem official site                         | 2026-05-26   | VARA external software modem and license model      |
 | ARDOP Specification Revision 0.3.1                | 2026-05-26   | ARDOP open protocol and host/radio interface        |
 | Mercury GitHub README, Rhizomatica                | 2026-05-26   | Mercury external modem and TCP TNC interface        |
-

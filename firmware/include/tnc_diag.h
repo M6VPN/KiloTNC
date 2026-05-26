@@ -56,6 +56,9 @@ struct tnc_diag_snapshot {
 	size_t channel_tx_aborts;
 	size_t ptt_on_events;
 	size_t ptt_off_events;
+	size_t mode_set_requests;
+	size_t mode_set_unsupported;
+	size_t mode_set_invalid;
 	uint16_t rx_dcd_score;
 	uint16_t rx_confidence_avg;
 	uint8_t p;
@@ -65,6 +68,10 @@ struct tnc_diag_snapshot {
 	uint8_t tx_active;
 	uint8_t audio_ready;
 	uint8_t dcd_busy;
+	uint8_t last_nino_sethw;
+	uint8_t last_mode_temporary;
+	enum tnc_mode_id current_mode;
+	enum tnc_mode_id last_requested_mode;
 	enum tnc_diag_fault last_fault;
 };
 

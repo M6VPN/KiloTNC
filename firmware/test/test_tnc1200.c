@@ -30,6 +30,7 @@ static int test_tnc1200_control_commands(void);
 static int test_tnc1200_dcd_gating(void);
 static int test_tnc1200_init_args(void);
 static int test_tnc1200_loopback(void);
+static int test_tnc1200_mode_sethw(void);
 static int test_tnc1200_rx_to_kiss(void);
 static int test_tnc1200_tail_abort_timeout(void);
 static int test_tnc1200_tx_from_kiss(void);
@@ -49,6 +50,9 @@ test_tnc1200(void)
 	if (subres != 0)
 		return subres;
 	subres = test_tnc1200_loopback();
+	if (subres != 0)
+		return subres;
+	subres = test_tnc1200_mode_sethw();
 	if (subres != 0)
 		return subres;
 	subres = test_tnc1200_commands_errors();
@@ -458,6 +462,91 @@ test_tnc1200_loopback(void)
 	CHECK(tnc1200_stats(&rx_tnc, &stats) == TNC1200_OK);
 	CHECK(stats.kiss_frames_out == 1U);
 	CHECK(stats.rx_frames_ok == 1U);
+
+	return 0;
+}
+
+static int
+test_tnc1200_mode_sethw(void)
+{
+	uint8_t frame[KILOTNC_AX25_MAX_FRAME];
+	uint8_t kiss_buf[TEST_TNC_KISS_MAX];
+	uint8_t sethw[1];
+	int16_t pcm[TEST_TNC_PCM_MAX];
+	struct tnc1200 tnc;
+	struct tnc1200_stats stats;
+	struct tnc1200_status status;
+	size_t frame_len;
+	size_t kiss_len;
+	size_t sethw_len;
+	size_t samples;
+
+	CHECK(test_make_frame("mode", frame, sizeof(frame), &frame_len) == 0);
+	CHECK(test_make_kiss_data(frame, frame_len, kiss_buf, sizeof(kiss_buf),
+	    &kiss_len) == 0);
+	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
+	CHECK(tnc1200_status(&tnc, &status) == TNC1200_OK);
+	CHECK(status.current_mode == TNC_MODE_1200_AFSK_AX25);
+
+	sethw[0] = 6U;
+	CHECK(kiss_encode_frame(0U, KISS_CMD_SETHARDWARE, sethw,
+	    sizeof(sethw), kiss_buf, sizeof(kiss_buf), &sethw_len) ==
+	    KISS_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, sethw_len) == TNC1200_OK);
+	CHECK(tnc1200_status(&tnc, &status) == TNC1200_OK);
+	CHECK(status.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_requested_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_nino_sethw == 6U);
+	CHECK(status.last_mode_temporary == 0U);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.mode_set_requests == 1U);
+	CHECK(stats.mode_set_unsupported == 0U);
+	CHECK(stats.mode_set_invalid == 0U);
+
+	sethw[0] = 22U;
+	CHECK(kiss_encode_frame(0U, KISS_CMD_SETHARDWARE, sethw,
+	    sizeof(sethw), kiss_buf, sizeof(kiss_buf), &sethw_len) ==
+	    KISS_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, sethw_len) == TNC1200_OK);
+	CHECK(tnc1200_status(&tnc, &status) == TNC1200_OK);
+	CHECK(status.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_requested_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_nino_sethw == 22U);
+	CHECK(status.last_mode_temporary == 1U);
+
+	sethw[0] = 0U;
+	CHECK(kiss_encode_frame(0U, KISS_CMD_SETHARDWARE, sethw,
+	    sizeof(sethw), kiss_buf, sizeof(kiss_buf), &sethw_len) ==
+	    KISS_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, sethw_len) == TNC1200_OK);
+	CHECK(tnc1200_status(&tnc, &status) == TNC1200_OK);
+	CHECK(status.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_requested_mode == TNC_MODE_9600_GFSK_AX25);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.mode_set_unsupported == 1U);
+
+	sethw[0] = 31U;
+	CHECK(kiss_encode_frame(0U, KISS_CMD_SETHARDWARE, sethw,
+	    sizeof(sethw), kiss_buf, sizeof(kiss_buf), &sethw_len) ==
+	    KISS_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, sethw_len) == TNC1200_OK);
+	CHECK(tnc1200_status(&tnc, &status) == TNC1200_OK);
+	CHECK(status.current_mode == TNC_MODE_1200_AFSK_AX25);
+	CHECK(status.last_requested_mode == TNC_MODE_UNSUPPORTED);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.mode_set_invalid == 1U);
+
+	sethw[0] = 6U;
+	CHECK(kiss_encode_frame(0U, KISS_CMD_SETHARDWARE, sethw,
+	    sizeof(sethw), kiss_buf, sizeof(kiss_buf), &sethw_len) ==
+	    KISS_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, sethw_len) == TNC1200_OK);
+	CHECK(test_make_kiss_data(frame, frame_len, kiss_buf, sizeof(kiss_buf),
+	    &kiss_len) == 0);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(test_collect_tnc_tx(&tnc, 23U, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &samples) == 0);
+	CHECK(samples != 0U);
 
 	return 0;
 }

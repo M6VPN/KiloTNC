@@ -49,6 +49,9 @@ tnc_diag_capture_tnc1200(struct tnc_diag *diag, const struct tnc1200 *tnc)
 	diag->snapshot.channel_tx_aborts = stats.channel_tx_aborts;
 	diag->snapshot.ptt_on_events = stats.ptt_on_events;
 	diag->snapshot.ptt_off_events = stats.ptt_off_events;
+	diag->snapshot.mode_set_requests = stats.mode_set_requests;
+	diag->snapshot.mode_set_unsupported = stats.mode_set_unsupported;
+	diag->snapshot.mode_set_invalid = stats.mode_set_invalid;
 	diag->snapshot.rx_dcd_score = status.rx_dcd_score;
 	diag->snapshot.rx_confidence_avg = status.rx_confidence_avg;
 	diag->snapshot.p = status.p;
@@ -58,6 +61,10 @@ tnc_diag_capture_tnc1200(struct tnc_diag *diag, const struct tnc1200 *tnc)
 	diag->snapshot.tx_active = status.tx_active;
 	diag->snapshot.audio_ready = status.audio_ready;
 	diag->snapshot.dcd_busy = status.dcd_busy;
+	diag->snapshot.last_nino_sethw = status.last_nino_sethw;
+	diag->snapshot.last_mode_temporary = status.last_mode_temporary;
+	diag->snapshot.current_mode = status.current_mode;
+	diag->snapshot.last_requested_mode = status.last_requested_mode;
 	diag->snapshot.last_fault = last_fault;
 
 	return TNC_DIAG_OK;
@@ -109,8 +116,10 @@ tnc_diag_format_snapshot(const struct tnc_diag_snapshot *snapshot,
 	    "rx_malformed=%zu rx_dropped=%zu rx_samples=%zu "
 	    "chan_req=%zu chan_grant=%zu chan_busy=%zu chan_defers=%zu "
 	    "chan_timeouts=%zu chan_aborts=%zu ptt_on=%zu ptt_off=%zu "
-	    "rx_dcd=%u rx_conf=%u p=%u slot=%u fullduplex=%u ptt=%u "
-	    "tx_active=%u audio_ready=%u dcd=%u last_fault=%u",
+	    "mode_req=%zu mode_unsup=%zu mode_invalid=%zu rx_dcd=%u "
+	    "rx_conf=%u p=%u slot=%u fullduplex=%u ptt=%u tx_active=%u "
+	    "audio_ready=%u dcd=%u current_mode=%u last_mode=%u "
+	    "last_nino=%u mode_temp=%u last_fault=%u",
 	    snapshot->kiss_frames_in, snapshot->kiss_frames_out,
 	    snapshot->kiss_parse_errors, snapshot->kiss_ignored_commands,
 	    snapshot->tx_frames_started, snapshot->tx_frames_done,
@@ -122,6 +131,8 @@ tnc_diag_format_snapshot(const struct tnc_diag_snapshot *snapshot,
 	    snapshot->channel_tx_persistence_deferrals,
 	    snapshot->channel_tx_timeouts, snapshot->channel_tx_aborts,
 	    snapshot->ptt_on_events, snapshot->ptt_off_events,
+	    snapshot->mode_set_requests, snapshot->mode_set_unsupported,
+	    snapshot->mode_set_invalid,
 	    (unsigned int)snapshot->rx_dcd_score,
 	    (unsigned int)snapshot->rx_confidence_avg,
 	    (unsigned int)snapshot->p,
@@ -131,6 +142,10 @@ tnc_diag_format_snapshot(const struct tnc_diag_snapshot *snapshot,
 	    (unsigned int)snapshot->tx_active,
 	    (unsigned int)snapshot->audio_ready,
 	    (unsigned int)snapshot->dcd_busy,
+	    (unsigned int)snapshot->current_mode,
+	    (unsigned int)snapshot->last_requested_mode,
+	    (unsigned int)snapshot->last_nino_sethw,
+	    (unsigned int)snapshot->last_mode_temporary,
 	    (unsigned int)snapshot->last_fault);
 	if (written < 0)
 		return TNC_DIAG_ERR_SMALL;

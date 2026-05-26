@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.9 diagnostics and fault-counter consolidation.
+Current stage: M1.10 mode registry and NinoTNC compatibility mapping.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 

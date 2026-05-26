@@ -13,6 +13,7 @@ Sources checked on 2026-05-26.
 | IL2P Specification Draft v0.6                            | 2026-05-26   | https://tarpn.net/t/il2p/il2p-specification_draft_v0-6.pdf                                              | IL2P FEC, scrambling, sync word, CRC, AX.25 mapping |
 | TARPN IL2P overview                                      | 2026-05-26   | https://tarpn.net/t/il2p/il2p.html                                                                       | IL2P spec link and revision notes                   |
 | OARC NinoTNC page                                        | 2026-05-26   | https://wiki.oarc.uk/packet%3Aninotnc                                                                    | NinoTNC modes and SETHW mode control notes          |
+| TARPN NinoTNC N9600A Operator Manual                     | 2026-05-26   | https://tarpn.net/t/nino-tnc/n9600a/n9600a_operation.html                                                | NinoTNC modes, SETHW +16 behavior, compatibility    |
 | TARPN Protocols and Modulation page                      | 2026-05-26   | https://tarpn.net/t/builder/builders_tarpn_protocols.html                                               | NinoTNC modulation and bitrate overview             |
 | FX.25 Forward Error Correction page                      | 2026-05-26   | https://en.wikipedia.org/wiki/FX.25_Forward_Error_Correction                                            | FX.25 research context and archived spec pointer    |
 
