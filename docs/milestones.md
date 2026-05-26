@@ -125,9 +125,19 @@ M2.6 status:
 - Add embedded TNC counters to diagnostics.
 - Keep modem audio, real USB, hardware PTT, and hardware drivers out of the repo.
 
+M2.7 status:
+
+- Add embedded modem boundary around portable AFSK1200 TX.
+- Accept AX.25 frames with FCS from the embedded TNC test path.
+- Generate simulated AFSK1200 samples into the audio stub.
+- Keep modem TX disabled by default and explicitly test-enabled only.
+- Abort simulated modem TX on watchdog fault and safe shutdown.
+- Add modem TX counters to diagnostics.
+- Keep real audio hardware, GPIO PTT, USB hardware, and RF transmit out of the repo.
+
 Next planned M2 passes:
 
-- M2.7: embedded modem/audio boundary skeleton.
+- M2.8: embedded RX audio/modem boundary skeleton.
 
 M2 scope:
 

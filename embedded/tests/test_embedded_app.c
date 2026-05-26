@@ -106,6 +106,8 @@ test_app_null_args(void)
 		return __LINE__;
 	if (embedded_app_audio_bridge(NULL, NULL) != EMBEDDED_APP_ERR_ARG)
 		return __LINE__;
+	if (embedded_app_modem(NULL, NULL, NULL) != EMBEDDED_APP_ERR_ARG)
+		return __LINE__;
 	if (embedded_app_usb_bridge(NULL, NULL) != EMBEDDED_APP_ERR_ARG)
 		return __LINE__;
 
@@ -325,7 +327,7 @@ test_target_metadata(void)
 
 	features = KILOTNC_TARGET_FEATURES;
 	if (strcmp(KILOTNC_EMBEDDED_STAGE,
-	    "M2.6 embedded TNC core integration skeleton") !=
+	    "M2.7 embedded modem/audio boundary skeleton") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)

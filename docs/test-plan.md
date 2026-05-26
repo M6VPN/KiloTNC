@@ -623,6 +623,27 @@ M2.6 embedded TNC core integration gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, modem audio, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.7 embedded modem/audio boundary gate:
+
+- `make embedded-test` covers embedded modem init.
+- `make embedded-test` covers valid 1200 AFSK AX.25 frame start.
+- `make embedded-test` rejects unsupported modes.
+- `make embedded-test` rejects malformed frame lengths.
+- `make embedded-test` rejects busy TX start.
+- `make embedded-test` covers modem TX process and abort.
+- `make embedded-test` verifies generated AFSK1200 samples are written to the audio stub.
+- `make embedded-test` covers bounded small-chunk TX processing.
+- `make embedded-test` verifies KISS data can request modem TX only when explicitly enabled.
+- `make embedded-test` verifies modem TX is disabled by default.
+- `make embedded-test` verifies unsupported mode requests block simulated modem TX.
+- `make embedded-test` verifies app step services modem TX and kicks watchdog.
+- `make embedded-test` verifies watchdog fault aborts active modem TX.
+- `make embedded-test` verifies safe shutdown aborts active modem TX.
+- `make embedded-test` covers modem counters in diagnostics.
+- `make embedded-test` verifies PTT remains off during modem tests.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

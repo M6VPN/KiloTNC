@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.6 expands the host-native embedded skeleton test with embedded TNC core integration coverage.
+M2.7 expands the host-native embedded skeleton test with modem/audio boundary coverage.
 
 Planned M2 test sequence:
 
@@ -17,6 +17,10 @@ Planned M2 test sequence:
 - Embedded TNC Nino-compatible SETHW mode mapping.
 - Embedded TNC diagnostics counters.
 - Embedded TNC KISS data loopback.
+- Embedded modem start, process, and abort.
+- Simulated AFSK1200 sample generation into the audio stub.
+- TNC-to-modem TX request handling.
+- Modem diagnostics counters.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.

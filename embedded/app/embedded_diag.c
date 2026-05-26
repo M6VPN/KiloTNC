@@ -10,6 +10,7 @@
 #include "embedded_audio.h"
 #include "embedded_app.h"
 #include "embedded_diag.h"
+#include "embedded_modem.h"
 #include "embedded_tnc.h"
 #include "embedded_usb_bridge.h"
 
@@ -30,6 +31,7 @@ embedded_diag_capture(const struct embedded_app *app,
 {
 	struct embedded_app_status app_status;
 	struct embedded_audio_stats audio_bridge_stats;
+	struct embedded_modem_status modem_status;
 	struct embedded_tnc_status tnc_status;
 	struct embedded_usb_bridge_stats bridge_stats;
 	struct kilotnc_audio_stats audio_stats;
@@ -117,7 +119,7 @@ audio:
 
 tnc:
 	if (app->tnc == NULL)
-		return EMBEDDED_DIAG_OK;
+		goto modem;
 
 	if (embedded_tnc_status(app->tnc, &tnc_status) != EMBEDDED_TNC_OK)
 		return EMBEDDED_DIAG_ERR_ARG;
@@ -136,6 +138,12 @@ tnc:
 	    embedded_diag_size_to_u32(tnc_status.unsupported_mode_requests);
 	snapshot->tnc_mode_invalid =
 	    embedded_diag_size_to_u32(tnc_status.invalid_mode_requests);
+	snapshot->tnc_modem_tx_requests =
+	    embedded_diag_size_to_u32(tnc_status.modem_tx_requests);
+	snapshot->tnc_modem_tx_accepted =
+	    embedded_diag_size_to_u32(tnc_status.modem_tx_accepted);
+	snapshot->tnc_modem_tx_rejected =
+	    embedded_diag_size_to_u32(tnc_status.modem_tx_rejected);
 	snapshot->tnc_current_mode = (uint8_t)tnc_status.current_mode;
 	snapshot->tnc_txdelay = tnc_status.txdelay;
 	snapshot->tnc_p = tnc_status.p;
@@ -143,6 +151,29 @@ tnc:
 	snapshot->tnc_txtail = tnc_status.txtail;
 	snapshot->tnc_fullduplex = tnc_status.fullduplex;
 	snapshot->tnc_loopback_enabled = tnc_status.loopback_enabled;
+	snapshot->tnc_modem_tx_enabled = tnc_status.modem_tx_enabled;
+
+modem:
+	if (app->modem == NULL)
+		return EMBEDDED_DIAG_OK;
+
+	if (embedded_modem_status(app->modem, &modem_status) !=
+	    EMBEDDED_MODEM_OK)
+		return EMBEDDED_DIAG_ERR_ARG;
+	snapshot->modem_tx_frames_started =
+	    embedded_diag_size_to_u32(modem_status.tx_frames_started);
+	snapshot->modem_tx_frames_rejected =
+	    embedded_diag_size_to_u32(modem_status.tx_frames_rejected);
+	snapshot->modem_tx_frames_done =
+	    embedded_diag_size_to_u32(modem_status.tx_frames_done);
+	snapshot->modem_tx_samples_generated =
+	    embedded_diag_size_to_u32(modem_status.tx_samples_generated);
+	snapshot->modem_tx_audio_errors =
+	    embedded_diag_size_to_u32(modem_status.tx_audio_errors);
+	snapshot->modem_aborts =
+	    embedded_diag_size_to_u32(modem_status.aborts);
+	snapshot->modem_tx_active = modem_status.tx_active;
+	snapshot->modem_current_mode = (uint8_t)modem_status.current_mode;
 
 	return EMBEDDED_DIAG_OK;
 }
@@ -173,7 +204,13 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "tnc_mode_set_requests=%u tnc_mode_unsupported=%u "
 	    "tnc_mode_invalid=%u tnc_txdelay=%u tnc_p=%u "
 	    "tnc_slottime=%u tnc_txtail=%u tnc_fullduplex=%u "
-	    "tnc_loopback=%u "
+	    "tnc_loopback=%u tnc_modem_tx_enabled=%u "
+	    "tnc_modem_tx_requests=%u tnc_modem_tx_accepted=%u "
+	    "tnc_modem_tx_rejected=%u modem_tx_active=%u "
+	    "modem_mode=%u modem_tx_frames_started=%u "
+	    "modem_tx_frames_rejected=%u modem_tx_frames_done=%u "
+	    "modem_tx_samples_generated=%u modem_tx_audio_errors=%u "
+	    "modem_aborts=%u "
 	    "app_state=%u reset_cause=%u ptt=%u usb_connected=%u",
 	    snapshot->app_steps, snapshot->app_faults,
 	    snapshot->platform_ticks, snapshot->watchdog_kicks,
@@ -193,6 +230,14 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    snapshot->tnc_mode_invalid, snapshot->tnc_txdelay,
 	    snapshot->tnc_p, snapshot->tnc_slottime, snapshot->tnc_txtail,
 	    snapshot->tnc_fullduplex, snapshot->tnc_loopback_enabled,
+	    snapshot->tnc_modem_tx_enabled, snapshot->tnc_modem_tx_requests,
+	    snapshot->tnc_modem_tx_accepted,
+	    snapshot->tnc_modem_tx_rejected, snapshot->modem_tx_active,
+	    snapshot->modem_current_mode, snapshot->modem_tx_frames_started,
+	    snapshot->modem_tx_frames_rejected,
+	    snapshot->modem_tx_frames_done,
+	    snapshot->modem_tx_samples_generated,
+	    snapshot->modem_tx_audio_errors, snapshot->modem_aborts,
 	    snapshot->app_state, snapshot->reset_cause, snapshot->ptt_state,
 	    snapshot->usb_connected);
 	if (ret < 0)

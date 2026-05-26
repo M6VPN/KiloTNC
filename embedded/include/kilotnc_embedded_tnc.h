@@ -36,6 +36,8 @@ struct embedded_tnc_status {
 	uint8_t txtail;
 	uint8_t fullduplex;
 	uint8_t loopback_enabled;
+	uint8_t modem_tx_enabled;
+	uint8_t modem_tx_inhibited;
 	uint8_t ptt_state;
 	size_t kiss_frames_in;
 	size_t kiss_frames_out;
@@ -45,24 +47,34 @@ struct embedded_tnc_status {
 	size_t mode_set_requests;
 	size_t unsupported_mode_requests;
 	size_t invalid_mode_requests;
+	size_t modem_tx_requests;
+	size_t modem_tx_accepted;
+	size_t modem_tx_rejected;
 	size_t usb_bytes_in;
 	size_t usb_bytes_out;
 	size_t usb_would_block;
 	size_t usb_errors;
 };
 
+struct embedded_modem;
+
 struct embedded_tnc {
 	struct kiss_parser parser;
 	struct tnc_control control;
+	struct embedded_modem *modem;
 	struct embedded_tnc_status status;
 	uint8_t sethw[KILOTNC_SETHW_MAX_PAYLOAD];
 	size_t sethw_len;
 };
 
 enum embedded_tnc_result embedded_tnc_init(struct embedded_tnc *);
+enum embedded_tnc_result embedded_tnc_modem(struct embedded_tnc *,
+	struct embedded_modem *);
 enum embedded_tnc_result embedded_tnc_process_usb(struct embedded_tnc *,
 	const struct kilotnc_usb_cdc *);
 enum embedded_tnc_result embedded_tnc_set_loopback(struct embedded_tnc *,
+	int);
+enum embedded_tnc_result embedded_tnc_set_modem_tx(struct embedded_tnc *,
 	int);
 enum embedded_tnc_result embedded_tnc_status(const struct embedded_tnc *,
 	struct embedded_tnc_status *);

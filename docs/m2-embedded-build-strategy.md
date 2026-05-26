@@ -115,6 +115,28 @@ This remains host-native. It does not use ADC, DAC, SAI, I2S, DMA, codec drivers
 This remains host-native. It does not use a real USB stack, modem audio,
 GPIO PTT, hardware registers, or hardware drivers.
 
+## M2.7 Embedded Modem Boundary Coverage
+
+`make embedded-test` now also verifies:
+
+- Embedded modem init, start, process, and abort paths.
+- Valid 1200 AFSK AX.25 frame acceptance.
+- Unsupported mode rejection.
+- Malformed frame rejection.
+- Busy TX rejection.
+- Simulated AFSK1200 sample generation into the audio stub.
+- Small bounded TX chunk processing.
+- TNC-to-modem request handling when explicitly enabled.
+- Modem TX remains disabled by default.
+- Unsupported mode requests block simulated modem TX.
+- App step services modem TX while kicking the watchdog.
+- Watchdog fault and safe shutdown abort active modem TX.
+- PTT remains off during modem sample generation.
+- Modem counters in embedded diagnostics.
+
+This remains host-native. It does not use real USB, ADC, DAC, SAI, I2S,
+DMA, codec drivers, GPIO PTT, hardware registers, or transmitter audio.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

@@ -8,6 +8,6 @@
 #include "kilotnc_platform.h"
 
 #define KILOTNC_EMBEDDED_STAGE \
-	"M2.6 embedded TNC core integration skeleton"
+	"M2.7 embedded modem/audio boundary skeleton"
 
 #endif

@@ -8,6 +8,7 @@
 
 #include "embedded_audio.h"
 #include "embedded_app.h"
+#include "embedded_modem.h"
 #include "embedded_tnc.h"
 #include "embedded_usb_bridge.h"
 
@@ -54,6 +55,8 @@ embedded_app_set_fault(struct embedded_app *app)
 
 	app->status.state = EMBEDDED_APP_FAULT;
 	app->status.faulted = 1;
+	if (app->modem != NULL)
+		(void)embedded_modem_abort(app->modem);
 	result = embedded_app_ptt_off(app);
 	if (result != EMBEDDED_APP_OK)
 		return result;
@@ -128,6 +131,8 @@ embedded_app_shutdown(struct embedded_app *app)
 
 	app->status.shutdown_requested = 1;
 	app->status.state = EMBEDDED_APP_STOPPED;
+	if (app->modem != NULL)
+		(void)embedded_modem_abort(app->modem);
 	result = embedded_app_ptt_off(app);
 	if (result != EMBEDDED_APP_OK)
 		return result;
@@ -186,6 +191,18 @@ embedded_app_step(struct embedded_app *app)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
+	if (app->modem != NULL && app->modem_audio != NULL) {
+		enum embedded_modem_result modem_result;
+
+		modem_result = embedded_modem_process_tx(app->modem,
+		    app->modem_audio, EMBEDDED_MODEM_TX_CHUNK_MAX);
+		if (modem_result != EMBEDDED_MODEM_OK &&
+		    modem_result != EMBEDDED_MODEM_DONE) {
+			if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+				return EMBEDDED_APP_ERR_PLATFORM;
+			return EMBEDDED_APP_ERR_FAULT;
+		}
+	}
 	if (app->usb_bridge != NULL &&
 	    embedded_usb_bridge_service(app->usb_bridge) !=
 	    EMBEDDED_USB_BRIDGE_OK) {
@@ -214,6 +231,19 @@ embedded_app_audio_bridge(struct embedded_app *app,
 		return EMBEDDED_APP_ERR_ARG;
 
 	app->audio_bridge = bridge;
+	return EMBEDDED_APP_OK;
+}
+
+enum embedded_app_result
+embedded_app_modem(struct embedded_app *app, struct embedded_modem *modem,
+	const struct kilotnc_audio *audio)
+{
+	if (app == NULL || !embedded_app_platform_ready(app->platform) ||
+	    modem == NULL || audio == NULL)
+		return EMBEDDED_APP_ERR_ARG;
+
+	app->modem = modem;
+	app->modem_audio = audio;
 	return EMBEDDED_APP_OK;
 }
 

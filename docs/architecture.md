@@ -94,10 +94,11 @@ Platform adapters
 	|-- watchdog and reset adapter
 	|-- USB CDC byte-stream adapter
 	|-- audio loopback or test adapter
+	|-- modem/audio boundary
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the first embedded compile-only skeleton and host-native platform stub test. M2.2 adds host-native platform tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge for app, platform, USB, and KISS counters. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds a host-native embedded TNC core integration skeleton for KISS command handling, mode mapping, control state, and diagnostics. It does not implement a real USB stack, TinyUSB, STM32 HAL, descriptors, endpoint code, modem audio, real audio peripherals, or hardware adapters.
+M2.1 adds the first embedded compile-only skeleton and host-native platform stub test. M2.2 adds host-native platform tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge for app, platform, USB, and KISS counters. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds a host-native embedded TNC core integration skeleton for KISS command handling, mode mapping, control state, and diagnostics. M2.7 adds a host-native modem/audio boundary that can generate simulated AFSK1200 samples into the audio stub. It does not implement a real USB stack, TinyUSB, STM32 HAL, descriptors, endpoint code, real audio peripherals, hardware PTT, or hardware adapters.
 
 Before embedded use, adapter boundaries need review for:
 

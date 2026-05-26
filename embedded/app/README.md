@@ -20,3 +20,5 @@ M2.4 adds an embedded diagnostics bridge. It captures app state, reset cause, PT
 M2.5 adds an optional audio loopback hook. Tests can attach the host-native audio stub so `embedded_app_step()` copies injected RX samples to captured TX samples while still kicking the watchdog and keeping PTT off. This is sample-path only and does not run modem DSP.
 
 M2.6 adds an optional embedded TNC hook. Tests can attach the host-native USB CDC stub so `embedded_app_step()` routes KISS bytes through the embedded TNC skeleton, updates mode and KISS counters, and keeps PTT off. This does not emit modem audio or key hardware.
+
+M2.7 adds an optional embedded modem hook. Tests can enable simulated modem TX so accepted embedded TNC KISS data frames request AFSK1200 sample generation into the audio stub. `embedded_app_step()` services bounded modem chunks, keeps the watchdog path active, aborts modem TX on shutdown or watchdog fault, and keeps PTT off.

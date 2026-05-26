@@ -45,6 +45,15 @@ struct embedded_diag_snapshot {
 	uint32_t tnc_mode_set_requests;
 	uint32_t tnc_mode_unsupported;
 	uint32_t tnc_mode_invalid;
+	uint32_t tnc_modem_tx_requests;
+	uint32_t tnc_modem_tx_accepted;
+	uint32_t tnc_modem_tx_rejected;
+	uint32_t modem_tx_frames_started;
+	uint32_t modem_tx_frames_rejected;
+	uint32_t modem_tx_frames_done;
+	uint32_t modem_tx_samples_generated;
+	uint32_t modem_tx_audio_errors;
+	uint32_t modem_aborts;
 	uint8_t tnc_current_mode;
 	uint8_t tnc_txdelay;
 	uint8_t tnc_p;
@@ -52,6 +61,9 @@ struct embedded_diag_snapshot {
 	uint8_t tnc_txtail;
 	uint8_t tnc_fullduplex;
 	uint8_t tnc_loopback_enabled;
+	uint8_t tnc_modem_tx_enabled;
+	uint8_t modem_tx_active;
+	uint8_t modem_current_mode;
 	uint8_t app_state;
 	uint8_t reset_cause;
 	uint8_t ptt_state;
