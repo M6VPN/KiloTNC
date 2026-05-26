@@ -164,9 +164,17 @@ M2.10 status:
 - Add skip-safe `make embedded-target-check`.
 - Keep startup code, linker script, HAL, CMSIS, TinyUSB, pin assignments, hardware registers, and flashable firmware out of the repo.
 
+M2.11 status:
+
+- Add STM32H753 resource planning for debug, USB, test PTT GPIO, diagnostics, audio, timing, watchdog, reset, and pins to avoid.
+- Add `target_resources.h` with planning metadata only.
+- Keep test PTT GPIO, USB resource, and audio resource as `TBD`.
+- Keep real pin assignments unverified.
+- Keep HAL, CMSIS, TinyUSB, vendor projects, hardware registers, pin initialization, and real drivers out of the repo.
+
 Next planned M2 passes:
 
-- M2.11: STM32H753 pin and resource planning.
+- M2.12: opt-in STM32 cross-compile skeleton, still no HAL import and no flashable firmware unless explicitly gated.
 
 M2 scope:
 

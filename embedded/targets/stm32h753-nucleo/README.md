@@ -40,3 +40,13 @@ M2.10 status:
 - No clock tree finalized.
 
 The target headers contain metadata, planned feature flags, and safe compile-gated placeholders only. The target C files are not part of normal host builds and do not produce flashable firmware.
+
+M2.11 status:
+
+- STM32H753 resource planning is documented in [docs/m2-stm32h753-resource-plan.md](../../../docs/m2-stm32h753-resource-plan.md).
+- Resource metadata is recorded in `target_resources.h`.
+- USB, test PTT GPIO, diagnostics, audio, timing, watchdog, reset, and debug resources are planning items only.
+- No pin assignments are final.
+- No hardware drivers exist.
+- No radio connection exists.
+- No PTT pin is selected for real use.

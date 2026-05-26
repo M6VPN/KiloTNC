@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.10 adds a compile-gated STM32H753 target skeleton. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
+M2.11 adds STM32H753 resource planning metadata and documentation. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -49,3 +49,5 @@ The embedded RX modem boundary reads generated test samples from the audio RX st
 The embedded full host-test loopback coordinates the USB CDC stub, embedded TNC, embedded modem TX, audio TX stub, audio RX stub, modem RX, and USB KISS output in one bounded run. Tests copy generated TX samples into the RX stub, verify the decoded KISS output, enforce a max iteration timeout, and keep PTT off.
 
 The STM32H753 target skeleton under `embedded/targets/stm32h753-nucleo/` contains metadata, compile-gated placeholder source files, and planning notes for future linker, startup, USB, watchdog, GPIO, and audio work. The target source files do not include STM32 HAL, CMSIS, TinyUSB, vendor headers, hardware registers, pin assignments, or real drivers.
+
+The M2.11 resource metadata header records planned USB, test PTT GPIO, diagnostics, audio, watchdog, and reset resources while keeping all real pin assignments marked unverified. The resource plan is in `docs/m2-stm32h753-resource-plan.md`.

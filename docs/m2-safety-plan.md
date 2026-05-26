@@ -28,6 +28,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.8 host-native RX modem tests verify audio RX processing and KISS output do not change the stub PTT state.
 - M2.9 host-native full loopback tests verify USB KISS input, simulated audio TX/RX, and USB KISS output keep the stub PTT state off.
 - M2.10 target skeleton files contain no pin assignments, no real PTT pin, no real watchdog hardware path, no startup code, and no flashable firmware image.
+- M2.11 resource planning keeps the test PTT GPIO as `TBD` and marks all real pin assignments unverified.
 
 ## Watchdog And Timeout
 
@@ -46,6 +47,18 @@ M2 firmware planning must include:
 - Malformed or noise-like RX audio that cannot affect watchdog or PTT safe-off.
 - Full host-test loopback that exits by max iteration timeout instead of locking up.
 - Watchdog faults that abort full host-test loopback safely.
+- USB and future network input that cannot directly key PTT.
+- Boot, debug, power, clock, USB, and Ethernet pins that are avoided for test PTT planning.
+- Audio TX path that remains disconnected from any transmitter.
+
+## M2.11 Pin Safety Rules
+
+- No pin can be treated as real PTT until it is verified against ST documentation and the selected board schematic.
+- No pin can be treated as real PTT until it is bench-tested with no radio connected.
+- The test PTT GPIO must default off.
+- USB and future network input must not directly key PTT.
+- Boot, debug, power, clock, USB, and Ethernet pins must be avoided for test PTT planning.
+- Audio TX must remain disconnected from any transmitter.
 
 ## Diagnostics Visibility
 

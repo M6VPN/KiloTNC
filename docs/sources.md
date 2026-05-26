@@ -1,6 +1,6 @@
 # Sources
 
-Sources checked on 2026-05-26.
+Sources checked through 2026-05-27.
 
 ## Protocols
 
@@ -32,10 +32,13 @@ Sources checked on 2026-05-26.
 | --------------------------------------------- | ------------ | ----------------------------------------------------------------------- | ---------------------------------------- |
 | STM32H743BG product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h743bg.html | CPU, RAM, USB, SAI/I2S, memory features  |
 | STM32H753BI product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753bi.html | H753 class and crypto-capable variant    |
-| NUCLEO-H753ZI product page, STMicroelectronics | 2026-05-26   | https://www.st.com/en/evaluation-tools/nucleo-h753zi.html               | Nucleo-144 board status and features     |
-| STM32H753ZI product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html | H753ZI memory, USB, and peripheral class |
-| STM32H753xI datasheet, STMicroelectronics     | 2026-05-26   | https://www.st.com/resource/en/datasheet/stm32h753zi.pdf                | USB, SAI, I2S-capable SPI, memory details |
-| STM32H7 Nucleo-144 boards user manual, ST     | 2026-05-26   | https://www.st.com/resource/en/user_manual/dm00499160-stm32h7-nucleo-144-boards-mb1364-stmicroelectronics.pdf | NUCLEO-H753ZI board family details |
+| NUCLEO-H753ZI product page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/evaluation-tools/nucleo-h753zi.html               | Nucleo-144 board status, ST-LINK, connector, and schematic-pack references |
+| STM32H753ZI product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html | H753ZI memory, USB, timer, watchdog, ADC, DAC, SAI, and I2S class |
+| STM32H753xI datasheet, STMicroelectronics     | 2026-05-27   | https://www.st.com/resource/en/datasheet/stm32h753zi.pdf                | Future pin and peripheral verification |
+| STM32H7 Nucleo-144 boards user manual, ST     | 2026-05-27   | https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf | NUCLEO-H753ZI board connectors, LEDs, USB OTG FS, VCP, Ethernet conflicts, and solder bridges |
+| STM32H743/753 documentation page, STMicroelectronics | 2026-05-27 | https://www.st.com/en/microcontrollers-microprocessors/stm32h743-753/documentation.html | RM0433 reference manual listing for future peripheral behavior checks |
+| MB1364-H753ZI-C01 schematic, STMicroelectronics | 2026-05-27 | https://www.st.com/resource/en/schematic_pack/mb1364-h753zi-c01-schematic.pdf | Future board-revision resource verification |
+| MB1364-H753ZI-E01 schematic, STMicroelectronics | 2026-05-27 | https://www.st.com/resource/en/schematic_pack/mb1364-h753zi-e01-schematic.pdf | Future board-revision resource verification |
 | NUCLEO-H743ZI2 CubeIDE community report, ST   | 2026-05-26   | https://community.st.com/t5/stm32cubeide-mcus/nucleo-h743zi2-board-not-supported-in-stm32cubeide-obsolete/td-p/823344 | H743ZI2 obsolete-status risk note |
 | RP2350 documentation, Raspberry Pi            | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/rp2350.html  | RP2350 experimental target features      |
 | Pico-series documentation, Raspberry Pi       | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html | Pico 2 board features                    |

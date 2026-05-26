@@ -69,6 +69,12 @@ embedded/targets/stm32h753-nucleo/
 
 The skeleton records target metadata and planned feature flags for the NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board path. It does not include STM32 HAL, CMSIS, TinyUSB, startup vectors, linker scripts, pin assignments, hardware register access, or a flashable firmware image.
 
+## M2.11 Resource Planning
+
+M2.11 adds `docs/m2-stm32h753-resource-plan.md` and target resource metadata for the selected `stm32h753-nucleo` path.
+
+USB, diagnostics, audio, watchdog, reset, and test PTT GPIO resources remain planning items. No real pin assignment is final, and the test PTT GPIO remains `TBD`.
+
 ## Sources Checked
 
 Sources checked on 2026-05-26:

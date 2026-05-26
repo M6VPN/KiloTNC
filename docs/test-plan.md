@@ -694,6 +694,15 @@ M2.10 compile-gated STM32H753 target skeleton gate:
 - Target-specific C files contain no hardware register access and no pin assignments.
 - No linker script, startup vector table, vendor project, or flashable firmware image is committed.
 
+M2.11 STM32H753 resource planning gate:
+
+- `docs/m2-stm32h753-resource-plan.md` exists.
+- `embedded/targets/stm32h753-nucleo/target_resources.h` exists.
+- `make embedded-test` covers target resource metadata.
+- Planned USB, test PTT GPIO, audio, diagnostics, watchdog, and reset flags are present.
+- Pin assignments remain unverified and `TBD`.
+- No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

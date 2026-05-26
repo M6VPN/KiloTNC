@@ -205,6 +205,16 @@ make embedded-target-check
 
 The target skeleton does not require STM32Cube, CMSIS, STM32 HAL, TinyUSB, startup code, linker scripts, hardware registers, pin assignments, or a vendor IDE project. It does not link firmware and does not produce a flashable image.
 
+## M2.11 STM32H753 Resource Planning
+
+M2.11 adds planning metadata and documentation only:
+
+- `docs/m2-stm32h753-resource-plan.md`.
+- `embedded/targets/stm32h753-nucleo/target_resources.h`.
+- Target metadata tests for resource flags and unverified pin assignments.
+
+`make embedded-test` remains host-native and does not require an ARM toolchain. No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, linker script, startup code, or flashable firmware is added.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.10 expands the host-native embedded skeleton test with target metadata coverage for the compile-gated STM32H753 target skeleton.
+M2.11 expands the host-native embedded skeleton test with target resource metadata coverage for STM32H753 pin/resource planning.
 
 Planned M2 test sequence:
 
@@ -28,6 +28,8 @@ Planned M2 test sequence:
 - Full-loopback timeout and watchdog-fault handling.
 - STM32H753 target metadata and planned feature flags.
 - Absence flags for linker script, startup code, HAL, USB stack, pinout, and flashable image.
+- STM32H753 resource metadata flags.
+- Unverified `TBD` resource placeholders for USB, test PTT GPIO, and audio.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.
