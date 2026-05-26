@@ -111,7 +111,7 @@ static int
 test_diag_format_stable_fields(void)
 {
 	struct embedded_diag_snapshot snapshot;
-	char buf[512];
+	char buf[768];
 	size_t out_len;
 
 	(void)memset(&snapshot, 0, sizeof(snapshot));
@@ -127,6 +127,8 @@ test_diag_format_stable_fields(void)
 	if (strstr(buf, "kiss_parse_errors=0") == NULL)
 		return __LINE__;
 	if (strstr(buf, "audio_rx_samples=0 audio_tx_samples=0") == NULL)
+		return __LINE__;
+	if (strstr(buf, "tnc_mode=0 tnc_kiss_frames_in=0") == NULL)
 		return __LINE__;
 	if (strstr(buf, "ptt=0 usb_connected=0") == NULL)
 		return __LINE__;

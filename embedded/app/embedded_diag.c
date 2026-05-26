@@ -10,6 +10,7 @@
 #include "embedded_audio.h"
 #include "embedded_app.h"
 #include "embedded_diag.h"
+#include "embedded_tnc.h"
 #include "embedded_usb_bridge.h"
 
 static uint32_t embedded_diag_size_to_u32(size_t);
@@ -29,6 +30,7 @@ embedded_diag_capture(const struct embedded_app *app,
 {
 	struct embedded_app_status app_status;
 	struct embedded_audio_stats audio_bridge_stats;
+	struct embedded_tnc_status tnc_status;
 	struct embedded_usb_bridge_stats bridge_stats;
 	struct kilotnc_audio_stats audio_stats;
 	struct kilotnc_usb_cdc_stats usb_stats;
@@ -88,7 +90,7 @@ embedded_diag_capture(const struct embedded_app *app,
 
 audio:
 	if (app->audio_bridge == NULL)
-		return EMBEDDED_DIAG_OK;
+		goto tnc;
 
 	if (embedded_audio_stats(app->audio_bridge, &audio_bridge_stats) !=
 	    EMBEDDED_AUDIO_OK)
@@ -112,6 +114,35 @@ audio:
 	}
 	snapshot->audio_loopback_blocks =
 	    embedded_diag_size_to_u32(audio_bridge_stats.loopback_blocks);
+
+tnc:
+	if (app->tnc == NULL)
+		return EMBEDDED_DIAG_OK;
+
+	if (embedded_tnc_status(app->tnc, &tnc_status) != EMBEDDED_TNC_OK)
+		return EMBEDDED_DIAG_ERR_ARG;
+
+	snapshot->tnc_kiss_frames_in =
+	    embedded_diag_size_to_u32(tnc_status.kiss_frames_in);
+	snapshot->tnc_kiss_frames_out =
+	    embedded_diag_size_to_u32(tnc_status.kiss_frames_out);
+	snapshot->tnc_kiss_parse_errors =
+	    embedded_diag_size_to_u32(tnc_status.kiss_parse_errors);
+	snapshot->tnc_kiss_ignored_commands =
+	    embedded_diag_size_to_u32(tnc_status.kiss_ignored_commands);
+	snapshot->tnc_mode_set_requests =
+	    embedded_diag_size_to_u32(tnc_status.mode_set_requests);
+	snapshot->tnc_mode_unsupported =
+	    embedded_diag_size_to_u32(tnc_status.unsupported_mode_requests);
+	snapshot->tnc_mode_invalid =
+	    embedded_diag_size_to_u32(tnc_status.invalid_mode_requests);
+	snapshot->tnc_current_mode = (uint8_t)tnc_status.current_mode;
+	snapshot->tnc_txdelay = tnc_status.txdelay;
+	snapshot->tnc_p = tnc_status.p;
+	snapshot->tnc_slottime = tnc_status.slottime;
+	snapshot->tnc_txtail = tnc_status.txtail;
+	snapshot->tnc_fullduplex = tnc_status.fullduplex;
+	snapshot->tnc_loopback_enabled = tnc_status.loopback_enabled;
 
 	return EMBEDDED_DIAG_OK;
 }
@@ -137,6 +168,12 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "audio_rx_overflows=%u audio_tx_overflows=%u "
 	    "audio_rx_underflows=%u audio_tx_underflows=%u "
 	    "audio_loopback_blocks=%u "
+	    "tnc_mode=%u tnc_kiss_frames_in=%u tnc_kiss_frames_out=%u "
+	    "tnc_kiss_parse_errors=%u tnc_kiss_ignored=%u "
+	    "tnc_mode_set_requests=%u tnc_mode_unsupported=%u "
+	    "tnc_mode_invalid=%u tnc_txdelay=%u tnc_p=%u "
+	    "tnc_slottime=%u tnc_txtail=%u tnc_fullduplex=%u "
+	    "tnc_loopback=%u "
 	    "app_state=%u reset_cause=%u ptt=%u usb_connected=%u",
 	    snapshot->app_steps, snapshot->app_faults,
 	    snapshot->platform_ticks, snapshot->watchdog_kicks,
@@ -149,6 +186,13 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    snapshot->audio_tx_samples, snapshot->audio_rx_overflows,
 	    snapshot->audio_tx_overflows, snapshot->audio_rx_underflows,
 	    snapshot->audio_tx_underflows, snapshot->audio_loopback_blocks,
+	    snapshot->tnc_current_mode, snapshot->tnc_kiss_frames_in,
+	    snapshot->tnc_kiss_frames_out, snapshot->tnc_kiss_parse_errors,
+	    snapshot->tnc_kiss_ignored_commands,
+	    snapshot->tnc_mode_set_requests, snapshot->tnc_mode_unsupported,
+	    snapshot->tnc_mode_invalid, snapshot->tnc_txdelay,
+	    snapshot->tnc_p, snapshot->tnc_slottime, snapshot->tnc_txtail,
+	    snapshot->tnc_fullduplex, snapshot->tnc_loopback_enabled,
 	    snapshot->app_state, snapshot->reset_cause, snapshot->ptt_state,
 	    snapshot->usb_connected);
 	if (ret < 0)

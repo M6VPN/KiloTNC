@@ -93,6 +93,28 @@ This remains host-native. It does not create a USB diagnostic channel or call a 
 
 This remains host-native. It does not use ADC, DAC, SAI, I2S, DMA, codec drivers, hardware registers, or a transmitter audio path.
 
+## M2.6 Embedded TNC Coverage
+
+`make embedded-test` now also verifies:
+
+- Embedded TNC init and default 1200 AFSK AX.25 mode.
+- KISS data-frame parsing from the USB CDC stub.
+- Optional KISS data-frame loopback to the USB CDC stub.
+- KISS FEND and FESC escaping through loopback.
+- Repeated FEND handling.
+- Malformed KISS recovery counters.
+- Unsupported KISS command counters.
+- TXDELAY, P, SlotTime, TXtail, and FullDuplex command state.
+- SETHW mode 6 and 22 through the shared mode registry.
+- Known but unimplemented modes remain inactive and counted.
+- Invalid mode requests remain inactive and counted.
+- Embedded TNC counters in embedded diagnostics.
+- App step services the embedded TNC while kicking the watchdog.
+- PTT remains off during embedded TNC tests.
+
+This remains host-native. It does not use a real USB stack, modem audio,
+GPIO PTT, hardware registers, or hardware drivers.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.5 expands the host-native embedded skeleton test with audio stub and loopback coverage.
+M2.6 expands the host-native embedded skeleton test with embedded TNC core integration coverage.
 
 Planned M2 test sequence:
 
@@ -13,6 +13,10 @@ Planned M2 test sequence:
 - Embedded diagnostics capture and formatting.
 - USB and KISS diagnostic counters.
 - Audio format, RX injection, TX capture, loopback, overflow, and underflow counters.
+- Embedded TNC KISS command handling.
+- Embedded TNC Nino-compatible SETHW mode mapping.
+- Embedded TNC diagnostics counters.
+- Embedded TNC KISS data loopback.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.

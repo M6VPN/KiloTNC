@@ -603,6 +603,26 @@ M2.5 embedded audio loopback gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No ADC, DAC, SAI, I2S, DMA, codec, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.6 embedded TNC core integration gate:
+
+- `make embedded-test` covers embedded TNC init.
+- `make embedded-test` verifies default 1200 AFSK AX.25 mode.
+- `make embedded-test` verifies KISS data-frame parsing from USB.
+- `make embedded-test` verifies optional KISS data-frame loopback.
+- `make embedded-test` covers KISS FEND and FESC escaping.
+- `make embedded-test` covers repeated FEND handling.
+- `make embedded-test` covers malformed KISS recovery counters.
+- `make embedded-test` covers unsupported KISS command counters.
+- `make embedded-test` covers TXDELAY, P, SlotTime, TXtail, and FullDuplex commands.
+- `make embedded-test` covers Nino-compatible SETHW mode 6 and 22.
+- `make embedded-test` verifies known unimplemented modes are counted and inactive.
+- `make embedded-test` verifies invalid mode requests are counted and inactive.
+- `make embedded-test` covers embedded TNC counters in diagnostics.
+- `make embedded-test` verifies app step services embedded TNC and kicks watchdog.
+- `make embedded-test` verifies watchdog fault still forces PTT off with embedded TNC attached.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, modem audio, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

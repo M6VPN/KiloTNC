@@ -325,7 +325,7 @@ test_target_metadata(void)
 
 	features = KILOTNC_TARGET_FEATURES;
 	if (strcmp(KILOTNC_EMBEDDED_STAGE,
-	    "M2.5 embedded audio loopback path") !=
+	    "M2.6 embedded TNC core integration skeleton") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)

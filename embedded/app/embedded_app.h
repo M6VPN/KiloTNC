@@ -11,7 +11,9 @@
 #include "kilotnc_platform.h"
 
 struct embedded_audio;
+struct embedded_tnc;
 struct embedded_usb_bridge;
+struct kilotnc_usb_cdc;
 
 enum embedded_app_result {
 	EMBEDDED_APP_OK = 0,
@@ -43,6 +45,8 @@ struct embedded_app_status {
 struct embedded_app {
 	const struct kilotnc_platform *platform;
 	struct embedded_audio *audio_bridge;
+	struct embedded_tnc *tnc;
+	const struct kilotnc_usb_cdc *tnc_usb;
 	struct embedded_usb_bridge *usb_bridge;
 	struct embedded_app_status status;
 };
@@ -56,6 +60,8 @@ enum embedded_app_result embedded_app_shutdown(struct embedded_app *);
 enum embedded_app_result embedded_app_status(const struct embedded_app *,
 	struct embedded_app_status *);
 enum embedded_app_result embedded_app_step(struct embedded_app *);
+enum embedded_app_result embedded_app_tnc(struct embedded_app *,
+	struct embedded_tnc *, const struct kilotnc_usb_cdc *);
 enum embedded_app_result embedded_app_usb_bridge(struct embedded_app *,
 	struct embedded_usb_bridge *);
 

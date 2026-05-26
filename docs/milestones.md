@@ -115,9 +115,19 @@ M2.5 status:
 - Add audio overflow and underflow counters to diagnostics.
 - Keep ADC, DAC, SAI, I2S, DMA, codec, and transmitter audio paths out of the repo.
 
+M2.6 status:
+
+- Add embedded TNC state and status.
+- Parse KISS byte streams from the USB CDC stub.
+- Handle KISS data frames and basic KISS commands.
+- Map Nino-compatible SETHW mode 6 and 22 through the mode registry.
+- Count known unimplemented and invalid mode requests without activating them.
+- Add embedded TNC counters to diagnostics.
+- Keep modem audio, real USB, hardware PTT, and hardware drivers out of the repo.
+
 Next planned M2 passes:
 
-- M2.6: embedded TNC core integration skeleton.
+- M2.7: embedded modem/audio boundary skeleton.
 
 M2 scope:
 

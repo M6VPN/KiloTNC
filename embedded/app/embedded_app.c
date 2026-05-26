@@ -8,6 +8,7 @@
 
 #include "embedded_audio.h"
 #include "embedded_app.h"
+#include "embedded_tnc.h"
 #include "embedded_usb_bridge.h"
 
 static enum embedded_app_result embedded_app_ptt_off(struct embedded_app *);
@@ -178,6 +179,13 @@ embedded_app_step(struct embedded_app *app)
 		(void)embedded_app_set_fault(app);
 		return EMBEDDED_APP_ERR_FAULT;
 	}
+	if (app->tnc != NULL && app->tnc_usb != NULL &&
+	    embedded_tnc_process_usb(app->tnc, app->tnc_usb) !=
+	    EMBEDDED_TNC_OK) {
+		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+			return EMBEDDED_APP_ERR_PLATFORM;
+		return EMBEDDED_APP_ERR_FAULT;
+	}
 	if (app->usb_bridge != NULL &&
 	    embedded_usb_bridge_service(app->usb_bridge) !=
 	    EMBEDDED_USB_BRIDGE_OK) {
@@ -206,6 +214,19 @@ embedded_app_audio_bridge(struct embedded_app *app,
 		return EMBEDDED_APP_ERR_ARG;
 
 	app->audio_bridge = bridge;
+	return EMBEDDED_APP_OK;
+}
+
+enum embedded_app_result
+embedded_app_tnc(struct embedded_app *app, struct embedded_tnc *tnc,
+	const struct kilotnc_usb_cdc *usb)
+{
+	if (app == NULL || !embedded_app_platform_ready(app->platform) ||
+	    tnc == NULL || usb == NULL)
+		return EMBEDDED_APP_ERR_ARG;
+
+	app->tnc = tnc;
+	app->tnc_usb = usb;
 	return EMBEDDED_APP_OK;
 }
 

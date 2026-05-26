@@ -56,7 +56,7 @@ portable core
 	|-- diagnostics adapter
 ```
 
-M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. Real USB stack and real audio peripheral integration remain future work.
+M2.1 adds the compile-only skeleton and host-native stub test. M2.2 adds tick, watchdog, reset-cause, diagnostics, and GPIO/PTT test stubs. M2.3 adds a host-native USB CDC byte-stream stub and KISS echo/loopback bridge. M2.4 adds a host-native embedded diagnostics bridge. M2.5 adds a host-native audio stub and sample loopback path. M2.6 adds host-native embedded TNC core integration for KISS command handling, mode mapping, control state, and diagnostics. Real USB stack, modem audio, and real audio peripheral integration remain future work.
 
 ## Build Strategy
 

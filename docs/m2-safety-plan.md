@@ -23,6 +23,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.3 host-native USB CDC tests verify echo, KISS loopback, malformed KISS recovery, and unsupported KISS commands do not change the stub PTT state.
 - M2.4 host-native diagnostics tests verify PTT state, reset cause, watchdog fault state, USB counters, and KISS parse counters are visible through a bounded snapshot.
 - M2.5 host-native audio tests verify audio loopback and audio error counters do not change the stub PTT state.
+- M2.6 host-native embedded TNC tests verify KISS commands, malformed input, unsupported modes, and invalid modes do not change the stub PTT state.
 
 ## Watchdog And Timeout
 
@@ -33,6 +34,8 @@ M2 firmware planning must include:
 - Max TX timeout carried into embedded control state.
 - Abort path that forces TX inactive and PTT off.
 - Audio loopback errors that do not bypass watchdog or PTT safe-off.
+- KISS/USB input that cannot directly key PTT.
+- Unsupported or invalid mode requests that cannot activate unsafe paths.
 
 ## Diagnostics Visibility
 
@@ -43,6 +46,7 @@ M2 must expose enough diagnostics for board tests:
 - PTT state.
 - USB/KISS parse error state.
 - Audio overflow and underflow counters.
+- Embedded TNC mode, KISS command, and mode request counters.
 - TX active state.
 - Max TX timeout event.
 - Fault counter snapshot.
@@ -62,5 +66,6 @@ Before any future real radio PTT connection:
 7. Diagnostics show the tested state transitions.
 8. USB KISS loopback is tested without any RF path.
 9. Malformed USB/KISS input is tested without changing PTT state.
+10. Unsupported mode requests are tested without changing PTT state.
 
 Only after these gates should a later milestone consider hardware PTT connection planning.

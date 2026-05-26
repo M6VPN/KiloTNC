@@ -7,6 +7,7 @@
 #include "kilotnc_board.h"
 #include "kilotnc_platform.h"
 
-#define KILOTNC_EMBEDDED_STAGE	"M2.5 embedded audio loopback path"
+#define KILOTNC_EMBEDDED_STAGE \
+	"M2.6 embedded TNC core integration skeleton"
 
 #endif
