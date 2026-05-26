@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.25 KISS service compatibility tests.
+Current stage: M1.26 external black-box interoperability planning.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, and KISS compatibility tests across local daemon transports.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, and external black-box interoperability planning placeholders.
 
 ## Milestones
 
@@ -111,6 +111,12 @@ Run deterministic KISS compatibility checks across local daemon transports:
 make kiss-compat-test
 ```
 
+Show optional external interoperability wrapper guidance:
+
+```text
+make interop-help
+```
+
 GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, `make kiss-compat-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
@@ -128,6 +134,7 @@ GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, 
 | `hardware/kicad/`       | Future KiCad project files                               |
 | `hardware/datasheets/`  | Local datasheet references if redistribution permits     |
 | `hardware/simulations/` | Future analog and signal simulations                     |
+| `interop/`              | Optional external black-box interop wrappers             |
 | `tools/`                | Future host tools and scripts                            |
 | `lab/`                  | Bench notes, measurements, and test records              |
 

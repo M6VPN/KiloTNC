@@ -80,6 +80,8 @@ The mode registry is shared by firmware, host tools, and the planned daemon targ
 
 Nino-compatible values remain boundary inputs. KiloTNC uses internal mode IDs after parsing.
 
+M1.26 external interoperability planning keeps this scope narrow. NinoTNC compatibility currently means mode mapping and SETHW behavior at the host/KISS boundary. It does not claim full on-air IL2Pc compatibility.
+
 ## Sources checked
 
 | Source title                         | Date checked | Note                                        |

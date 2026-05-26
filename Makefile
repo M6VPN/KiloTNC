@@ -110,6 +110,16 @@ tool-test: ${TOOLBIN}
 
 daemon: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN}
 
+interop-help:
+	@printf '%s\n' 'Optional black-box interoperability helpers:'
+	@printf '%s\n' '  interop/run_direwolf_optional.sh'
+	@printf '%s\n' '  interop/run_ninotnc_optional.sh'
+	@printf '%s\n' '  interop/run_ax25_optional.sh'
+	@printf '%s\n' ''
+	@printf '%s\n' 'These helpers are not part of CI.'
+	@printf '%s\n' 'They skip safely unless prerequisites are present.'
+	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
+
 kiss-compat-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN} ${KISSTESTBIN}
 	mkdir -p ${BUILD}/kiss-compat
 	./${KISSTESTBIN} generate ${BUILD}/kiss-compat
@@ -316,4 +326,4 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test sanitize tools tool-test daemon daemon-test kiss-compat-test clean
+.PHONY: all test sanitize tools tool-test daemon interop-help daemon-test kiss-compat-test clean

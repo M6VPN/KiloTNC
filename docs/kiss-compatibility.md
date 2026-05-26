@@ -2,6 +2,8 @@
 
 M1.25 adds deterministic host-side checks for KISS framing across local daemon transports. The tests use generated inputs under `build/kiss-compat/` and do not commit binary vectors.
 
+M1.26 keeps external interoperability separate. External black-box checks against installed tools or attached devices are planned in `docs/interoperability.md` and optional wrappers under `interop/`, but they are not part of CI.
+
 ## Tested Transports
 
 - File input and output.

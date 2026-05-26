@@ -26,6 +26,8 @@ M1.23 adds ALSA planning plus a compile-gated daemon audio stub. The default bui
 
 M1.24 adds sndio and OSS planning plus compile-gated daemon audio stubs. The default build recognizes `audio_backend=sndio` and `audio_backend=oss` as known backends but rejects them as unsupported, and it does not require sndio or OSS headers or libraries.
 
+M1.26 adds external black-box interoperability planning and optional harness placeholders. It does not make external tools part of daemon CI.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -100,6 +102,8 @@ Planned interfaces:
 - stdin/stdout test mode. Explicit bounded stdin/stdout mode exists in M1.16.
 
 KISS-over-TCP, Unix sockets, and PTYs are host interfaces, not on-air protocols.
+
+Future black-box interop checks may use `kilotncd` TCP or PTY KISS adapters with external local KISS clients. Those checks remain optional and outside CI until explicitly enabled.
 
 ## Radio Control
 

@@ -477,6 +477,16 @@ M1.25 host-side checks on 2026-05-26:
 - Existing transport conflict checks remain covered by `make daemon-test`.
 - No real audio API, serial PTT, CAT, GPIO, USB, hardware path, external TNC, or remote network service is implemented.
 
+M1.26 documentation gate on 2026-05-26:
+
+- Interoperability plan exists.
+- Optional harness documentation exists under `interop/`.
+- Optional wrappers skip safely when external tools, devices, or explicit enablement are missing.
+- External tools are not required by CI.
+- No external code, tests, vectors, tables, or algorithms are imported.
+- No RF transmit path is enabled by default.
+- `make interop-help` prints optional local wrapper guidance.
+
 Pending:
 
 - Full timing recovery loop.
