@@ -180,9 +180,18 @@ M2.12 status:
 - Skip cleanly when `arm-none-eabi-gcc` is absent.
 - Keep linker scripts, startup vectors, HAL, CMSIS, TinyUSB, vendor SDKs, flash commands, hardware registers, pin assignments, real drivers, and flashable firmware out of the repo.
 
+M2.13 status:
+
+- Add USB CDC stack selection planning.
+- Choose TinyUSB as the future first adapter path.
+- Keep STM32Cube USB Device as a fallback and reference path.
+- Add `usb_stack_boundary` placeholder support for `stub`, `tinyusb`, `stm32cube`, and `custom`.
+- Keep only the USB CDC stub implemented.
+- Keep TinyUSB, STM32Cube, CMSIS, HAL, descriptors, endpoints, hardware registers, vendor projects, real USB, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.13: embedded vendor dependency boundary planning or USB CDC stack selection planning, still no vendor import unless explicitly gated.
+- M2.14: USB descriptor skeleton planning, still data-only and not used by a real USB stack.
 
 M2 scope:
 

@@ -59,6 +59,18 @@ Sources checked through 2026-05-27.
 | FreeBSD Architecture Handbook, Sound | 2026-05-26   | https://docs.freebsd.org/en/books/arch-handbook/sound/         | FreeBSD pcm and OSS interface context |
 | NetBSD audio(4) manual               | 2026-05-26   | https://man.netbsd.org/NetBSD-10.0/audio.4                     | NetBSD audio device interface context |
 
+## USB Stack Planning
+
+| Source title                              | Date checked | URL                                                                                                      | Note                                               |
+| ----------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| TinyUSB documentation                     | 2026-05-27   | https://docs.tinyusb.org/                                                                                | Device stack, CDC support, STM32 H7 support table  |
+| TinyUSB FAQ                               | 2026-05-27   | https://docs.tinyusb.org/en/latest/faq.html                                                              | MCU family support and MIT license                 |
+| TinyUSB supported boards reference        | 2026-05-27   | https://docs.tinyusb.org/en/latest/reference/boards.html                                                 | BSP boundary for examples and tests                |
+| ST Introduction to USB with STM32         | 2026-05-27   | https://wiki.st.com/stm32mcu/wiki/Introduction_to_USB_with_STM32                                         | STM32 USB device library and driver layering       |
+| STM32CubeH7 getting started user manual   | 2026-05-27   | https://www.st.com/resource/en/user_manual/dm00386433-getting-started-with-stm32cubeh7-for-stm32h7-series-stmicroelectronics.pdf | STM32CubeH7 middleware includes USB Host and Device libraries |
+| STM32 USBX middleware repository          | 2026-05-27   | https://github.com/STMicroelectronics/stm32-mw-usbx                                                      | STM32Cube USBX middleware and version consistency  |
+| STM32H7 Nucleo-144 boards user manual, ST | 2026-05-27   | https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf         | CN1 STLINK USB and CN13 USB OTG FS connector       |
+
 ## File Formats
 
 | Source title                                  | Date checked | URL                                                                                  | Note                                  |

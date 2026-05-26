@@ -30,3 +30,5 @@ The future STM32 adapter should implement the same interface. M2.3 does not add 
 M2.4 diagnostics reads platform counters through the existing app/platform boundary and USB counters through the CDC stats hook. The stub exposes reset cause, PTT state, watchdog kicks, diagnostic writes, RX/TX byte totals, and overflow counters for host tests.
 
 M2.5 adds a host-native audio stub. It exposes 48 kHz mono signed 16-bit format metadata, fixed RX/TX sample buffers, RX injection, TX capture, sample counters, and overflow/underflow counters. It does not implement ADC, DAC, SAI, I2S, DMA, codec, or hardware audio paths.
+
+M2.13 adds a USB stack boundary placeholder. The only implemented USB path remains the host-native USB CDC stub. `tinyusb`, `stm32cube`, and `custom` are recognized as planned stack names but return unsupported. No TinyUSB, STM32Cube, CMSIS, HAL, descriptor, endpoint, interrupt, hardware register, or vendor SDK include is added.

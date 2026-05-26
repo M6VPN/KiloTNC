@@ -715,6 +715,19 @@ M2.12 opt-in STM32H753 target check gate:
 - `make embedded-test` remains host-native and independent of the ARM toolchain.
 - No HAL, CMSIS, TinyUSB, vendor project, pin initialization, alternate-function setup, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.13 USB CDC stack selection and dependency-boundary gate:
+
+- `docs/m2-usb-stack-plan.md` exists.
+- `embedded/platform/usb_stack_boundary.c` exists.
+- `embedded/platform/usb_stack_boundary.h` exists.
+- `embedded/include/kilotnc_usb_stack_boundary.h` exists.
+- `make embedded-test` covers USB stack boundary parsing.
+- `make embedded-test` verifies `stub` is implemented.
+- `make embedded-test` verifies `tinyusb`, `stm32cube`, and `custom` are known but unsupported.
+- `make embedded-test` verifies unknown stack names are rejected.
+- `make embedded-test` verifies formatter bounds and NULL argument handling.
+- No TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, USB descriptors, endpoint handlers, interrupt handlers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

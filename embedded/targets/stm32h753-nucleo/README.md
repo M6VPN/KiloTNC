@@ -62,3 +62,12 @@ M2.12 status:
 - If the compiler is present, only `target_main.c` and `target_platform.c` are compiled to temporary object files under `build/embedded-target/`.
 - No link step runs.
 - No ELF, BIN, HEX, linker script, startup vector table, HAL, CMSIS, TinyUSB, vendor SDK, flash command, or flashable firmware image is produced.
+
+M2.13 status:
+
+- USB CDC stack planning is documented in [docs/m2-usb-stack-plan.md](../../../docs/m2-usb-stack-plan.md).
+- TinyUSB is the preferred future first adapter path.
+- STM32Cube USB Device is the fallback and reference path.
+- The current implemented USB path remains the host-native USB CDC stub.
+- `tinyusb`, `stm32cube`, and `custom` are recognized by the boundary but unsupported.
+- No real USB stack, descriptors, endpoints, interrupts, hardware access, HAL, CMSIS, TinyUSB import, STM32Cube import, vendor SDK, or generated project is present.

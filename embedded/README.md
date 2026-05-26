@@ -53,3 +53,5 @@ The STM32H753 target skeleton under `embedded/targets/stm32h753-nucleo/` contain
 The M2.11 resource metadata header records planned USB, test PTT GPIO, diagnostics, audio, watchdog, and reset resources while keeping all real pin assignments marked unverified. The resource plan is in `docs/m2-stm32h753-resource-plan.md`.
 
 M2.12 adds target-local build metadata in `target_sources.mk` and `target_build.mk`, plus `check_target_compile.sh`. The check compiles only target skeleton objects under `build/embedded-target/` when `arm-none-eabi-gcc` is available, skips cleanly when it is absent, and does not link or create ELF, BIN, HEX, startup, linker, HAL, CMSIS, TinyUSB, or vendor output.
+
+M2.13 adds USB CDC stack selection planning and a dependency-boundary placeholder. The future preferred path is a TinyUSB adapter boundary, with STM32Cube USB Device as fallback. The current implemented path remains the host-native USB CDC stub only.

@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.11 expands the host-native embedded skeleton test with target resource metadata coverage for STM32H753 pin/resource planning.
+M2.13 expands the host-native embedded skeleton test with USB stack boundary coverage. The test verifies that the stub USB path is the only implemented path and that TinyUSB, STM32Cube, and custom stack names are known but unsupported.
 
 Planned M2 test sequence:
 

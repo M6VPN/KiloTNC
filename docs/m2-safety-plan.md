@@ -30,6 +30,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.10 target skeleton files contain no pin assignments, no real PTT pin, no real watchdog hardware path, no startup code, and no flashable firmware image.
 - M2.11 resource planning keeps the test PTT GPIO as `TBD` and marks all real pin assignments unverified.
 - M2.12 target object checks do not link firmware, create flashable images, assign pins, access hardware registers, or key PTT.
+- M2.13 USB stack planning keeps TinyUSB and STM32Cube unlinked and keeps the USB CDC stub as the only implemented path.
 
 ## Watchdog And Timeout
 
@@ -49,6 +50,8 @@ M2 firmware planning must include:
 - Full host-test loopback that exits by max iteration timeout instead of locking up.
 - Watchdog faults that abort full host-test loopback safely.
 - USB and future network input that cannot directly key PTT.
+- Future USB disconnect behavior that forces TX idle and PTT off.
+- Future USB stack adapter failures that cannot bypass watchdog or PTT safe-off.
 - Boot, debug, power, clock, USB, and Ethernet pins that are avoided for test PTT planning.
 - Audio TX path that remains disconnected from any transmitter.
 
@@ -69,6 +72,15 @@ M2 firmware planning must include:
 - No linker script or startup vector table is present.
 - No flash programming command is present.
 - Target C files must remain free of STM32 HAL, CMSIS, TinyUSB, vendor headers, and hardware registers.
+
+## M2.13 USB Safety Rules
+
+- USB host input cannot directly key PTT.
+- USB disconnect must force safe TX or idle state in future real stack work.
+- Watchdog behavior must remain independent of USB task service.
+- USB RX and TX queues must remain bounded.
+- Malformed USB KISS input must be counted and recovered without unsafe state changes.
+- TinyUSB and STM32Cube paths remain unsupported until explicitly integrated behind the boundary.
 
 ## Diagnostics Visibility
 

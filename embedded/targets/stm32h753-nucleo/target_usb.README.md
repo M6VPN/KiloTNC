@@ -14,3 +14,14 @@ Intentionally absent in M2.10:
 - No endpoint handlers.
 - No USB interrupt handling.
 - No host-visible USB device.
+
+M2.13 USB stack planning is tracked in [docs/m2-usb-stack-plan.md](../../../docs/m2-usb-stack-plan.md).
+
+Planned direction:
+
+- Prefer TinyUSB as the future first USB CDC adapter path.
+- Keep STM32Cube USB Device middleware as a fallback and reference path.
+- Keep the current USB CDC stub as the only implemented path.
+- Keep VID, PID, string descriptors, endpoint layout, and optional diagnostics CDC interface as future planning items.
+
+No real USB stack, TinyUSB source, STM32Cube USB Device source, CMSIS, HAL, descriptors, endpoint handlers, interrupt handlers, hardware register access, or generated vendor project is added in M2.13.

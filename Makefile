@@ -388,6 +388,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/platform/audio_stub.c \
 	  embedded/platform/platform_stub.c \
 	  embedded/platform/usb_cdc_stub.c \
+	  embedded/platform/usb_stack_boundary.c \
 	  embedded/tests/test_audio_stub.c \
 	  embedded/tests/test_embedded_app.c \
 	  embedded/tests/test_embedded_audio.c \
@@ -399,7 +400,8 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_embedded_usb_bridge.c \
 	  embedded/tests/test_target_metadata.c \
 	  embedded/tests/test_usb_cdc_stub.c \
-	firmware/src/afsk1200.c \
+	  embedded/tests/test_usb_stack_boundary.c \
+	  firmware/src/afsk1200.c \
 	firmware/src/afsk1200_stream.c \
 	firmware/src/afsk1200_tx.c \
 	  firmware/src/ax25.c \
@@ -419,6 +421,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/platform/audio_stub.c \
 		embedded/platform/platform_stub.c \
 		embedded/platform/usb_cdc_stub.c \
+		embedded/platform/usb_stack_boundary.c \
 		embedded/tests/test_audio_stub.c \
 		embedded/tests/test_embedded_app.c \
 		embedded/tests/test_embedded_audio.c \
@@ -430,6 +433,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_embedded_usb_bridge.c \
 		embedded/tests/test_target_metadata.c \
 		embedded/tests/test_usb_cdc_stub.c \
+		embedded/tests/test_usb_stack_boundary.c \
 		firmware/src/afsk1200.c \
 		firmware/src/afsk1200_stream.c \
 		firmware/src/afsk1200_tx.c \

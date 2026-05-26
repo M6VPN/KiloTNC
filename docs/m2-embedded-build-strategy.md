@@ -233,6 +233,26 @@ embedded/targets/stm32h753-nucleo/check_target_compile.sh
 
 No ELF, BIN, HEX, startup vector table, linker script, STM32Cube, CMSIS, STM32 HAL, TinyUSB, vendor project, hardware register access, pin initialization, or flash programming is added.
 
+## M2.13 USB Dependency Boundary
+
+M2.13 chooses the future USB CDC stack direction without importing or building a real USB stack.
+
+- TinyUSB is the preferred future first adapter path.
+- STM32Cube USB Device middleware remains a fallback and reference path.
+- Custom USB device stack work remains research-only.
+- The implemented path remains the host-native USB CDC stub.
+- `usb_stack_boundary` recognizes `stub`, `tinyusb`, `stm32cube`, and `custom`.
+- Only `stub` reports implemented support.
+- No TinyUSB, STM32Cube, CMSIS, HAL, descriptors, endpoint handlers, interrupt handlers, hardware registers, or vendor SDK paths are added.
+
+Future USB dependency environment variables are reserved only:
+
+```text
+TINYUSB_PATH=/path/to/tinyusb
+STM32CUBE_H7_PATH=/path/to/STM32CubeH7
+KILOTNC_USB_STACK=tinyusb
+```
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:
@@ -250,6 +270,9 @@ These names are reserved for later embedded work. They are not required for norm
 KILOTNC_EMBEDDED_TARGET=stm32h753-nucleo
 STM32CUBE_PATH=/path/to/STM32Cube...
 ARM_NONE_EABI_CC=arm-none-eabi-gcc
+TINYUSB_PATH=/path/to/tinyusb
+STM32CUBE_H7_PATH=/path/to/STM32CubeH7
+KILOTNC_USB_STACK=tinyusb
 ```
 
 ## Build Separation
