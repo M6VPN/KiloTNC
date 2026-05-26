@@ -56,7 +56,7 @@ portable core
 	|-- diagnostics adapter
 ```
 
-M2.0 does not implement these adapters. M2.1 should add the compile-only skeleton, M2.2 should add tick, watchdog, and GPIO test stubs, and M2.3 should add USB CDC KISS echo or loopback.
+M2.1 adds the compile-only skeleton and host-native stub test. M2.2 should add tick, watchdog, and GPIO test stubs. M2.3 should add USB CDC KISS echo or loopback.
 
 ## Build Strategy
 
@@ -67,6 +67,7 @@ M2.0 does not implement these adapters. M2.1 should add the compile-only skeleto
 - Keep generated build output under `build/` or target-specific ignored directories.
 - Keep no-heap and fixed-buffer rules for core modem, protocol, and control code.
 - Keep STM32CubeIDE and vendor-generated output outside the repo unless a later milestone explicitly changes that policy.
+- Keep `make embedded-test` host-native so CI does not require an ARM toolchain.
 
 ## Safety Gates
 

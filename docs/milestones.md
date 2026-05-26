@@ -70,9 +70,17 @@ M2.0 status:
 - Document the embedded build strategy.
 - Document M2 safety gates before any PTT or RF path.
 
+M2.1 status:
+
+- Add embedded C headers and source layout.
+- Define the platform adapter interface.
+- Add safe platform stub behavior.
+- Add target metadata for `stm32h753-nucleo`.
+- Add host-native `make embedded-test`.
+- Keep ARM cross-compilation optional and absent from normal CI.
+
 Next planned M2 passes:
 
-- M2.1: embedded compile-only skeleton.
 - M2.2: platform tick, watchdog, and GPIO test stubs.
 - M2.3: USB CDC KISS echo or loopback.
 - M2.4: diagnostics bridge.

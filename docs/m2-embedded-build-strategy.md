@@ -14,6 +14,25 @@ M2 embedded work must stay separate from the host-side M1 build, daemon, tools, 
 
 STM32CubeIDE is available locally and may be used for inspection or later generated-project experiments, but M2.0 does not commit IDE output.
 
+## M2.1 Host-Native Skeleton Test
+
+M2.1 adds a host-native embedded skeleton test:
+
+```text
+make embedded-test
+```
+
+This target compiles the embedded app skeleton, platform stub, target metadata, and embedded test under the host compiler. It does not use `arm-none-eabi-gcc`, STM32 HAL, CMSIS, TinyUSB, STM32Cube, Pico SDK, or generated vendor projects.
+
+The target verifies:
+
+- Embedded app init works.
+- Init forces the stub PTT state off.
+- Step advances stub time.
+- Step kicks the watchdog counter.
+- Fault and shutdown force PTT off.
+- Target metadata is visible.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:
@@ -45,7 +64,7 @@ Host targets remain:
 - `make daemon-test`
 - `make kiss-compat-test`
 
-Future embedded targets should be explicit and opt-in. They must not break host CI when the embedded toolchain is absent.
+Future embedded cross-compile targets should be explicit and opt-in. They must not break host CI when the embedded toolchain is absent.
 
 ## Repository Policy
 

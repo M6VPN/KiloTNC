@@ -12,4 +12,4 @@ Planned adapters:
 - Diagnostics output.
 - Config and persistence.
 
-M2.0 does not implement these adapters. M2.1 should add the first compile-only boundary before any hardware driver work starts.
+M2.1 adds the first compile-only platform boundary and a safe host-native stub. It does not add hardware drivers.

@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M2.0 dev-board target selection and embedded build skeleton planning.
+Current stage: M2.1 embedded compile-only skeleton.
 
 No PCB work, hardware build, RF transmit, real radio keying, real codec driver work, or embedded USB implementation has started.
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, and the M2.0 embedded documentation skeleton.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, and the M2.1 embedded compile-only skeleton.
 
 ## Milestones
 
@@ -113,6 +113,12 @@ Run deterministic KISS compatibility checks across local daemon transports:
 make kiss-compat-test
 ```
 
+Run the host-native embedded skeleton test:
+
+```text
+make embedded-test
+```
+
 Show optional external interoperability wrapper guidance:
 
 ```text
@@ -125,7 +131,7 @@ Show embedded build planning guidance:
 make embedded-help
 ```
 
-GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, `make kiss-compat-test`, and `make sanitize` on push and pull request.
+GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, `make kiss-compat-test`, `make embedded-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
 

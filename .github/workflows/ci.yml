@@ -36,5 +36,8 @@ jobs:
       - name: KISS Compatibility Test
         run: make kiss-compat-test
 
+      - name: Embedded Skeleton Test
+        run: make embedded-test
+
       - name: Sanitizers
         run: make sanitize

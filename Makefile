@@ -18,6 +18,9 @@ TCPCLIENTBIN = ${BUILD}/kilotncd_tcp_client
 UNIXCLIENTBIN = ${BUILD}/kilotncd_unix_client
 PTYCLIENTBIN = ${BUILD}/kilotncd_pty_client
 KISSTESTBIN = ${BUILD}/kilotncd_kiss_test
+EMBEDBIN = ${BUILD}/kilotnc_embedded_tests
+EMBED_CFLAGS = ${CFLAGS} -I embedded/include -I embedded/app \
+	  -I embedded/platform -I embedded/targets/stm32h753-nucleo
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  daemon/kilotncd_control.c \
 	  tools/wav_writer.c
@@ -81,6 +84,7 @@ help:
 	@printf '%s\n' '  daemon            build kilotncd and local test clients'
 	@printf '%s\n' '  daemon-test       run deterministic daemon checks'
 	@printf '%s\n' '  kiss-compat-test  run local KISS compatibility checks'
+	@printf '%s\n' '  embedded-test     build and run host-native embedded skeleton tests'
 	@printf '%s\n' '  interop-help      show optional interop wrapper guidance'
 	@printf '%s\n' '  embedded-help     show M2 embedded skeleton guidance'
 	@printf '%s\n' '  clean             remove build outputs'
@@ -134,13 +138,17 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.0 embedded status: documentation and skeleton only.'
-	@printf '%s\n' 'No embedded build target is active yet.'
+	@printf '%s\n' 'M2.1 embedded status: compile-only host-native skeleton.'
+	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
+	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
 	@printf '%s\n' 'Reserved future environment variables:'
 	@printf '%s\n' '  KILOTNC_EMBEDDED_TARGET=stm32h753-nucleo'
 	@printf '%s\n' '  STM32CUBE_PATH=/path/to/STM32Cube...'
 	@printf '%s\n' '  ARM_NONE_EABI_CC=arm-none-eabi-gcc'
+
+embedded-test: ${EMBEDBIN}
+	./${EMBEDBIN}
 
 kiss-compat-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN} ${KISSTESTBIN}
 	mkdir -p ${BUILD}/kiss-compat
@@ -345,7 +353,14 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 
+${EMBEDBIN}: embedded/app/embedded_app.c \
+	  embedded/platform/platform_stub.c \
+	  embedded/tests/test_embedded_app.c
+	mkdir -p ${BUILD}
+	${CC} ${EMBED_CFLAGS} -o $@ embedded/app/embedded_app.c \
+		embedded/platform/platform_stub.c embedded/tests/test_embedded_app.c
+
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all clean daemon daemon-test embedded-help help interop-help kiss-compat-test sanitize test tools tool-test
+.PHONY: all clean daemon daemon-test embedded-help embedded-test help interop-help kiss-compat-test sanitize test tools tool-test

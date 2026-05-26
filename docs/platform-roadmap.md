@@ -16,7 +16,7 @@ The MCU firmware target is the physical KiloTNC hardware:
 - Fail-safe continuous operation.
 - Watchdog, timeout, and fault-counter behavior.
 
-This target starts in M2 as a dev-board firmware prototype. M2.0 selects the `stm32h753-nucleo` target path and adds documentation/build skeleton only. It does not include PCB work, RF transmit, real radio keying, USB CDC implementation, real codec drivers, or GPIO PTT drivers.
+This target starts in M2 as a dev-board firmware prototype. M2.0 selects the `stm32h753-nucleo` target path and adds documentation/build skeleton only. M2.1 adds a host-native compile-only embedded skeleton. It does not include PCB work, RF transmit, real radio keying, USB CDC implementation, real codec drivers, or GPIO PTT drivers.
 
 ### Linux/BSD Daemon
 

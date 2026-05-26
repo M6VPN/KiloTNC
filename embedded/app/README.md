@@ -11,4 +11,4 @@ Planned responsibilities:
 - Publish diagnostics and fault counters.
 - Enforce watchdog and max TX timeout policy.
 
-M2.0 does not add the application state machine implementation.
+M2.1 adds a compile-only application skeleton with init, step, shutdown, fault, and status functions. It does not process real USB or audio data yet.

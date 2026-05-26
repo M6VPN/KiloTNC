@@ -529,6 +529,18 @@ M2.0 documentation gate on 2026-05-26:
 - Existing M1 host, tool, daemon, and compatibility checks still pass.
 - No PCB, RF transmit, real radio PTT, USB CDC implementation, codec driver, DMA audio, or GPIO driver work is started.
 
+M2.1 embedded compile-only gate:
+
+- `make embedded-test` builds and runs with the host C compiler.
+- Embedded app init succeeds.
+- Embedded app init forces stub PTT off.
+- Embedded app step advances stub tick state.
+- Embedded app step increments watchdog kick count.
+- Embedded app shutdown and fault paths force stub PTT off.
+- Target metadata for `stm32h753-nucleo` is visible to the test.
+- No ARM toolchain is required.
+- No STM32 HAL, CMSIS, TinyUSB, Cube, Pico SDK, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.
