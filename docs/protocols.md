@@ -162,6 +162,8 @@ KISS-over-TCP transports KISS frames between a host client and a daemon. It does
 
 PTY KISS gives local host programs a serial-like transport for KISS frames. It does not change AX.25, HDLC, FCS, or modem framing and does not access real serial hardware in M1.17.
 
+M1.25 KISS compatibility tests exercise file/stdin/stdout, localhost TCP, Unix socket, PTY, and CLI loopback paths with deterministic local KISS streams. These tests cover local host transport behavior only and do not claim external TNC or on-air interoperability.
+
 Internet bridging is future research and is disabled by default in planning. Any future internet-originated packet path must pass through operator policy, mode validation, queue limits, DCD/channel access, and max TX watchdog logic before RF transmission.
 
 ## Sources checked

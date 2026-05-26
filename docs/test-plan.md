@@ -460,6 +460,23 @@ M1.24 host-side checks on 2026-05-26:
 - Existing status, control, profile, foreground, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
 - No real ALSA, sndio, OSS, PulseAudio, PipeWire, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
 
+M1.25 host-side checks on 2026-05-26:
+
+- `make kiss-compat-test` builds the daemon, CLI, local transport clients, and KISS compatibility helper.
+- The helper generates deterministic KISS input files under `build/kiss-compat/`.
+- Plain AX.25 UI KISS frames are checked through file loopback and CLI loopback.
+- KISS payload escaping for FEND `0xC0` and FESC `0xDB` is checked through file loopback and CLI loopback.
+- Multiple KISS frames in one byte stream are generated and decoded by the compatibility helper.
+- File/stdin/stdout paths exercise KISS input, PCM output, PCM input, and KISS stdout output.
+- Localhost TCP once mode accepts plain, escaped, and command KISS streams and writes non-empty PCM.
+- Unix socket once mode accepts plain, escaped, and malformed KISS streams and writes non-empty PCM.
+- PTY once mode accepts plain, escaped, and repeated-FEND KISS streams and writes non-empty PCM.
+- SETHW mode `6` and `22` are tested through command streams.
+- Unsupported KISS commands are ignored and counted.
+- Malformed escape input increments diagnostics and recovers to a valid frame.
+- Existing transport conflict checks remain covered by `make daemon-test`.
+- No real audio API, serial PTT, CAT, GPIO, USB, hardware path, external TNC, or remote network service is implemented.
+
 Pending:
 
 - Full timing recovery loop.

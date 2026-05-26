@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton. M1.23 adds an ALSA planning boundary and compile-gated stub. M1.24 adds sndio and OSS planning boundaries and compile-gated stubs.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton. M1.23 adds an ALSA planning boundary and compile-gated stub. M1.24 adds sndio and OSS planning boundaries and compile-gated stubs. M1.25 adds deterministic KISS compatibility tests across local daemon transports.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.24 Scope
+## M1.25 Scope
 
 Implemented:
 
@@ -32,6 +32,8 @@ Implemented:
 - ALSA backend name and compile-gated unsupported stub.
 - sndio backend name and compile-gated unsupported stub.
 - OSS backend name and compile-gated unsupported stub.
+- KISS compatibility helper for deterministic local transport tests.
+- `make kiss-compat-test` for file, stdin/stdout, localhost TCP, Unix socket, PTY, and CLI loopback checks.
 
 Not implemented:
 
@@ -241,7 +243,19 @@ M1.23 and M1.24 add planned audio backend stubs:
 - Default builds do not link sndio or OSS libraries.
 - `ENABLE_ALSA`, `ENABLE_SNDIO`, and `ENABLE_OSS` are reserved for later work and do not enable real runtime support in M1.24.
 
-ALSA, sndio, and OSS remain unsupported for active daemon use in M1.24.
+ALSA, sndio, and OSS remain unsupported for active daemon use in M1.25.
+
+## KISS Compatibility Tests
+
+M1.25 adds a generated KISS compatibility suite for local daemon transports:
+
+```text
+make kiss-compat-test
+```
+
+The target generates deterministic KISS inputs under `build/kiss-compat/` and checks plain AX.25 UI frames, escaped FEND and FESC payload bytes, command frames, SETHW mode `6`, SETHW mode `22`, unsupported commands, malformed escape recovery, and repeated FEND handling.
+
+The checked transports are file/stdin/stdout, localhost TCP once mode, Unix socket once mode, PTY once mode, and CLI loopback. The tests do not use external TNCs, real audio devices, serial hardware, RF, or remote network service.
 
 ## Radio Control Backend
 

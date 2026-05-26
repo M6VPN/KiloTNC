@@ -17,6 +17,7 @@ DAEMONBIN = ${BUILD}/kilotncd
 TCPCLIENTBIN = ${BUILD}/kilotncd_tcp_client
 UNIXCLIENTBIN = ${BUILD}/kilotncd_unix_client
 PTYCLIENTBIN = ${BUILD}/kilotncd_pty_client
+KISSTESTBIN = ${BUILD}/kilotncd_kiss_test
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  daemon/kilotncd_control.c \
 	  tools/wav_writer.c
@@ -108,6 +109,60 @@ tool-test: ${TOOLBIN}
 	if ./${TOOLBIN} generate-pcm --out ${BUILD}/vectors/bad.pcm --mode NINO_MODE=0; then exit 1; else exit 0; fi
 
 daemon: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN}
+
+kiss-compat-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN} ${KISSTESTBIN}
+	mkdir -p ${BUILD}/kiss-compat
+	./${KISSTESTBIN} generate ${BUILD}/kiss-compat
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/plain.kiss plain
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/escaped.kiss escaped
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/multi.kiss multi
+	./${TOOLBIN} loopback --in ${BUILD}/kiss-compat/plain.kiss --out ${BUILD}/kiss-compat/cli-plain.out.kiss --mode NINO_MODE=6 > ${BUILD}/kiss-compat/cli-plain.diag
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/cli-plain.out.kiss plain
+	./${TOOLBIN} loopback --in ${BUILD}/kiss-compat/escaped.kiss --out ${BUILD}/kiss-compat/cli-escaped.out.kiss --mode NINO_MODE=6 > ${BUILD}/kiss-compat/cli-escaped.diag
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/cli-escaped.out.kiss escaped
+	./${TOOLBIN} vector-loopback --prefix ${BUILD}/kiss-compat/vector --mode NINO_MODE=6 > ${BUILD}/kiss-compat/vector.log
+	test -s ${BUILD}/kiss-compat/vector.out.kiss
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/plain.kiss --kiss-out ${BUILD}/kiss-compat/file-plain.out.kiss --loopback-once > ${BUILD}/kiss-compat/file-plain.diag 2>&1
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/file-plain.out.kiss plain
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/escaped.kiss --kiss-out ${BUILD}/kiss-compat/file-escaped.out.kiss --loopback-once > ${BUILD}/kiss-compat/file-escaped.diag 2>&1
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/file-escaped.out.kiss escaped
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/plain.kiss --pcm-out ${BUILD}/kiss-compat/file-plain.pcm --once > ${BUILD}/kiss-compat/file-tx.diag 2>&1
+	test -s ${BUILD}/kiss-compat/file-plain.pcm
+	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/kiss-compat/file-plain.pcm --kiss-out - --once > ${BUILD}/kiss-compat/stdout-rx.out.kiss 2> ${BUILD}/kiss-compat/stdout-rx.diag
+	./${KISSTESTBIN} expect ${BUILD}/kiss-compat/stdout-rx.out.kiss plain
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in - --pcm-out ${BUILD}/kiss-compat/stdin-escaped.pcm --once < ${BUILD}/kiss-compat/escaped.kiss > ${BUILD}/kiss-compat/stdin-escaped.diag 2>&1
+	test -s ${BUILD}/kiss-compat/stdin-escaped.pcm
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/commands.kiss --pcm-out ${BUILD}/kiss-compat/commands.pcm --once > ${BUILD}/kiss-compat/commands.diag 2>&1
+	test -s ${BUILD}/kiss-compat/commands.pcm
+	grep -q "kiss_ignored=1" ${BUILD}/kiss-compat/commands.diag
+	grep -q "last_nino=22" ${BUILD}/kiss-compat/commands.diag
+	grep -q "mode_temp=1" ${BUILD}/kiss-compat/commands.diag
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/malformed.kiss --pcm-out ${BUILD}/kiss-compat/malformed.pcm --once > ${BUILD}/kiss-compat/malformed.diag 2>&1
+	test -s ${BUILD}/kiss-compat/malformed.pcm
+	grep -q "kiss_parse_errors=1" ${BUILD}/kiss-compat/malformed.diag
+	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/kiss-compat/repeated-fend.kiss --pcm-out ${BUILD}/kiss-compat/repeated-fend.pcm --once > ${BUILD}/kiss-compat/repeated-fend.diag 2>&1
+	test -s ${BUILD}/kiss-compat/repeated-fend.pcm
+	./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18125 --kiss-tcp-once --pcm-out ${BUILD}/kiss-compat/tcp-plain.pcm --once > ${BUILD}/kiss-compat/tcp-plain.diag 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18125 ${BUILD}/kiss-compat/plain.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/tcp-plain.pcm
+	./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18126 --kiss-tcp-once --pcm-out ${BUILD}/kiss-compat/tcp-escaped.pcm --once > ${BUILD}/kiss-compat/tcp-escaped.diag 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18126 ${BUILD}/kiss-compat/escaped.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/tcp-escaped.pcm
+	./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18127 --kiss-tcp-once --pcm-out ${BUILD}/kiss-compat/tcp-commands.pcm --once > ${BUILD}/kiss-compat/tcp-commands.diag 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18127 ${BUILD}/kiss-compat/commands.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/tcp-commands.pcm
+	grep -q "kiss_ignored=1" ${BUILD}/kiss-compat/tcp-commands.diag
+	grep -q "last_nino=22" ${BUILD}/kiss-compat/tcp-commands.diag
+	./${DAEMONBIN} --kiss-unix-listen ${BUILD}/kiss-compat/plain.sock --kiss-unix-once --pcm-out ${BUILD}/kiss-compat/unix-plain.pcm --once > ${BUILD}/kiss-compat/unix-plain.diag 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/kiss-compat/plain.sock ${BUILD}/kiss-compat/plain.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/unix-plain.pcm
+	./${DAEMONBIN} --kiss-unix-listen ${BUILD}/kiss-compat/escaped.sock --kiss-unix-once --pcm-out ${BUILD}/kiss-compat/unix-escaped.pcm --once > ${BUILD}/kiss-compat/unix-escaped.diag 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/kiss-compat/escaped.sock ${BUILD}/kiss-compat/escaped.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/unix-escaped.pcm
+	./${DAEMONBIN} --kiss-unix-listen ${BUILD}/kiss-compat/malformed.sock --kiss-unix-once --pcm-out ${BUILD}/kiss-compat/unix-malformed.pcm --once > ${BUILD}/kiss-compat/unix-malformed.diag 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/kiss-compat/malformed.sock ${BUILD}/kiss-compat/malformed.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/unix-malformed.pcm
+	grep -q "kiss_parse_errors=1" ${BUILD}/kiss-compat/unix-malformed.diag
+	./${DAEMONBIN} --kiss-pty --kiss-pty-once --pty-path-out ${BUILD}/kiss-compat/plain.pty --pcm-out ${BUILD}/kiss-compat/pty-plain.pcm --once > ${BUILD}/kiss-compat/pty-plain.diag 2> ${BUILD}/kiss-compat/pty-plain.err & pid=$$!; sleep 1; ./${PTYCLIENTBIN} ${BUILD}/kiss-compat/plain.pty ${BUILD}/kiss-compat/plain.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/pty-plain.pcm
+	./${DAEMONBIN} --kiss-pty --kiss-pty-once --pty-path-out ${BUILD}/kiss-compat/escaped.pty --pcm-out ${BUILD}/kiss-compat/pty-escaped.pcm --once > ${BUILD}/kiss-compat/pty-escaped.diag 2> ${BUILD}/kiss-compat/pty-escaped.err & pid=$$!; sleep 1; ./${PTYCLIENTBIN} ${BUILD}/kiss-compat/escaped.pty ${BUILD}/kiss-compat/escaped.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/pty-escaped.pcm
+	./${DAEMONBIN} --kiss-pty --kiss-pty-once --pty-path-out ${BUILD}/kiss-compat/repeated-fend.pty --pcm-out ${BUILD}/kiss-compat/pty-repeated-fend.pcm --once > ${BUILD}/kiss-compat/pty-repeated-fend.diag 2> ${BUILD}/kiss-compat/pty-repeated-fend.err & pid=$$!; sleep 1; ./${PTYCLIENTBIN} ${BUILD}/kiss-compat/repeated-fend.pty ${BUILD}/kiss-compat/repeated-fend.kiss; wait $$pid
+	test -s ${BUILD}/kiss-compat/pty-repeated-fend.pcm
 
 daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN}
 	mkdir -p ${BUILD}/daemon
@@ -254,7 +309,11 @@ ${PTYCLIENTBIN}: daemon/kilotncd_pty_client.c
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} -o $@ daemon/kilotncd_pty_client.c
 
+${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
+	mkdir -p ${BUILD}
+	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} daemon/kilotncd_kiss_test.c
+
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test sanitize tools tool-test daemon daemon-test clean
+.PHONY: all test sanitize tools tool-test daemon daemon-test kiss-compat-test clean

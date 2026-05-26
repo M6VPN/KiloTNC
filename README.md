@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.24 sndio/OSS planning plus compile-gated daemon audio stubs.
+Current stage: M1.25 KISS service compatibility tests.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, and local PTY once-mode adapter.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, and KISS compatibility tests across local daemon transports.
 
 ## Milestones
 
@@ -105,7 +105,13 @@ Run deterministic daemon checks:
 make daemon-test
 ```
 
-GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, and `make sanitize` on push and pull request.
+Run deterministic KISS compatibility checks across local daemon transports:
+
+```text
+make kiss-compat-test
+```
+
+GitHub Actions runs `make test`, `make tools`, `make tool-test`, `make daemon`, `make daemon-test`, `make kiss-compat-test`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
 
