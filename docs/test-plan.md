@@ -416,6 +416,17 @@ M1.20 host-side checks on 2026-05-26:
 - Existing file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
 - No real audio API, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
 
+M1.21 host-side checks on 2026-05-26:
+
+- `make test` includes bounded control command parser coverage.
+- Control commands cover `status`, `diag`, `stats`, `mode`, `ptt`, `dcd`, `abort-tx`, and `help`.
+- `mode NINO_MODE=6` and `mode NINO_MODE=22` are accepted.
+- Known but unimplemented modes are rejected for active TNC operation.
+- Invalid mode strings, invalid DCD values, unknown commands, overlong commands, too-small response buffers, and NULL arguments are rejected.
+- `kilotnc_cli control --cmd status` works.
+- `kilotncd --control status`, `kilotncd --control diag`, and `kilotncd --control "mode NINO_MODE=6"` work.
+- No persistent control socket, remote control listener, network API, interactive shell, real audio API, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

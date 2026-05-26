@@ -13,6 +13,7 @@ int test_afsk1200_tx(void);
 int test_fcs(void);
 int test_fuzz(void);
 int test_hdlc(void);
+int test_kilotncd_control(void);
 int test_kiss(void);
 int test_tnc_control(void);
 int test_tnc_diag(void);
@@ -34,6 +35,7 @@ main(void)
 	failures += test_run("fcs", test_fcs);
 	failures += test_run("hdlc", test_hdlc);
 	failures += test_run("ax25", test_ax25);
+	failures += test_run("kilotncd_control", test_kilotncd_control);
 	failures += test_run("kiss", test_kiss);
 	failures += test_run("tnc_control", test_tnc_control);
 	failures += test_run("tnc_diag", test_tnc_diag);

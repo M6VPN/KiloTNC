@@ -2,7 +2,7 @@
 
 `kilotnc_cli` is a host-side debug tool for the portable KiloTNC harness. It is not embedded firmware and does not talk to USB, radios, GPIO, or hardware audio devices.
 
-The planned `kilotncd` daemon is separate from this CLI. The CLI remains a manual debug and test-vector tool.
+The `kilotncd` daemon is separate from this CLI. The CLI remains a manual debug and test-vector tool.
 
 Build it with:
 
@@ -71,6 +71,15 @@ Print diagnostics:
 
 ```text
 build/kilotnc_cli diag --mode NINO_MODE=6
+```
+
+Run a one-shot local control command:
+
+```text
+build/kilotnc_cli control --cmd status
+build/kilotnc_cli control --cmd diag
+build/kilotnc_cli control --cmd "mode NINO_MODE=6"
+build/kilotnc_cli control --cmd "dcd 1"
 ```
 
 `NINO_MODE=22` maps to the same internal mode as `NINO_MODE=6` and marks the request as temporary/no-flash compatible.

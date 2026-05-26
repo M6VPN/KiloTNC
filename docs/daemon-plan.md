@@ -18,6 +18,8 @@ M1.19 implements a daemon radio-control backend abstraction with no-PTT, simulat
 
 M1.20 implements daemon config profiles and validation. It validates file, stdio, TCP, Unix socket, PTY, and status profiles before any future real audio or radio-control adapters are added.
 
+M1.21 implements a one-shot local control/status command surface. It parses one bounded ASCII command, writes one bounded text response, and exits. It does not implement a persistent control socket, remote control listener, network API, or interactive shell.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -127,6 +129,7 @@ Planned diagnostics:
 
 - Text status snapshot.
 - Counters from KISS, modem RX/TX, channel access, PTT, and fault records.
+- One-shot local control/status commands. This exists in M1.21.
 - Future local control socket.
 
 No USB CDC, network control protocol, or persistent fault store is implemented in this pass.

@@ -32,6 +32,7 @@ struct kilotncd_config {
 	char kiss_out[KILOTNCD_PATH_MAX];
 	char pcm_in[KILOTNCD_PATH_MAX];
 	char pcm_out[KILOTNCD_PATH_MAX];
+	char control[KILOTNCD_LINE_MAX];
 	char kiss_unix_listen[KILOTNCD_PATH_MAX];
 	char pty_path_out[KILOTNCD_PATH_MAX];
 	char radio_log[KILOTNCD_PATH_MAX];
@@ -57,6 +58,7 @@ struct kilotncd_config {
 	int have_kiss_out;
 	int have_pcm_in;
 	int have_pcm_out;
+	int have_control;
 	int have_kiss_tcp_listen;
 	int have_kiss_unix_listen;
 	int have_pty_path_out;

@@ -11,6 +11,7 @@
 #include "kiss.h"
 #include "kilotncd_audio.h"
 #include "kilotncd_config.h"
+#include "kilotncd_control.h"
 #include "kilotncd_file.h"
 #include "kilotncd_profile.h"
 #include "kilotncd_pty.h"
@@ -31,7 +32,8 @@ enum kilotncd_operation {
 	KILOTNCD_OP_NONE = 0,
 	KILOTNCD_OP_ONCE,
 	KILOTNCD_OP_LOOPBACK_ONCE,
-	KILOTNCD_OP_STATUS
+	KILOTNCD_OP_STATUS,
+	KILOTNCD_OP_CONTROL
 };
 
 struct kilotncd_loopback_ctx {
@@ -78,6 +80,7 @@ static int kilotncd_run_tcp_tx_once(const struct kilotncd_config *);
 static int kilotncd_run_unix_tx_once(const struct kilotncd_config *);
 static int kilotncd_run_rx_once(const struct kilotncd_config *);
 static int kilotncd_run_status(const struct kilotncd_config *);
+static int kilotncd_run_control(const struct kilotncd_config *);
 static int kilotncd_run_tx_once(const struct kilotncd_config *);
 static int kilotncd_pty_ready(const struct kilotncd_config *);
 static int kilotncd_tcp_ready(const struct kilotncd_config *);
@@ -102,6 +105,8 @@ main(int argc, char *argv[])
 
 	if (op == KILOTNCD_OP_STATUS)
 		return kilotncd_run_status(&config);
+	if (op == KILOTNCD_OP_CONTROL)
+		return kilotncd_run_control(&config);
 	if (op == KILOTNCD_OP_ONCE)
 		return kilotncd_run_once(&config);
 	if (op == KILOTNCD_OP_LOOPBACK_ONCE)
@@ -381,6 +386,12 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 			    kilotncd_config_apply_arg(config, "pcm_out",
 			    argv[++i]) != KILOTNCD_CONFIG_OK)
 				return -1;
+		} else if (strcmp(argv[i], "--control") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config, "control",
+			    argv[++i]) != KILOTNCD_CONFIG_OK)
+				return -1;
+			*op = KILOTNCD_OP_CONTROL;
 		} else if (strcmp(argv[i], "--kiss-tcp-listen") == 0) {
 			if (i + 1 >= argc ||
 			    kilotncd_config_apply_arg(config,
@@ -785,6 +796,44 @@ kilotncd_run_status(const struct kilotncd_config *config)
 }
 
 static int
+kilotncd_run_control(const struct kilotncd_config *config)
+{
+	struct kilotncd_control_context ctx;
+	struct kilotncd_config active_config;
+	struct tnc1200 tnc;
+	struct tnc_diag diag;
+	const struct tnc_mode_desc *desc;
+	size_t len;
+	enum kilotncd_control_result res;
+
+	if (config == NULL || !config->have_control)
+		return 1;
+	active_config = *config;
+	if (tnc_mode_get(active_config.mode, &desc) != TNC_MODE_OK)
+		return 1;
+	if (desc->support != TNC_MODE_SUPPORT_IMPLEMENTED) {
+		if (tnc_mode_default(&active_config.mode) != TNC_MODE_OK)
+			return 1;
+		active_config.mode_temporary = 0;
+	}
+	if (kilotncd_init_tnc(&tnc, &active_config) != 0 ||
+	    tnc_diag_init(&diag) != TNC_DIAG_OK)
+		return 1;
+	ctx.tnc = &tnc;
+	ctx.diag = &diag;
+	res = kilotncd_control_exec(&ctx, config->control, daemon_diag,
+	    sizeof(daemon_diag), &len);
+	if (res != KILOTNCD_CONTROL_OK) {
+		(void)fprintf(stderr, "control error=%u\n",
+		    (unsigned int)res);
+		return 1;
+	}
+	(void)printf("%s", daemon_diag);
+
+	return 0;
+}
+
+static int
 kilotncd_run_tx_once(const struct kilotncd_config *config)
 {
 	struct tnc1200 tnc;
@@ -857,8 +906,11 @@ kilotncd_validate_config(struct kilotncd_config *config,
 
 	if (config == NULL || op == NULL)
 		return -1;
+	if (*op == KILOTNCD_OP_NONE && config->have_control)
+		*op = KILOTNCD_OP_CONTROL;
 	if (!config->have_profile) {
-		if (*op == KILOTNCD_OP_STATUS) {
+		if (*op == KILOTNCD_OP_STATUS ||
+		    *op == KILOTNCD_OP_CONTROL) {
 			config->profile = KILOTNCD_PROFILE_STATUS;
 		} else {
 			pres = kilotncd_profile_infer(config,
@@ -880,6 +932,9 @@ kilotncd_validate_config(struct kilotncd_config *config,
 		return -1;
 	if (*op == KILOTNCD_OP_NONE)
 		*op = expected;
+	if (*op == KILOTNCD_OP_CONTROL &&
+	    config->profile == KILOTNCD_PROFILE_STATUS)
+		expected = KILOTNCD_OP_CONTROL;
 	if (*op != expected) {
 		(void)kilotncd_profile_error(KILOTNCD_PROFILE_ERR_CONFLICT,
 		    config->profile, daemon_error, sizeof(daemon_error));
@@ -937,6 +992,8 @@ kilotncd_usage(void)
 	(void)fprintf(stderr,
 	    "usage:\n"
 	    "  kilotncd --status [--mode NINO_MODE=6]\n"
+	    "  kilotncd --control status\n"
+	    "  kilotncd --control \"mode NINO_MODE=6\"\n"
 	    "  kilotncd --profile status\n"
 	    "  kilotncd --config daemon/example.conf --once\n"
 	    "  kilotncd --profile file-tx --mode NINO_MODE=6 "

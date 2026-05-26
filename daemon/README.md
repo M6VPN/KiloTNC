@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.20 Scope
+## M1.21 Scope
 
 Implemented:
 
@@ -24,6 +24,8 @@ Implemented:
 - Log PTT backend for deterministic tests.
 - Config profile parser, inference, defaults, and validation.
 - Safe example configs under `daemon/examples/`.
+- One-shot local control/status command parser.
+- `--control` status, diagnostics, mode, DCD, PTT, stats, abort, and help commands.
 
 Not implemented:
 
@@ -35,6 +37,7 @@ Not implemented:
 - Persistent Unix socket server.
 - Persistent PTY service.
 - Remote internet service.
+- Persistent control socket or interactive shell.
 
 ## Config Format
 
@@ -68,6 +71,7 @@ audio_channels=1
 audio_bits=16
 radio_backend=none
 radio_log=build/daemon/ptt.log
+control=status
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -108,6 +112,18 @@ Print status:
 build/kilotncd --status
 build/kilotncd --status --mode NINO_MODE=6
 ```
+
+Run one local control command:
+
+```text
+build/kilotncd --control status
+build/kilotncd --control diag
+build/kilotncd --control "mode NINO_MODE=6"
+build/kilotncd --control "dcd 1"
+build/kilotncd --control abort-tx
+```
+
+M1.21 control commands are one-shot only. They parse one bounded ASCII command, print one bounded response, and exit. There is no persistent control socket, remote listener, or interactive shell.
 
 Run TX once:
 

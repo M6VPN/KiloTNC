@@ -146,6 +146,11 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 		return kilotncd_config_copy_path(config->pcm_out,
 		    sizeof(config->pcm_out), value);
 	}
+	if (strcmp(key, "control") == 0) {
+		config->have_control = 1;
+		return kilotncd_config_copy_path(config->control,
+		    sizeof(config->control), value);
+	}
 	if (strcmp(key, "audio_backend") == 0) {
 		if (kilotncd_audio_parse_backend(value,
 		    &config->audio_backend) != KILOTNCD_AUDIO_OK)

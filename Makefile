@@ -3,7 +3,7 @@
 
 CC	?= cc
 CFLAGS	+= -std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror
-CFLAGS	+= -I firmware/include
+CFLAGS	+= -I firmware/include -I daemon
 SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
 
 BUILD	= build
@@ -15,11 +15,13 @@ TCPCLIENTBIN = ${BUILD}/kilotncd_tcp_client
 UNIXCLIENTBIN = ${BUILD}/kilotncd_unix_client
 PTYCLIENTBIN = ${BUILD}/kilotncd_pty_client
 TOOL_SRCS = tools/kilotnc_cli.c \
+	  daemon/kilotncd_control.c \
 	  tools/wav_writer.c
 DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_audio.c \
 	  daemon/kilotncd_audio_raw.c \
 	  daemon/kilotncd_config.c \
+	  daemon/kilotncd_control.c \
 	  daemon/kilotncd_file.c \
 	  daemon/kilotncd_profile.c \
 	  daemon/kilotncd_pty.c \
@@ -50,6 +52,7 @@ TEST_SRCS = firmware/test/test_afsk1200.c \
 	  firmware/test/test_fcs.c \
 	  firmware/test/test_fuzz.c \
 	  firmware/test/test_hdlc.c \
+	  firmware/test/test_kilotncd_control.c \
 	  firmware/test/test_kiss.c \
 	  firmware/test/test_tnc_control.c \
 	  firmware/test/test_tnc_diag.c \
@@ -57,7 +60,7 @@ TEST_SRCS = firmware/test/test_afsk1200.c \
 	  firmware/test/test_tnc1200.c \
 	  firmware/test/test_main.c
 
-SRCS	= ${CORE_SRCS} ${TEST_SRCS}
+SRCS	= ${CORE_SRCS} ${TEST_SRCS} daemon/kilotncd_control.c
 
 all: ${TESTBIN}
 
@@ -77,6 +80,9 @@ tool-test: ${TOOLBIN}
 	mkdir -p ${BUILD}/vectors
 	./${TOOLBIN} inspect-mode --mode NINO_MODE=6
 	./${TOOLBIN} inspect-mode --mode NINO_MODE=22
+	./${TOOLBIN} control --cmd status
+	./${TOOLBIN} control --cmd "mode NINO_MODE=6"
+	./${TOOLBIN} control --cmd "dcd 1"
 	./${TOOLBIN} generate-kiss --out ${BUILD}/vectors/kilotnc.kiss --dst APZKTN --src M6VPN --info "KiloTNC test"
 	./${TOOLBIN} generate-pcm --out ${BUILD}/vectors/kilotnc.pcm --dst APZKTN --src M6VPN --info "KiloTNC test" --mode NINO_MODE=6
 	./${TOOLBIN} generate-wav --out ${BUILD}/vectors/kilotnc.wav --dst APZKTN --src M6VPN --info "KiloTNC test" --mode NINO_MODE=22
@@ -101,6 +107,11 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${TOOLBIN} generate-kiss --out ${BUILD}/daemon/input.kiss --dst APZKTN --src M6VPN --info "KiloTNC daemon"
 	./${TOOLBIN} generate-pcm --out ${BUILD}/daemon/input.pcm --dst APZKTN --src M6VPN --info "KiloTNC daemon" --mode NINO_MODE=6
 	./${DAEMONBIN} --status
+	./${DAEMONBIN} --control status
+	./${DAEMONBIN} --control diag
+	./${DAEMONBIN} --control "mode NINO_MODE=6"
+	./${DAEMONBIN} --control "mode NINO_MODE=22"
+	if ./${DAEMONBIN} --control "mode NINO_MODE=0"; then exit 1; else exit 0; fi
 	./${DAEMONBIN} --profile status
 	./${DAEMONBIN} --status --mode NINO_MODE=6
 	./${DAEMONBIN} --status --mode NINO_MODE=22

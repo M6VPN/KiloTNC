@@ -10,6 +10,7 @@
 #include "afsk1200.h"
 #include "ax25.h"
 #include "kiss.h"
+#include "kilotncd_control.h"
 #include "tnc1200.h"
 #include "tnc_diag.h"
 #include "tnc_mode.h"
@@ -43,6 +44,7 @@ struct cli_args {
 	const char *src;
 	const char *info;
 	const char *prefix;
+	const char *cmd;
 };
 
 static int cli_apply_mode(struct tnc1200 *, enum tnc_mode_id, int);
@@ -50,6 +52,7 @@ static int cli_build_path(char *, size_t, const char *, const char *);
 static int cli_build_vector_kiss(const struct cli_args *, uint8_t *,
 	size_t, size_t *);
 static int cli_collect_tx(struct tnc1200 *, int16_t *, size_t, size_t *);
+static int cli_command_control(const struct cli_args *);
 static int cli_command_diag(const struct cli_args *);
 static int cli_command_generate_kiss(const struct cli_args *);
 static int cli_command_generate_pcm(const struct cli_args *);
@@ -114,6 +117,8 @@ main(int argc, char *argv[])
 		return cli_command_loopback(&args);
 	if (strcmp(argv[1], "diag") == 0)
 		return cli_command_diag(&args);
+	if (strcmp(argv[1], "control") == 0)
+		return cli_command_control(&args);
 
 	cli_usage();
 	return 1;
@@ -238,6 +243,36 @@ cli_collect_tx(struct tnc1200 *tnc, int16_t *pcm, size_t pcm_cap,
 		off += emitted;
 	}
 	*sample_count = off;
+
+	return 0;
+}
+
+static int
+cli_command_control(const struct cli_args *args)
+{
+	struct kilotncd_control_context ctx;
+	struct tnc1200 tnc;
+	struct tnc_diag diag;
+	size_t len;
+	enum kilotncd_control_result res;
+
+	if (args->cmd == NULL) {
+		cli_usage();
+		return 1;
+	}
+	if (tnc1200_init(&tnc, NULL) != TNC1200_OK ||
+	    tnc_diag_init(&diag) != TNC_DIAG_OK)
+		return 1;
+	ctx.tnc = &tnc;
+	ctx.diag = &diag;
+	res = kilotncd_control_exec(&ctx, args->cmd, cli_diag_buf,
+	    sizeof(cli_diag_buf), &len);
+	if (res != KILOTNCD_CONTROL_OK) {
+		(void)fprintf(stderr, "control error=%u\n",
+		    (unsigned int)res);
+		return 1;
+	}
+	(void)printf("%s", cli_diag_buf);
 
 	return 0;
 }
@@ -670,6 +705,10 @@ cli_parse_args(int argc, char **argv, struct cli_args *args)
 			if (i + 1 >= argc)
 				return -1;
 			args->prefix = argv[++i];
+		} else if (strcmp(argv[i], "--cmd") == 0) {
+			if (i + 1 >= argc)
+				return -1;
+			args->cmd = argv[++i];
 		} else {
 			return -1;
 		}
@@ -818,7 +857,9 @@ cli_usage(void)
 	    "--mode NINO_MODE=6\n"
 	    "  kilotnc_cli loopback --in frame.kiss --out out.kiss "
 	    "--mode NINO_MODE=6\n"
-	    "  kilotnc_cli diag --mode NINO_MODE=6\n");
+	    "  kilotnc_cli diag --mode NINO_MODE=6\n"
+	    "  kilotnc_cli control --cmd status\n"
+	    "  kilotnc_cli control --cmd \"mode NINO_MODE=6\"\n");
 }
 
 static int

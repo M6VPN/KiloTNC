@@ -49,6 +49,8 @@ M1.11 exposes formatted snapshots through `kilotnc_cli diag` and prints snapshot
 
 M1.12 planning treats the same snapshot format as the status source for the host CLI, planned `kilotncd` daemon status, and future diagnostic CDC or local control sockets.
 
+M1.21 exposes diagnostics through one-shot local control commands in `kilotncd --control diag` and `kilotnc_cli control --cmd diag`. The control command path is bounded text only and does not add a persistent control socket or remote listener.
+
 ## Limitations
 
 - No USB CDC CLI yet.
