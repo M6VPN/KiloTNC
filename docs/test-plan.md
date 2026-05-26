@@ -286,6 +286,16 @@ M1.10 host-side tests checked with `make clean && make test` and `make sanitize`
 - Diagnostics include current mode and mode request counters.
 - Diagnostics formatter includes stable mode fields.
 
+M1.11 host-side checks on 2026-05-26:
+
+- `make tools` builds `build/kilotnc_cli`.
+- CLI mode command accepts `NINO_MODE=6`.
+- CLI mode command accepts `NINO_MODE=22`.
+- CLI rejects an unimplemented mode for TX/RX operations before file I/O.
+- CLI can print bounded diagnostics text.
+- CLI uses bounded file reads and writes.
+- CLI raw PCM helpers read and write signed 16-bit little-endian mono PCM.
+
 Pending:
 
 - Full timing recovery loop.

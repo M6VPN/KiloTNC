@@ -45,6 +45,8 @@ The actual output includes all snapshot fields. The formatter uses bounded `snpr
 
 This layer is intended to feed a later diagnostic CDC CLI and embedded fault reporting path. It also provides a stable host-side test target before any USB or hardware work starts.
 
+M1.11 exposes formatted snapshots through `kilotnc_cli diag` and prints snapshots after KISS-to-PCM, PCM-to-KISS, and loopback commands.
+
 ## Limitations
 
 - No USB CDC CLI yet.

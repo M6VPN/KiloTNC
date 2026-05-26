@@ -9,8 +9,9 @@ SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
 BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
 SANBIN	= ${BUILD}/kilotnc_tests_sanitize
+TOOLBIN	= ${BUILD}/kilotnc_cli
 
-SRCS	= firmware/src/afsk1200.c \
+CORE_SRCS = firmware/src/afsk1200.c \
 	  firmware/src/afsk1200_rx.c \
 	  firmware/src/afsk1200_stream.c \
 	  firmware/src/afsk1200_tx.c \
@@ -21,8 +22,9 @@ SRCS	= firmware/src/afsk1200.c \
 	  firmware/src/tnc_control.c \
 	  firmware/src/tnc_diag.c \
 	  firmware/src/tnc_mode.c \
-	  firmware/src/tnc1200.c \
-	  firmware/test/test_afsk1200.c \
+	  firmware/src/tnc1200.c
+
+TEST_SRCS = firmware/test/test_afsk1200.c \
 	  firmware/test/test_afsk1200_rx.c \
 	  firmware/test/test_afsk1200_stream.c \
 	  firmware/test/test_afsk1200_tx.c \
@@ -37,6 +39,8 @@ SRCS	= firmware/src/afsk1200.c \
 	  firmware/test/test_tnc1200.c \
 	  firmware/test/test_main.c
 
+SRCS	= ${CORE_SRCS} ${TEST_SRCS}
+
 all: ${TESTBIN}
 
 ${TESTBIN}: ${SRCS}
@@ -49,11 +53,17 @@ test: ${TESTBIN}
 sanitize: ${SANBIN}
 	./${SANBIN}
 
+tools: ${TOOLBIN}
+
 ${SANBIN}: ${SRCS}
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} ${SANFLAGS} -o $@ ${SRCS}
 
+${TOOLBIN}: ${CORE_SRCS} tools/kilotnc_cli.c
+	mkdir -p ${BUILD}
+	${CC} ${CFLAGS} -o $@ ${CORE_SRCS} tools/kilotnc_cli.c
+
 clean:
 	rm -rf ${BUILD}
 
-.PHONY: all test sanitize clean
+.PHONY: all test sanitize tools clean

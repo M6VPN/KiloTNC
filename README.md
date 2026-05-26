@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.10 mode registry and NinoTNC compatibility mapping.
+Current stage: M1.11 host CLI/test tool.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -73,7 +73,13 @@ Run the optional sanitizer build:
 make sanitize
 ```
 
-GitHub Actions runs `make test` and `make sanitize` on push and pull request.
+Build host-side debug tools:
+
+```text
+make tools
+```
+
+GitHub Actions runs `make test`, `make tools`, and `make sanitize` on push and pull request.
 
 ## Repository Layout
 

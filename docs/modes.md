@@ -57,6 +57,17 @@ If a known but unimplemented mode is requested, TNC1200 records the request and 
 
 If an invalid mode is requested, TNC1200 counts it and keeps the current implemented mode.
 
+## Host CLI
+
+M1.11 adds `kilotnc_cli`, which accepts the same mode parser inputs:
+
+- `NINO_MODE=6`
+- `NINO_MODE=22`
+- `KILOTNC_MODE=1200-afsk-ax25`
+- `1200-afsk-ax25`
+
+The CLI rejects planned and research modes for TX/RX operations. The `mode` command can still inspect registry entries.
+
 ## Sources checked
 
 | Source title                         | Date checked | Note                                        |

@@ -21,5 +21,8 @@ jobs:
       - name: Test
         run: make test
 
+      - name: Tools
+        run: make tools
+
       - name: Sanitizers
         run: make sanitize
