@@ -194,6 +194,29 @@ M1.6 host-side tests checked with `make clean && make test` and `make sanitize` 
 - TX-generated PCM decoded by whole-buffer RX acquisition.
 - TX-generated PCM decoded by streaming RX.
 
+M1.7 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- TNC1200 default config init.
+- TNC1200 custom config init.
+- NULL argument handling.
+- KISS data frame starts AFSK1200 TX.
+- TX PCM from KISS input decodes through whole-buffer RX.
+- TX PCM from KISS input decodes through streaming RX.
+- RX PCM frame emits KISS command 0 data frame.
+- Full KISS-to-PCM-to-KISS loopback with two TNC instances.
+- Host input in small KISS chunks.
+- TX process with small PCM output chunks.
+- RX process with small PCM input chunks.
+- Busy TX rejects the next KISS data frame and counts it.
+- KISS TXDELAY command updates TX preamble flag count.
+- KISS TXtail command updates TX tail flag count.
+- KISS P, SlotTime, FullDuplex, Return command handling.
+- Unsupported KISS command ignored and counted.
+- Malformed KISS input increments parse error counter and recovers.
+- RX KISS output buffer too small drops output and increments counter.
+- Stats update for TX, RX, KISS parse errors, ignored commands, and samples.
+- Abort TX stops active transmission.
+
 Pending:
 
 - Full timing recovery loop.
@@ -202,6 +225,7 @@ Pending:
 - Embedded ring-buffer integration.
 - PTT safety layer.
 - USB/KISS transmit queue.
+- KISS-to-modem channel access policy.
 - Real radio level control.
 - Real noisy decode.
 - Real sample clock drift handling.

@@ -14,6 +14,7 @@ int test_fcs(void);
 int test_fuzz(void);
 int test_hdlc(void);
 int test_kiss(void);
+int test_tnc1200(void);
 
 static int test_run(const char *, int (*)(void));
 
@@ -31,6 +32,7 @@ main(void)
 	failures += test_run("hdlc", test_hdlc);
 	failures += test_run("ax25", test_ax25);
 	failures += test_run("kiss", test_kiss);
+	failures += test_run("tnc1200", test_tnc1200);
 	failures += test_run("fuzz", test_fuzz);
 
 	if (failures != 0) {

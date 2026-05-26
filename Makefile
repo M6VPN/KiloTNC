@@ -18,6 +18,7 @@ SRCS	= firmware/src/afsk1200.c \
 	  firmware/src/fcs.c \
 	  firmware/src/hdlc.c \
 	  firmware/src/kiss.c \
+	  firmware/src/tnc1200.c \
 	  firmware/test/test_afsk1200.c \
 	  firmware/test/test_afsk1200_rx.c \
 	  firmware/test/test_afsk1200_stream.c \
@@ -27,6 +28,7 @@ SRCS	= firmware/src/afsk1200.c \
 	  firmware/test/test_fuzz.c \
 	  firmware/test/test_hdlc.c \
 	  firmware/test/test_kiss.c \
+	  firmware/test/test_tnc1200.c \
 	  firmware/test/test_main.c
 
 all: ${TESTBIN}

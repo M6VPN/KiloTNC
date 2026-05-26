@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.6 AFSK1200 streaming TX state machine.
+Current stage: M1.7 host-side KISS-to-AFSK1200 integration harness.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 

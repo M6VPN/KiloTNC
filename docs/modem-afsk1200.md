@@ -229,6 +229,10 @@ The TX state machine states are:
 
 This module does not control PTT. PTT timing and fail-safe behavior remain a later safety-layer task. M1.6 validates generated TX PCM by decoding it through both the whole-buffer RX acquisition API and the streaming RX state machine.
 
+## M1.7 Host-Side TNC Integration
+
+M1.7 adds the `tnc1200` host harness. It connects KISS data frames to AFSK1200 streaming TX and connects AFSK1200 streaming RX frames back to KISS data frames. This proves KISS-to-PCM-to-KISS loopback behavior without USB CDC, PTT, DMA, codec drivers, or hardware.
+
 ## Limitations
 
 - Generated host vectors only.
