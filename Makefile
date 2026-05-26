@@ -21,6 +21,7 @@ DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_audio_raw.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_file.c \
+	  daemon/kilotncd_profile.c \
 	  daemon/kilotncd_pty.c \
 	  daemon/kilotncd_radio.c \
 	  daemon/kilotncd_radio_log.c \
@@ -100,11 +101,17 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${TOOLBIN} generate-kiss --out ${BUILD}/daemon/input.kiss --dst APZKTN --src M6VPN --info "KiloTNC daemon"
 	./${TOOLBIN} generate-pcm --out ${BUILD}/daemon/input.pcm --dst APZKTN --src M6VPN --info "KiloTNC daemon" --mode NINO_MODE=6
 	./${DAEMONBIN} --status
+	./${DAEMONBIN} --profile status
 	./${DAEMONBIN} --status --mode NINO_MODE=6
 	./${DAEMONBIN} --status --mode NINO_MODE=22
+	./${DAEMONBIN} --profile status --mode NINO_MODE=0
 	./${DAEMONBIN} --status --radio-backend none
 	printf 'radio_backend=none\n' > ${BUILD}/daemon/radio-none.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/radio-none.conf --status
+	./${DAEMONBIN} --config daemon/examples/status.conf
+	./${DAEMONBIN} --profile file-tx --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/profile-file-tx.pcm
+	./${DAEMONBIN} --profile file-rx --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out ${BUILD}/daemon/profile-file-rx.kiss
+	./${DAEMONBIN} --profile file-loopback --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --kiss-out ${BUILD}/daemon/profile-file-loopback.kiss
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/tx.pcm --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --radio-backend log --radio-log ${BUILD}/daemon/ptt.log --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/radio-log-tx.pcm --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out ${BUILD}/daemon/rx.kiss --once
@@ -112,6 +119,9 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	./${DAEMONBIN} --config ${BUILD}/daemon/audio-raw.conf --once
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --kiss-out ${BUILD}/daemon/loop.kiss --loopback-once
 	./${DAEMONBIN} --config daemon/example.conf --once
+	./${DAEMONBIN} --config daemon/examples/file-tx.conf
+	./${DAEMONBIN} --config daemon/examples/file-rx.conf
+	./${DAEMONBIN} --config daemon/examples/file-loopback.conf
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in - --pcm-out ${BUILD}/daemon/stdin-tx.pcm --once < ${BUILD}/daemon/input.kiss
 	./${DAEMONBIN} --mode NINO_MODE=6 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out - --once > ${BUILD}/daemon/stdout-tx.pcm 2> ${BUILD}/daemon/stdout-tx.diag
 	./${DAEMONBIN} --mode NINO_MODE=6 --pcm-in ${BUILD}/daemon/input.pcm --kiss-out - --once > ${BUILD}/daemon/stdout-rx.kiss 2> ${BUILD}/daemon/stdout-rx.diag
@@ -132,19 +142,28 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-bits.conf --status; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --radio-backend serial-rts --status; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --radio-backend bad-radio --status; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --profile bad-profile; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --profile file-tx; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --mode NINO_MODE=0 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/bad.pcm --once; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --kiss-tcp-listen 0.0.0.0:18015 --kiss-tcp-once --pcm-out ${BUILD}/daemon/nonlocal.pcm --once; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --profile tcp-kiss-once --kiss-tcp-listen 127.0.0.1:18020 --kiss-tcp-once --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/tcp-kiss-conflict.pcm; then exit 1; else exit 0; fi
 	printf 'mode=NINO_MODE=6\nkiss_tcp_listen=127.0.0.1:18016\nkiss_tcp_once=1\nallow_nonlocal_bind=0\npcm_out=${BUILD}/daemon/config-tcp.pcm\n' > ${BUILD}/daemon/tcp.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/tcp.conf --once > ${BUILD}/daemon/config-tcp.log 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18016 ${BUILD}/daemon/input.kiss; wait $$pid
+	./${DAEMONBIN} --config daemon/examples/tcp-kiss-once.conf > ${BUILD}/daemon/example-tcp.log 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18019 ${BUILD}/daemon/input.kiss; wait $$pid
 	printf 'mode=NINO_MODE=6\nkiss_unix_listen=${BUILD}/daemon/config.sock\nkiss_unix_once=1\nunlink_stale_socket=0\npcm_out=${BUILD}/daemon/config-unix.pcm\n' > ${BUILD}/daemon/unix.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/unix.conf --once > ${BUILD}/daemon/config-unix.log 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/daemon/config.sock ${BUILD}/daemon/input.kiss; wait $$pid
+	./${DAEMONBIN} --config daemon/examples/unix-kiss-once.conf > ${BUILD}/daemon/example-unix.log 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/daemon/example.sock ${BUILD}/daemon/input.kiss; wait $$pid
 	printf 'mode=NINO_MODE=6\nkiss_pty=1\nkiss_pty_once=1\npty_path_out=${BUILD}/daemon/config.pty\npcm_out=${BUILD}/daemon/config-pty.pcm\n' > ${BUILD}/daemon/pty.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/pty.conf --once > ${BUILD}/daemon/config-pty.log 2> ${BUILD}/daemon/config-pty.err & pid=$$!; sleep 1; test -s ${BUILD}/daemon/config.pty; ./${PTYCLIENTBIN} ${BUILD}/daemon/config.pty ${BUILD}/daemon/input.kiss; wait $$pid
+	./${DAEMONBIN} --config daemon/examples/pty-kiss-once.conf > ${BUILD}/daemon/example-pty.log 2> ${BUILD}/daemon/example-pty.err & pid=$$!; sleep 1; test -s ${BUILD}/daemon/example.pty; ./${PTYCLIENTBIN} ${BUILD}/daemon/example.pty ${BUILD}/daemon/input.kiss; wait $$pid
 	if ./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18017 --kiss-unix-listen ${BUILD}/daemon/conflict.sock --kiss-tcp-once --kiss-unix-once --pcm-out ${BUILD}/daemon/conflict.pcm --once; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18018 --kiss-tcp-once --kiss-pty --kiss-pty-once --pcm-out ${BUILD}/daemon/conflict-pty.pcm --once; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --kiss-unix-listen ${BUILD}/daemon/conflict.sock --kiss-unix-once --kiss-pty --kiss-pty-once --pcm-out ${BUILD}/daemon/conflict-unix-pty.pcm --once; then exit 1; else exit 0; fi
 	test -s ${BUILD}/daemon/input.kiss
 	test -s ${BUILD}/daemon/input.pcm
+	test -s ${BUILD}/daemon/profile-file-tx.pcm
+	test -s ${BUILD}/daemon/profile-file-rx.kiss
+	test -s ${BUILD}/daemon/profile-file-loopback.kiss
 	test -s ${BUILD}/daemon/tx.pcm
 	test -s ${BUILD}/daemon/radio-log-tx.pcm
 	test -s ${BUILD}/daemon/ptt.log
@@ -154,6 +173,9 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	test -s ${BUILD}/daemon/audio-raw.pcm
 	test -s ${BUILD}/daemon/loop.kiss
 	test -s ${BUILD}/daemon/config-tx.pcm
+	test -s ${BUILD}/daemon/example-file-tx.pcm
+	test -s ${BUILD}/daemon/example-file-rx.kiss
+	test -s ${BUILD}/daemon/example-file-loopback.kiss
 	test -s ${BUILD}/daemon/stdin-tx.pcm
 	test -s ${BUILD}/daemon/stdout-tx.pcm
 	test -s ${BUILD}/daemon/stdout-tx.diag
@@ -161,12 +183,16 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	test -s ${BUILD}/daemon/stdout-rx.diag
 	test -s ${BUILD}/daemon/tcp-tx.pcm
 	test -s ${BUILD}/daemon/config-tcp.pcm
+	test -s ${BUILD}/daemon/example-tcp.pcm
 	test -s ${BUILD}/daemon/unix-tx.pcm
 	test -s ${BUILD}/daemon/config-unix.pcm
+	test -s ${BUILD}/daemon/example-unix.pcm
 	test -s ${BUILD}/daemon/kilotnc.pty
 	test -s ${BUILD}/daemon/pty-tx.pcm
 	test -s ${BUILD}/daemon/config.pty
 	test -s ${BUILD}/daemon/config-pty.pcm
+	test -s ${BUILD}/daemon/example.pty
+	test -s ${BUILD}/daemon/example-pty.pcm
 
 ${SANBIN}: ${SRCS}
 	mkdir -p ${BUILD}

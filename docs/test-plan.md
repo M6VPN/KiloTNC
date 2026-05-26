@@ -399,6 +399,23 @@ M1.19 host-side checks on 2026-05-26:
 - Existing raw audio, file-mode, stdin/stdout, localhost TCP, Unix socket, and PTY daemon checks still pass.
 - No real serial PTT, CAT, GPIO, hardware PTT, real audio API, USB, or hardware path is implemented.
 
+M1.20 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the profile validation module.
+- `--profile status` works and prints mode, profile, support, radio backend, and diagnostics.
+- `--profile file-tx`, `file-rx`, and `file-loopback` work with valid local file arguments.
+- `tcp-kiss-once`, `unix-kiss-once`, and `pty-kiss-once` work in existing once-mode daemon tests.
+- Omitted profile values are inferred from compatible existing flags.
+- Example configs under `daemon/examples/` run successfully.
+- Missing required paths are rejected.
+- TCP plus Unix, TCP plus PTY, Unix plus PTY, and KISS input plus TCP listener conflicts are rejected.
+- Unsupported modes are rejected for TX/RX profiles.
+- Status reports a known but unimplemented mode without starting TX or RX.
+- Nonlocal TCP bind is rejected unless explicitly allowed.
+- Invalid audio formats and unsupported radio backends are rejected.
+- Existing file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
+- No real audio API, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

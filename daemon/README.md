@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.19 Scope
+## M1.20 Scope
 
 Implemented:
 
@@ -22,6 +22,8 @@ Implemented:
 - Daemon radio-control backend interface.
 - No-PTT and simulated PTT backends.
 - Log PTT backend for deterministic tests.
+- Config profile parser, inference, defaults, and validation.
+- Safe example configs under `daemon/examples/`.
 
 Not implemented:
 
@@ -42,6 +44,7 @@ Allowed keys:
 
 ```text
 mode=NINO_MODE=6
+profile=file-tx
 kiss_in=build/vectors/kilotnc.kiss
 kiss_out=build/daemon/out.kiss
 pcm_in=build/vectors/kilotnc.pcm
@@ -70,6 +73,32 @@ radio_log=build/daemon/ptt.log
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
 
 Command-line options override config values.
+
+## Profiles
+
+M1.20 profiles describe the complete daemon mode before any real audio or radio-control adapters are added.
+
+| Profile          | Required shape                            |
+| ---------------- | ----------------------------------------- |
+| `file-tx`        | KISS input file to raw PCM output file    |
+| `file-rx`        | Raw PCM input file to KISS output file    |
+| `file-loopback`  | KISS input file to KISS output file       |
+| `stdio-tx`       | KISS stdin or PCM stdout participates     |
+| `stdio-rx`       | PCM stdin or KISS stdout participates     |
+| `tcp-kiss-once`  | One localhost TCP KISS client to PCM file |
+| `unix-kiss-once` | One local Unix socket KISS client         |
+| `pty-kiss-once`  | One local PTY KISS client                 |
+| `status`         | Mode and diagnostics only                 |
+
+Use a profile explicitly:
+
+```text
+build/kilotncd --profile file-tx --mode NINO_MODE=6 --kiss-in frame.kiss --pcm-out tx.pcm
+```
+
+If `--profile` is omitted, `kilotncd` infers the profile from the selected inputs, outputs, and listeners. Explicit profiles reject conflicting adapters. TX-capable profiles require an implemented mode and nonzero `max_tx_ms`. Status may report known but unimplemented modes without starting TX or RX.
+
+Example configs are in `daemon/examples/`.
 
 ## Commands
 

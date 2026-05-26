@@ -12,6 +12,7 @@
 #include "kilotncd_audio.h"
 #include "kilotncd_config.h"
 #include "kilotncd_file.h"
+#include "kilotncd_profile.h"
 #include "kilotncd_pty.h"
 #include "kilotncd_radio.h"
 #include "kilotncd_tcp.h"
@@ -43,6 +44,7 @@ static uint8_t daemon_kiss_in[KILOTNCD_KISS_MAX_BYTES];
 static uint8_t daemon_kiss_out[KILOTNCD_KISS_MAX_BYTES];
 static int16_t daemon_pcm[KILOTNCD_PCM_MAX_SAMPLES];
 static char daemon_diag[KILOTNCD_DIAG_MAX];
+static char daemon_error[KILOTNCD_PROFILE_ERROR_MAX];
 
 static int kilotncd_apply_mode(struct tnc1200 *, enum tnc_mode_id, int);
 static int kilotncd_audio_config_path(const struct kilotncd_config *,
@@ -62,6 +64,8 @@ static size_t kilotncd_loopback_handler(const uint8_t *, size_t, uint8_t *,
 static int kilotncd_mode_implemented(enum tnc_mode_id);
 static int kilotncd_parse_args(int, char **, struct kilotncd_config *,
 	enum kilotncd_operation *);
+static int kilotncd_profile_operation(enum kilotncd_profile,
+	enum kilotncd_operation *);
 static int kilotncd_read_pcm(const struct kilotncd_config *, const char *,
 	int16_t *, size_t, size_t *);
 static int kilotncd_radio_config_path(const struct kilotncd_config *,
@@ -78,7 +82,8 @@ static int kilotncd_run_tx_once(const struct kilotncd_config *);
 static int kilotncd_pty_ready(const struct kilotncd_config *);
 static int kilotncd_tcp_ready(const struct kilotncd_config *);
 static int kilotncd_unix_ready(const struct kilotncd_config *);
-static int kilotncd_validate_config(const struct kilotncd_config *);
+static int kilotncd_validate_config(struct kilotncd_config *,
+	enum kilotncd_operation *);
 static int kilotncd_write_pcm(const struct kilotncd_config *, const char *,
 	const int16_t *, size_t);
 static const char *kilotncd_support_name(enum tnc_mode_support);
@@ -290,7 +295,7 @@ kilotncd_load_config(int argc, char **argv, struct kilotncd_config *config,
 		return -1;
 	if (kilotncd_parse_args(argc, argv, config, op) != 0)
 		return -1;
-	return kilotncd_validate_config(config);
+	return kilotncd_validate_config(config, op);
 }
 
 static size_t
@@ -349,6 +354,11 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 		} else if (strcmp(argv[i], "--mode") == 0) {
 			if (i + 1 >= argc ||
 			    kilotncd_config_apply_arg(config, "mode",
+			    argv[++i]) != KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--profile") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config, "profile",
 			    argv[++i]) != KILOTNCD_CONFIG_OK)
 				return -1;
 		} else if (strcmp(argv[i], "--kiss-in") == 0) {
@@ -438,6 +448,34 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 	}
 
 	return 0;
+}
+
+static int
+kilotncd_profile_operation(enum kilotncd_profile profile,
+	enum kilotncd_operation *op)
+{
+	if (op == NULL)
+		return -1;
+	if (profile == KILOTNCD_PROFILE_STATUS) {
+		*op = KILOTNCD_OP_STATUS;
+		return 0;
+	}
+	if (profile == KILOTNCD_PROFILE_FILE_LOOPBACK) {
+		*op = KILOTNCD_OP_LOOPBACK_ONCE;
+		return 0;
+	}
+	if (profile == KILOTNCD_PROFILE_FILE_TX ||
+	    profile == KILOTNCD_PROFILE_FILE_RX ||
+	    profile == KILOTNCD_PROFILE_STDIO_TX ||
+	    profile == KILOTNCD_PROFILE_STDIO_RX ||
+	    profile == KILOTNCD_PROFILE_TCP_KISS_ONCE ||
+	    profile == KILOTNCD_PROFILE_UNIX_KISS_ONCE ||
+	    profile == KILOTNCD_PROFILE_PTY_KISS_ONCE) {
+		*op = KILOTNCD_OP_ONCE;
+		return 0;
+	}
+
+	return -1;
 }
 
 static int
@@ -718,19 +756,28 @@ kilotncd_run_status(const struct kilotncd_config *config)
 {
 	struct tnc1200 tnc;
 	const struct tnc_mode_desc *desc;
+	const char *profile_name;
 	const char *radio_name;
 
 	if (tnc_mode_get(config->mode, &desc) != TNC_MODE_OK)
 		return 1;
+	if (kilotncd_profile_format(config->profile, &profile_name) !=
+	    KILOTNCD_PROFILE_OK)
+		return 1;
 	if (kilotncd_radio_backend_name(config->radio_backend,
 	    &radio_name) != KILOTNCD_RADIO_OK)
 		return 1;
-	if (kilotncd_init_tnc(&tnc, config) != 0)
-		return 1;
+	(void)printf("profile=%s\n", profile_name);
 	(void)printf("mode=%s\n", desc->name);
 	(void)printf("support=%s\n", kilotncd_support_name(desc->support));
 	(void)printf("temporary=%d\n", config->mode_temporary);
 	(void)printf("radio_backend=%s\n", radio_name);
+	if (desc->support != TNC_MODE_SUPPORT_IMPLEMENTED) {
+		(void)printf("diag unavailable=mode_not_implemented\n");
+		return 0;
+	}
+	if (kilotncd_init_tnc(&tnc, config) != 0)
+		return 1;
 	if (kilotncd_diag(stdout, "diag", &tnc) != 0)
 		return 1;
 
@@ -802,35 +849,50 @@ kilotncd_unix_ready(const struct kilotncd_config *config)
 }
 
 static int
-kilotncd_validate_config(const struct kilotncd_config *config)
+kilotncd_validate_config(struct kilotncd_config *config,
+	enum kilotncd_operation *op)
 {
-	if ((config->have_kiss_tcp_listen && config->have_kiss_unix_listen) ||
-	    (config->have_kiss_tcp_listen && config->kiss_pty != 0U) ||
-	    (config->have_kiss_unix_listen && config->kiss_pty != 0U))
+	enum kilotncd_operation expected;
+	enum kilotncd_profile_result pres;
+
+	if (config == NULL || op == NULL)
 		return -1;
-	if ((config->have_kiss_tcp_listen || config->have_kiss_unix_listen ||
-	    config->kiss_pty != 0U) && config->have_kiss_in)
+	if (!config->have_profile) {
+		if (*op == KILOTNCD_OP_STATUS) {
+			config->profile = KILOTNCD_PROFILE_STATUS;
+		} else {
+			pres = kilotncd_profile_infer(config,
+			    &config->profile);
+			if (pres != KILOTNCD_PROFILE_OK) {
+				(void)kilotncd_profile_error(pres,
+				    config->profile, daemon_error,
+				    sizeof(daemon_error));
+				(void)fprintf(stderr, "error: %s\n",
+				    daemon_error);
+				return -1;
+			}
+		}
+		config->have_profile = 1;
+	}
+	if (kilotncd_profile_apply_defaults(config) != KILOTNCD_PROFILE_OK)
 		return -1;
-	if (config->have_kiss_in && config->have_pcm_in &&
-	    strcmp(config->kiss_in, "-") == 0 &&
-	    strcmp(config->pcm_in, "-") == 0)
+	if (kilotncd_profile_operation(config->profile, &expected) != 0)
 		return -1;
-	if (config->have_kiss_out && config->have_pcm_out &&
-	    strcmp(config->kiss_out, "-") == 0 &&
-	    strcmp(config->pcm_out, "-") == 0)
+	if (*op == KILOTNCD_OP_NONE)
+		*op = expected;
+	if (*op != expected) {
+		(void)kilotncd_profile_error(KILOTNCD_PROFILE_ERR_CONFLICT,
+		    config->profile, daemon_error, sizeof(daemon_error));
+		(void)fprintf(stderr, "error: %s\n", daemon_error);
 		return -1;
-	if (config->audio_backend != KILOTNCD_AUDIO_BACKEND_RAW_FILE)
+	}
+	pres = kilotncd_profile_validate(config);
+	if (pres != KILOTNCD_PROFILE_OK) {
+		(void)kilotncd_profile_error(pres, config->profile,
+		    daemon_error, sizeof(daemon_error));
+		(void)fprintf(stderr, "error: %s\n", daemon_error);
 		return -1;
-	if (kilotncd_audio_validate_format(&config->audio_format) !=
-	    KILOTNCD_AUDIO_OK)
-		return -1;
-	if (config->radio_backend != KILOTNCD_RADIO_BACKEND_NONE &&
-	    config->radio_backend != KILOTNCD_RADIO_BACKEND_SIM &&
-	    config->radio_backend != KILOTNCD_RADIO_BACKEND_LOG)
-		return -1;
-	if (config->radio_backend == KILOTNCD_RADIO_BACKEND_LOG &&
-	    !config->have_radio_log)
-		return -1;
+	}
 
 	return 0;
 }
@@ -875,7 +937,10 @@ kilotncd_usage(void)
 	(void)fprintf(stderr,
 	    "usage:\n"
 	    "  kilotncd --status [--mode NINO_MODE=6]\n"
+	    "  kilotncd --profile status\n"
 	    "  kilotncd --config daemon/example.conf --once\n"
+	    "  kilotncd --profile file-tx --mode NINO_MODE=6 "
+	    "--kiss-in frame.kiss --pcm-out tx.pcm --once\n"
 	    "  kilotncd --mode NINO_MODE=6 --kiss-in frame.kiss "
 	    "--pcm-out tx.pcm --once\n"
 	    "  kilotncd --mode NINO_MODE=6 --pcm-in rx.pcm "

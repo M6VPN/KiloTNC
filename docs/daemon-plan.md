@@ -16,6 +16,8 @@ M1.18 implements a daemon audio backend abstraction with only a raw signed 16-bi
 
 M1.19 implements a daemon radio-control backend abstraction with no-PTT, simulated, and log backends only. It does not implement real serial RTS/DTR PTT, CAT, GPIO, or hardware control.
 
+M1.20 implements daemon config profiles and validation. It validates file, stdio, TCP, Unix socket, PTY, and status profiles before any future real audio or radio-control adapters are added.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -44,6 +46,20 @@ Planned configuration fields:
 - Diagnostics output level.
 
 M1.14 implements a bounded daemon config file parser. Persistent storage and live config reload are not implemented.
+
+M1.20 adds explicit config profiles:
+
+- `file-tx`.
+- `file-rx`.
+- `file-loopback`.
+- `stdio-tx`.
+- `stdio-rx`.
+- `tcp-kiss-once`.
+- `unix-kiss-once`.
+- `pty-kiss-once`.
+- `status`.
+
+Profiles reject incompatible adapters, unsafe nonlocal TCP binds, unsupported TX/RX modes, invalid audio formats, unsupported radio-control backends, and missing required inputs or outputs. This keeps the daemon path explicit before ALSA, sndio, OSS, serial PTT, CAT, or GPIO adapters are introduced.
 
 M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regression fixtures before real audio or socket adapters are added. M1.14 uses those fixtures for the first `make daemon-test` flow.
 
