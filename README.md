@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.22 foreground daemon event-loop skeleton.
+Current stage: M1.23 ALSA planning plus compile-gated daemon audio stub.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -44,7 +44,7 @@ Planned platform targets:
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
 
-These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, and local PTY once-mode adapter.
+These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA stub boundary, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, and local PTY once-mode adapter.
 
 ## Milestones
 

@@ -438,6 +438,16 @@ M1.22 host-side checks on 2026-05-26:
 - Existing status, control, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
 - No background daemonization, PID file, syslog, real audio API, persistent service, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
 
+M1.23 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the compile-gated ALSA stub.
+- Raw PCM TX, RX, and loopback daemon tests still pass.
+- `audio_backend=alsa` parses as a known backend name.
+- Selecting ALSA in the default build is rejected as unsupported.
+- Default build does not require ALSA headers or ALSA libraries.
+- Existing status, control, profile, foreground, file, stdin/stdout, TCP, Unix socket, PTY, raw audio, and radio log backend checks still pass.
+- No real ALSA, sndio, OSS, PulseAudio, PipeWire, serial PTT, CAT, GPIO, USB, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

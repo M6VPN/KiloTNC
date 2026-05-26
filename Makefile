@@ -5,6 +5,7 @@ CC	?= cc
 CFLAGS	+= -std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror
 CFLAGS	+= -I firmware/include -I daemon
 SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
+ENABLE_ALSA ?= 0
 
 BUILD	= build
 TESTBIN	= ${BUILD}/kilotnc_tests
@@ -19,6 +20,7 @@ TOOL_SRCS = tools/kilotnc_cli.c \
 	  tools/wav_writer.c
 DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_audio.c \
+	  daemon/kilotncd_audio_alsa.c \
 	  daemon/kilotncd_audio_raw.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_control.c \
@@ -153,6 +155,8 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOO
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/invalid.conf --status; then exit 1; else exit 0; fi
 	printf 'audio_backend=alsa\n' > ${BUILD}/daemon/audio-bad-backend.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-backend.conf --status; then exit 1; else exit 0; fi
+	printf 'mode=NINO_MODE=6\naudio_backend=alsa\nkiss_in=${BUILD}/daemon/input.kiss\npcm_out=${BUILD}/daemon/alsa-stub.pcm\n' > ${BUILD}/daemon/audio-alsa-tx.conf
+	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-alsa-tx.conf --once; then exit 1; else exit 0; fi
 	printf 'audio_sample_rate=44100\n' > ${BUILD}/daemon/audio-bad-rate.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/audio-bad-rate.conf --status; then exit 1; else exit 0; fi
 	printf 'audio_channels=2\n' > ${BUILD}/daemon/audio-bad-channels.conf

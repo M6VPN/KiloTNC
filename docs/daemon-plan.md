@@ -22,6 +22,8 @@ M1.21 implements a one-shot local control/status command surface. It parses one 
 
 M1.22 implements a bounded foreground daemon loop skeleton. It can initialize the TNC path, tick channel-control timing, emit periodic diagnostics, exit by `max_iterations`, and run existing deterministic once-mode operations through the foreground entrypoint. It does not implement background daemonization, PID files, syslog, real audio devices, persistent sockets, or remote control.
 
+M1.23 adds ALSA planning plus a compile-gated daemon audio stub. The default build recognizes `audio_backend=alsa` as a known backend but rejects it as unsupported, and it does not require ALSA headers or libraries.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -75,7 +77,7 @@ Planned first-pass backends:
 - POSIX raw device/file backend for deterministic tests. File mode exists in M1.14.
 - stdin/stdout file-stream mode for deterministic tests. Explicit bounded stdin/stdout handling exists in M1.16.
 - Raw PCM audio backend abstraction. Raw file/stdin/stdout backend exists in M1.18.
-- ALSA for Linux as the likely first real Linux audio backend.
+- ALSA for Linux as the likely first real Linux audio backend. A compile-gated unsupported stub exists in M1.23.
 - sndio for OpenBSD as the likely BSD-friendly backend.
 - OSS as a possible fallback on BSDs where available.
 

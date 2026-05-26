@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode. M1.18 adds a raw PCM audio backend abstraction. M1.19 adds a radio-control backend abstraction with no-PTT, simulated, and log backends. M1.20 adds explicit daemon config profiles and validation. M1.21 adds a one-shot local control/status command surface. M1.22 adds a bounded foreground loop skeleton. M1.23 adds an ALSA planning boundary and compile-gated stub.
 
 It is not a background service yet. It does not use real audio devices, real serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.22 Scope
+## M1.23 Scope
 
 Implemented:
 
@@ -29,11 +29,12 @@ Implemented:
 - Foreground bounded loop skeleton.
 - Dry-run foreground mode.
 - Periodic loop diagnostics to stderr.
+- ALSA backend name and compile-gated unsupported stub.
 
 Not implemented:
 
 - Daemonization, fork, PID files, or syslog.
-- ALSA, sndio, OSS, PulseAudio, PipeWire, or real audio devices.
+- Real ALSA, sndio, OSS, PulseAudio, PipeWire, or audio devices.
 - Real serial PTT, CAT, GPIO, or hardware PTT.
 - Real radio receive or transmit.
 - Multi-client TCP server.
@@ -223,7 +224,17 @@ Raw backend format:
 - 48,000 Hz.
 - File, stdin, or stdout paths through existing `-` semantics.
 
-Unsupported audio formats are rejected. `audio_backend=alsa`, `audio_backend=sndio`, and `audio_backend=oss` are planned names only and are rejected in M1.18.
+Unsupported audio formats are rejected.
+
+M1.23 adds an ALSA planning stub:
+
+- `audio_backend=alsa` is recognized as a known backend name.
+- Default builds compile only an unsupported ALSA stub.
+- Default builds do not require `alsa/asoundlib.h`.
+- Default builds do not link `-lasound`.
+- `ENABLE_ALSA` is reserved for later work and does not enable real ALSA runtime support in M1.23.
+
+`audio_backend=sndio` and `audio_backend=oss` are planned names only and remain unsupported.
 
 ## Radio Control Backend
 
