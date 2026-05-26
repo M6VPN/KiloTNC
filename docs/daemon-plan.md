@@ -4,7 +4,9 @@ Working name: `kilotncd`.
 
 `kilotncd` is a planned hardware-independent Linux/BSD daemon. It should use the portable KiloTNC core where practical and provide a KISS TNC service through host audio and host radio-control interfaces.
 
-M1.14 implements a minimal deterministic daemon skeleton. It supports config parsing, file/stdin-style adapters, status output, TX once, RX once, and loopback once. It does not implement real audio, sockets, PTYs, serial PTT, CAT, daemonization, or hardware access.
+M1.14 implements a minimal deterministic daemon skeleton. It supports config parsing, file/stdin-style adapters, status output, TX once, RX once, and loopback once.
+
+M1.15 implements a localhost-only KISS TCP adapter for single-client once-mode testing. It does not implement remote service, multi-client serving, real audio, PTYs, Unix sockets, serial PTT, CAT, daemonization, or hardware access.
 
 ## Scope
 
@@ -57,7 +59,7 @@ PulseAudio and PipeWire are not first core targets because the first daemon shou
 
 Planned interfaces:
 
-- TCP server, bound to localhost by default.
+- TCP server, bound to localhost by default. Single-client once mode exists in M1.15.
 - Unix socket.
 - PTY.
 - stdin/stdout test mode.

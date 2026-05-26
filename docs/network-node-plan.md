@@ -1,6 +1,6 @@
 # Network Node Plan
 
-KiloTNC may grow optional internet and node services around the portable TNC core. These services are planned only. No network listener, router, BBS, iGate, or remote-control code is implemented in M1.12.
+KiloTNC may grow optional internet and node services around the portable TNC core. These services are planned only. M1.15 adds a localhost-only daemon TCP KISS test adapter, but no internet listener, router, BBS, iGate, or remote-control code is implemented.
 
 ## Scope
 
@@ -18,6 +18,8 @@ Planned node functions:
 ## KISS-over-TCP
 
 KISS-over-TCP is a host interface. It is not an on-air protocol.
+
+M1.15 TCP KISS is for local daemon testing only. It binds to localhost by default and rejects nonlocal binds unless explicitly overridden.
 
 Default behavior should be:
 

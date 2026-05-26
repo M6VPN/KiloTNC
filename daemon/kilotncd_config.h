@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 
+#include "kilotncd_tcp.h"
 #include "tnc_mode.h"
 
 #define KILOTNCD_PATH_MAX	512U
@@ -28,17 +29,21 @@ struct kilotncd_config {
 	char kiss_out[KILOTNCD_PATH_MAX];
 	char pcm_in[KILOTNCD_PATH_MAX];
 	char pcm_out[KILOTNCD_PATH_MAX];
+	struct kilotncd_tcp_addr kiss_tcp_addr;
 	enum tnc_mode_id mode;
 	int mode_temporary;
 	uint8_t p;
 	uint8_t slottime_10ms;
 	uint8_t fullduplex;
+	uint8_t kiss_tcp_once;
+	uint8_t allow_nonlocal_bind;
 	uint32_t max_tx_ms;
 	int have_mode;
 	int have_kiss_in;
 	int have_kiss_out;
 	int have_pcm_in;
 	int have_pcm_out;
+	int have_kiss_tcp_listen;
 };
 
 enum kilotncd_config_result kilotncd_config_apply_arg(

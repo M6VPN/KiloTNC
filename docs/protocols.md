@@ -158,6 +158,8 @@ Mercury:
 
 KISS-over-TCP, Unix sockets, PTYs, and stdin/stdout are daemon host interfaces. They are not on-air protocols.
 
+KISS-over-TCP transports KISS frames between a host client and a daemon. It does not change AX.25, HDLC, FCS, or modem framing.
+
 Internet bridging is future research and is disabled by default in planning. Any future internet-originated packet path must pass through operator policy, mode validation, queue limits, DCD/channel access, and max TX watchdog logic before RF transmission.
 
 ## Sources checked

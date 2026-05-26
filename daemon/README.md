@@ -1,8 +1,8 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements only a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter.
 
-It is not a background service yet. It does not use real audio devices, sockets, PTYs, serial PTT, CAT, GPIO, USB, or radio hardware.
+It is not a background service yet. It does not use real audio devices, PTYs, Unix sockets, serial PTT, CAT, GPIO, USB, or radio hardware.
 
 ## M1.14 Scope
 
@@ -15,14 +15,17 @@ Implemented:
 - RX once: PCM input to KISS output.
 - Loopback once: KISS input to KISS output through generated PCM.
 - Status output with mode and diagnostics.
+- Localhost KISS TCP single-client once mode.
 
 Not implemented:
 
 - Daemonization, fork, PID files, or syslog.
 - ALSA, sndio, OSS, PulseAudio, or PipeWire.
-- TCP KISS, Unix sockets, or PTYs.
+- Unix sockets or PTYs.
 - Serial PTT, CAT, GPIO, or hardware PTT.
 - Real radio receive or transmit.
+- Multi-client TCP server.
+- Remote internet service.
 
 ## Config Format
 
@@ -40,6 +43,9 @@ max_tx_ms=30000
 p=255
 slottime_10ms=10
 fullduplex=0
+kiss_tcp_listen=127.0.0.1:8001
+kiss_tcp_once=1
+allow_nonlocal_bind=0
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -79,7 +85,15 @@ Run with config:
 build/kilotncd --config daemon/example.conf --once
 ```
 
+Listen for one localhost KISS TCP client and write generated PCM:
+
+```text
+build/kilotncd --kiss-tcp-listen 127.0.0.1:8001 --kiss-tcp-once --pcm-out build/daemon/tcp_tx.pcm --once
+```
+
 Use `-` for stdin or stdout on file-like inputs and outputs. Diagnostics are printed to stderr when binary output is written to stdout.
+
+TCP KISS in M1.15 is localhost-only by default. Binding to anything other than `127.0.0.1` or `localhost` is rejected unless `--allow-nonlocal-bind` is set. If that flag is used, `kilotncd` prints a warning to stderr.
 
 ## Safety Defaults
 
@@ -89,6 +103,7 @@ Use `-` for stdin or stdout on file-like inputs and outputs. Diagnostics are pri
 - `fullduplex=0`.
 - `max_tx_ms=30000`.
 - No network listeners.
+- TCP listeners start only when explicitly requested.
 - No hardware PTT.
 - No real audio device.
 - No internet-to-RF path.
@@ -100,7 +115,6 @@ Planned later adapters:
 - ALSA.
 - sndio.
 - OSS.
-- TCP KISS on localhost first.
 - Unix socket.
 - PTY.
 - Serial PTT and CAT.

@@ -329,6 +329,17 @@ M1.14 host-side checks on 2026-05-26:
 - Unimplemented modes are rejected for TX/RX.
 - No audio backend, socket, PTY, serial, USB, GPIO, or hardware path is implemented.
 
+M1.15 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the localhost TCP adapter.
+- `make daemon-test` starts a single-client localhost TCP KISS listener.
+- TCP client sends generated KISS to the daemon.
+- Daemon writes non-empty PCM output from TCP KISS input.
+- Nonlocal bind such as `0.0.0.0` is rejected without explicit override.
+- Config parser accepts `kiss_tcp_listen`, `kiss_tcp_once`, and `allow_nonlocal_bind`.
+- No TCP listener starts unless requested.
+- No remote internet service, multi-client server, real audio, PTY, serial, USB, GPIO, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

@@ -71,7 +71,7 @@ The current implementation is host-side C. It does not include MCU HAL, host aud
 
 M1.13 generated vectors provide repeatable KISS, PCM, WAV, loopback, and diagnostics outputs for later MCU firmware, daemon, and hardware validation.
 
-M1.14 adds the first `kilotncd` skeleton around the shared core. It is file/stdin-style only and has no real audio, network, PTY, serial, USB, or hardware adapters.
+M1.14 adds the first `kilotncd` skeleton around the shared core. M1.15 adds a localhost-only KISS TCP test adapter. The daemon still has no real audio, remote network service, PTY, Unix socket, serial, USB, or hardware adapters.
 
 ## Target-Specific Adapters
 

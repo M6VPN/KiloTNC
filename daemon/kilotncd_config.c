@@ -44,6 +44,8 @@ kilotncd_config_init(struct kilotncd_config *config)
 	config->p = 255U;
 	config->slottime_10ms = 10U;
 	config->fullduplex = 0U;
+	config->kiss_tcp_once = 0U;
+	config->allow_nonlocal_bind = 0U;
 	config->max_tx_ms = 30000U;
 
 	return KILOTNCD_CONFIG_OK;
@@ -135,6 +137,29 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 		config->have_pcm_out = 1;
 		return kilotncd_config_copy_path(config->pcm_out,
 		    sizeof(config->pcm_out), value);
+	}
+	if (strcmp(key, "kiss_tcp_listen") == 0) {
+		if (kilotncd_tcp_parse_listen(value,
+		    &config->kiss_tcp_addr) != KILOTNCD_TCP_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		config->have_kiss_tcp_listen = 1;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "kiss_tcp_once") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->kiss_tcp_once) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->kiss_tcp_once > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "allow_nonlocal_bind") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->allow_nonlocal_bind) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->allow_nonlocal_bind > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
 	}
 	if (strcmp(key, "p") == 0)
 		return kilotncd_config_parse_u8(value, &config->p);
