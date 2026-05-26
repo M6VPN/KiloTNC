@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.7 expands the host-native embedded skeleton test with modem/audio boundary coverage.
+M2.8 expands the host-native embedded skeleton test with RX audio/modem boundary coverage.
 
 Planned M2 test sequence:
 
@@ -21,6 +21,9 @@ Planned M2 test sequence:
 - Simulated AFSK1200 sample generation into the audio stub.
 - TNC-to-modem TX request handling.
 - Modem diagnostics counters.
+- AFSK1200 streaming RX from audio stub samples.
+- Decoded AX.25 frame KISS output to the USB CDC stub.
+- RX output drop counters.
 - Watchdog fault and PTT-off diagnostic reporting.
 - Board boot with PTT test pin off.
 - Reset safe-off check.

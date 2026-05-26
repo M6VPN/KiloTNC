@@ -22,3 +22,5 @@ M2.5 adds an optional audio loopback hook. Tests can attach the host-native audi
 M2.6 adds an optional embedded TNC hook. Tests can attach the host-native USB CDC stub so `embedded_app_step()` routes KISS bytes through the embedded TNC skeleton, updates mode and KISS counters, and keeps PTT off. This does not emit modem audio or key hardware.
 
 M2.7 adds an optional embedded modem hook. Tests can enable simulated modem TX so accepted embedded TNC KISS data frames request AFSK1200 sample generation into the audio stub. `embedded_app_step()` services bounded modem chunks, keeps the watchdog path active, aborts modem TX on shutdown or watchdog fault, and keeps PTT off.
+
+M2.8 extends the modem hook with RX audio processing. Tests can enable modem RX so `embedded_app_step()` reads samples from the audio RX stub, decodes frames through the portable AFSK1200 streaming RX path, and writes KISS data frames to the USB CDC stub. RX is disabled by default and does not control PTT.

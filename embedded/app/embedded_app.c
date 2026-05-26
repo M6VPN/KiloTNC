@@ -191,6 +191,42 @@ embedded_app_step(struct embedded_app *app)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
+	if (app->modem != NULL && app->modem_audio != NULL &&
+	    app->tnc != NULL && app->tnc_usb != NULL) {
+		struct embedded_modem_rx_frame rx_frames[
+		    EMBEDDED_MODEM_RX_FRAME_CAP];
+		struct embedded_tnc_status tnc_status;
+		enum embedded_modem_result rx_result;
+		size_t rx_count;
+
+		if (embedded_tnc_status(app->tnc, &tnc_status) !=
+		    EMBEDDED_TNC_OK) {
+			if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+				return EMBEDDED_APP_ERR_PLATFORM;
+			return EMBEDDED_APP_ERR_FAULT;
+		}
+		if (tnc_status.modem_rx_enabled != 0U &&
+		    tnc_status.modem_rx_inhibited == 0U) {
+			rx_result = embedded_modem_process_rx(app->modem,
+			    app->modem_audio, rx_frames,
+			    EMBEDDED_MODEM_RX_FRAME_CAP, &rx_count);
+			if (rx_result != EMBEDDED_MODEM_OK &&
+			    rx_result != EMBEDDED_MODEM_ERR_SMALL) {
+				if (embedded_app_set_fault(app) !=
+				    EMBEDDED_APP_OK)
+					return EMBEDDED_APP_ERR_PLATFORM;
+				return EMBEDDED_APP_ERR_FAULT;
+			}
+			if (rx_count != 0U &&
+			    embedded_tnc_emit_modem_rx(app->tnc, app->tnc_usb,
+			    rx_frames, rx_count) != EMBEDDED_TNC_OK) {
+				if (embedded_app_set_fault(app) !=
+				    EMBEDDED_APP_OK)
+					return EMBEDDED_APP_ERR_PLATFORM;
+				return EMBEDDED_APP_ERR_FAULT;
+			}
+		}
+	}
 	if (app->modem != NULL && app->modem_audio != NULL) {
 		enum embedded_modem_result modem_result;
 

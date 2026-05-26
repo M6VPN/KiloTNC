@@ -248,7 +248,7 @@ test_embedded_tnc_diag(void)
 	struct embedded_tnc tnc;
 	struct embedded_app app;
 	struct embedded_diag_snapshot snapshot;
-	char formatted[1024];
+	char formatted[1536];
 	uint8_t kiss[32];
 	size_t formatted_len;
 	size_t kiss_len;
@@ -485,6 +485,13 @@ test_embedded_tnc_null_args(void)
 	if (embedded_tnc_process_usb(&tnc, NULL) != EMBEDDED_TNC_ERR_ARG)
 		return __LINE__;
 	if (embedded_tnc_set_loopback(NULL, 1) != EMBEDDED_TNC_ERR_ARG)
+		return __LINE__;
+	if (embedded_tnc_set_modem_rx(NULL, 1) != EMBEDDED_TNC_ERR_ARG)
+		return __LINE__;
+	if (embedded_tnc_set_modem_tx(NULL, 1) != EMBEDDED_TNC_ERR_ARG)
+		return __LINE__;
+	if (embedded_tnc_emit_modem_rx(NULL, usb_cdc_stub_usb(&usb_stub),
+	    NULL, 0U) != EMBEDDED_TNC_ERR_ARG)
 		return __LINE__;
 	if (embedded_tnc_status(NULL, &status) != EMBEDDED_TNC_ERR_ARG)
 		return __LINE__;

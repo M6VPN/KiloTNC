@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.7 adds a host-native embedded modem/audio boundary skeleton. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, or hardware audio path is implemented here yet.
+M2.8 adds a host-native embedded RX audio/modem boundary skeleton. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, or hardware audio path is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -31,3 +31,5 @@ The audio loopback path uses fixed sample buffers and mono signed 16-bit 48 kHz 
 The embedded TNC skeleton reads KISS bytes from the USB CDC stub, handles basic KISS commands, maps Nino-compatible SETHW mode 6 and 22 through the shared mode registry, keeps unsupported modes inactive, and can loop accepted data frames back to USB in tests. M2.6 does not connect KISS frames to modem audio or hardware PTT.
 
 The embedded modem boundary can accept AX.25 frames with FCS from the embedded TNC test path and generate simulated AFSK1200 samples into the audio stub. This path is disabled by default, uses fixed buffers, does not key PTT, and does not connect samples to hardware or RF.
+
+The embedded RX modem boundary reads generated test samples from the audio RX stub, feeds them through the portable AFSK1200 streaming RX path, and emits decoded AX.25 frames as KISS data frames to the USB CDC stub when RX is explicitly enabled. It is host-tested only and does not use receiver hardware or key PTT.

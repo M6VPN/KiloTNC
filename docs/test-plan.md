@@ -644,6 +644,26 @@ M2.7 embedded modem/audio boundary gate:
 - `make embedded-test` remains host-native and does not require an ARM toolchain.
 - No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.8 embedded RX audio/modem boundary gate:
+
+- `make embedded-test` covers embedded modem RX init.
+- `make embedded-test` covers RX reset.
+- `make embedded-test` covers empty RX audio underflow handling.
+- `make embedded-test` decodes generated AFSK1200 samples through portable streaming RX.
+- `make embedded-test` verifies decoded AX.25 destination, source, and info.
+- `make embedded-test` covers small bounded RX chunk processing.
+- `make embedded-test` verifies noise samples do not produce bogus frames.
+- `make embedded-test` handles too-small RX output arrays safely.
+- `make embedded-test` verifies modem RX is disabled by default.
+- `make embedded-test` verifies enabled modem RX emits KISS data frames to the USB stub.
+- `make embedded-test` verifies USB TX overflow is counted as an RX output drop.
+- `make embedded-test` verifies app step services RX and kicks watchdog.
+- `make embedded-test` verifies watchdog fault blocks RX and leaves PTT off.
+- `make embedded-test` covers modem RX counters in diagnostics.
+- `make embedded-test` verifies PTT remains off during RX tests.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+- No TinyUSB, STM32 HAL, CMSIS, Cube, USB descriptors, hardware register access, ADC, DAC, SAI, I2S, DMA, codec, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

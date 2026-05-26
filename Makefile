@@ -138,7 +138,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.7 embedded status: host-native modem/audio boundary skeleton.'
+	@printf '%s\n' 'M2.8 embedded status: host-native RX audio/modem boundary skeleton.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -371,8 +371,9 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_embedded_tnc.c \
 	  embedded/tests/test_embedded_usb_bridge.c \
 	  embedded/tests/test_usb_cdc_stub.c \
-	  firmware/src/afsk1200.c \
-	  firmware/src/afsk1200_tx.c \
+	firmware/src/afsk1200.c \
+	firmware/src/afsk1200_stream.c \
+	firmware/src/afsk1200_tx.c \
 	  firmware/src/ax25.c \
 	  firmware/src/fcs.c \
 	  firmware/src/hdlc.c \
@@ -399,6 +400,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_embedded_usb_bridge.c \
 		embedded/tests/test_usb_cdc_stub.c \
 		firmware/src/afsk1200.c \
+		firmware/src/afsk1200_stream.c \
 		firmware/src/afsk1200_tx.c \
 		firmware/src/ax25.c \
 		firmware/src/fcs.c \

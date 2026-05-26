@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "kiss.h"
+#include "kilotnc_embedded_modem.h"
 #include "kilotnc_usb_cdc.h"
 #include "tnc_control.h"
 #include "tnc_mode.h"
@@ -38,6 +39,8 @@ struct embedded_tnc_status {
 	uint8_t loopback_enabled;
 	uint8_t modem_tx_enabled;
 	uint8_t modem_tx_inhibited;
+	uint8_t modem_rx_enabled;
+	uint8_t modem_rx_inhibited;
 	uint8_t ptt_state;
 	size_t kiss_frames_in;
 	size_t kiss_frames_out;
@@ -50,6 +53,8 @@ struct embedded_tnc_status {
 	size_t modem_tx_requests;
 	size_t modem_tx_accepted;
 	size_t modem_tx_rejected;
+	size_t modem_rx_kiss_frames;
+	size_t modem_rx_output_drops;
 	size_t usb_bytes_in;
 	size_t usb_bytes_out;
 	size_t usb_would_block;
@@ -68,6 +73,9 @@ struct embedded_tnc {
 };
 
 enum embedded_tnc_result embedded_tnc_init(struct embedded_tnc *);
+enum embedded_tnc_result embedded_tnc_emit_modem_rx(struct embedded_tnc *,
+	const struct kilotnc_usb_cdc *, const struct embedded_modem_rx_frame *,
+	size_t);
 enum embedded_tnc_result embedded_tnc_modem(struct embedded_tnc *,
 	struct embedded_modem *);
 enum embedded_tnc_result embedded_tnc_process_usb(struct embedded_tnc *,
@@ -75,6 +83,8 @@ enum embedded_tnc_result embedded_tnc_process_usb(struct embedded_tnc *,
 enum embedded_tnc_result embedded_tnc_set_loopback(struct embedded_tnc *,
 	int);
 enum embedded_tnc_result embedded_tnc_set_modem_tx(struct embedded_tnc *,
+	int);
+enum embedded_tnc_result embedded_tnc_set_modem_rx(struct embedded_tnc *,
 	int);
 enum embedded_tnc_result embedded_tnc_status(const struct embedded_tnc *,
 	struct embedded_tnc_status *);

@@ -144,6 +144,10 @@ tnc:
 	    embedded_diag_size_to_u32(tnc_status.modem_tx_accepted);
 	snapshot->tnc_modem_tx_rejected =
 	    embedded_diag_size_to_u32(tnc_status.modem_tx_rejected);
+	snapshot->tnc_modem_rx_kiss_frames =
+	    embedded_diag_size_to_u32(tnc_status.modem_rx_kiss_frames);
+	snapshot->tnc_modem_rx_output_drops =
+	    embedded_diag_size_to_u32(tnc_status.modem_rx_output_drops);
 	snapshot->tnc_current_mode = (uint8_t)tnc_status.current_mode;
 	snapshot->tnc_txdelay = tnc_status.txdelay;
 	snapshot->tnc_p = tnc_status.p;
@@ -152,6 +156,7 @@ tnc:
 	snapshot->tnc_fullduplex = tnc_status.fullduplex;
 	snapshot->tnc_loopback_enabled = tnc_status.loopback_enabled;
 	snapshot->tnc_modem_tx_enabled = tnc_status.modem_tx_enabled;
+	snapshot->tnc_modem_rx_enabled = tnc_status.modem_rx_enabled;
 
 modem:
 	if (app->modem == NULL)
@@ -170,9 +175,26 @@ modem:
 	    embedded_diag_size_to_u32(modem_status.tx_samples_generated);
 	snapshot->modem_tx_audio_errors =
 	    embedded_diag_size_to_u32(modem_status.tx_audio_errors);
+	snapshot->modem_rx_frames_ok =
+	    embedded_diag_size_to_u32(modem_status.rx_frames_ok);
+	snapshot->modem_rx_bad_fcs =
+	    embedded_diag_size_to_u32(modem_status.rx_frames_bad_fcs);
+	snapshot->modem_rx_malformed =
+	    embedded_diag_size_to_u32(modem_status.rx_frames_malformed);
+	snapshot->modem_rx_dropped =
+	    embedded_diag_size_to_u32(modem_status.rx_frames_dropped);
+	snapshot->modem_rx_samples_consumed =
+	    embedded_diag_size_to_u32(modem_status.rx_samples_consumed);
+	snapshot->modem_rx_audio_errors =
+	    embedded_diag_size_to_u32(modem_status.rx_audio_errors);
+	snapshot->modem_rx_audio_underflows =
+	    embedded_diag_size_to_u32(modem_status.rx_audio_underflows);
+	snapshot->modem_rx_audio_overflows =
+	    embedded_diag_size_to_u32(modem_status.rx_audio_overflows);
 	snapshot->modem_aborts =
 	    embedded_diag_size_to_u32(modem_status.aborts);
 	snapshot->modem_tx_active = modem_status.tx_active;
+	snapshot->modem_rx_active = modem_status.rx_active;
 	snapshot->modem_current_mode = (uint8_t)modem_status.current_mode;
 
 	return EMBEDDED_DIAG_OK;
@@ -206,10 +228,16 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "tnc_slottime=%u tnc_txtail=%u tnc_fullduplex=%u "
 	    "tnc_loopback=%u tnc_modem_tx_enabled=%u "
 	    "tnc_modem_tx_requests=%u tnc_modem_tx_accepted=%u "
-	    "tnc_modem_tx_rejected=%u modem_tx_active=%u "
-	    "modem_mode=%u modem_tx_frames_started=%u "
+	    "tnc_modem_tx_rejected=%u tnc_modem_rx_enabled=%u "
+	    "tnc_modem_rx_kiss_frames=%u "
+	    "tnc_modem_rx_output_drops=%u modem_tx_active=%u "
+	    "modem_rx_active=%u modem_mode=%u modem_tx_frames_started=%u "
 	    "modem_tx_frames_rejected=%u modem_tx_frames_done=%u "
 	    "modem_tx_samples_generated=%u modem_tx_audio_errors=%u "
+	    "modem_rx_frames_ok=%u modem_rx_bad_fcs=%u "
+	    "modem_rx_malformed=%u modem_rx_dropped=%u "
+	    "modem_rx_samples_consumed=%u modem_rx_audio_errors=%u "
+	    "modem_rx_audio_underflows=%u modem_rx_audio_overflows=%u "
 	    "modem_aborts=%u "
 	    "app_state=%u reset_cause=%u ptt=%u usb_connected=%u",
 	    snapshot->app_steps, snapshot->app_faults,
@@ -232,12 +260,21 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    snapshot->tnc_fullduplex, snapshot->tnc_loopback_enabled,
 	    snapshot->tnc_modem_tx_enabled, snapshot->tnc_modem_tx_requests,
 	    snapshot->tnc_modem_tx_accepted,
-	    snapshot->tnc_modem_tx_rejected, snapshot->modem_tx_active,
-	    snapshot->modem_current_mode, snapshot->modem_tx_frames_started,
+	    snapshot->tnc_modem_tx_rejected,
+	    snapshot->tnc_modem_rx_enabled,
+	    snapshot->tnc_modem_rx_kiss_frames,
+	    snapshot->tnc_modem_rx_output_drops, snapshot->modem_tx_active,
+	    snapshot->modem_rx_active, snapshot->modem_current_mode,
+	    snapshot->modem_tx_frames_started,
 	    snapshot->modem_tx_frames_rejected,
 	    snapshot->modem_tx_frames_done,
 	    snapshot->modem_tx_samples_generated,
-	    snapshot->modem_tx_audio_errors, snapshot->modem_aborts,
+	    snapshot->modem_tx_audio_errors, snapshot->modem_rx_frames_ok,
+	    snapshot->modem_rx_bad_fcs, snapshot->modem_rx_malformed,
+	    snapshot->modem_rx_dropped, snapshot->modem_rx_samples_consumed,
+	    snapshot->modem_rx_audio_errors,
+	    snapshot->modem_rx_audio_underflows,
+	    snapshot->modem_rx_audio_overflows, snapshot->modem_aborts,
 	    snapshot->app_state, snapshot->reset_cause, snapshot->ptt_state,
 	    snapshot->usb_connected);
 	if (ret < 0)

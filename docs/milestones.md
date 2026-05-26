@@ -135,9 +135,19 @@ M2.7 status:
 - Add modem TX counters to diagnostics.
 - Keep real audio hardware, GPIO PTT, USB hardware, and RF transmit out of the repo.
 
+M2.8 status:
+
+- Add embedded RX audio/modem boundary around portable AFSK1200 streaming RX.
+- Read generated test samples from the audio RX stub.
+- Decode AX.25 frames with FCS through the portable streaming RX path.
+- Emit decoded frames as KISS data frames to the USB CDC stub when RX is enabled.
+- Keep RX disabled by default.
+- Add modem RX counters and RX output drop counters to diagnostics.
+- Keep real receiver hardware, audio peripherals, GPIO PTT, USB hardware, and RF out of the repo.
+
 Next planned M2 passes:
 
-- M2.8: embedded RX audio/modem boundary skeleton.
+- M2.9: embedded full host-test loopback.
 
 M2 scope:
 

@@ -25,6 +25,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.5 host-native audio tests verify audio loopback and audio error counters do not change the stub PTT state.
 - M2.6 host-native embedded TNC tests verify KISS commands, malformed input, unsupported modes, and invalid modes do not change the stub PTT state.
 - M2.7 host-native modem boundary tests verify simulated AFSK sample generation does not change the stub PTT state.
+- M2.8 host-native RX modem tests verify audio RX processing and KISS output do not change the stub PTT state.
 
 ## Watchdog And Timeout
 
@@ -39,6 +40,8 @@ M2 firmware planning must include:
 - Unsupported or invalid mode requests that cannot activate unsafe paths.
 - Simulated modem sample generation that cannot key PTT.
 - Watchdog faults that abort active simulated modem TX.
+- RX audio processing that cannot key PTT.
+- Malformed or noise-like RX audio that cannot affect watchdog or PTT safe-off.
 
 ## Diagnostics Visibility
 
@@ -51,6 +54,7 @@ M2 must expose enough diagnostics for board tests:
 - Audio overflow and underflow counters.
 - Embedded TNC mode, KISS command, and mode request counters.
 - Embedded modem TX active, request, done, rejected, abort, and sample counters.
+- Embedded modem RX frame, sample, audio error, and output drop counters.
 - TX active state.
 - Max TX timeout event.
 - Fault counter snapshot.
@@ -73,5 +77,7 @@ Before any future real radio PTT connection:
 10. Unsupported mode requests are tested without changing PTT state.
 11. Simulated modem TX is tested without changing PTT state.
 12. Watchdog fault aborts simulated modem TX.
+13. Simulated RX audio decode is tested without changing PTT state.
+14. Malformed RX audio is tested without changing PTT state.
 
 Only after these gates should a later milestone consider hardware PTT connection planning.

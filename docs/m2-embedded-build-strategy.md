@@ -137,6 +137,27 @@ GPIO PTT, hardware registers, or hardware drivers.
 This remains host-native. It does not use real USB, ADC, DAC, SAI, I2S,
 DMA, codec drivers, GPIO PTT, hardware registers, or transmitter audio.
 
+## M2.8 Embedded RX Modem Boundary Coverage
+
+`make embedded-test` now also verifies:
+
+- Embedded modem RX init and reset paths.
+- Empty audio RX underflow handling.
+- Generated AFSK1200 PCM decode through portable streaming RX.
+- AX.25 destination, source, and info verification after decode.
+- Small bounded RX chunk processing.
+- Noise input does not produce bogus frames.
+- RX output frame array too small is handled safely.
+- Modem RX is disabled by default.
+- Explicitly enabled modem RX emits KISS data frames to the USB stub.
+- USB TX overflow while emitting RX frames is counted and safe.
+- App step services RX while kicking the watchdog.
+- Watchdog fault blocks RX processing and leaves PTT off.
+- Modem RX counters in embedded diagnostics.
+
+This remains host-native. It does not use real RF receive, real USB, ADC,
+DAC, SAI, I2S, DMA, codec drivers, GPIO PTT, or hardware registers.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

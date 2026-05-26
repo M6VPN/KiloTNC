@@ -111,7 +111,7 @@ static int
 test_diag_format_stable_fields(void)
 {
 	struct embedded_diag_snapshot snapshot;
-	char buf[1024];
+	char buf[1536];
 	size_t out_len;
 
 	(void)memset(&snapshot, 0, sizeof(snapshot));

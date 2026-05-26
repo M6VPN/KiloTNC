@@ -78,6 +78,7 @@ embedded_tnc_apply_mode(struct embedded_tnc *tnc, uint8_t value)
 	if (mode_result != TNC_MODE_OK) {
 		tnc->status.invalid_mode_requests++;
 		tnc->status.modem_tx_inhibited = 1U;
+		tnc->status.modem_rx_inhibited = 1U;
 		return EMBEDDED_TNC_OK;
 	}
 
@@ -87,11 +88,13 @@ embedded_tnc_apply_mode(struct embedded_tnc *tnc, uint8_t value)
 	    desc->support != TNC_MODE_SUPPORT_IMPLEMENTED) {
 		tnc->status.unsupported_mode_requests++;
 		tnc->status.modem_tx_inhibited = 1U;
+		tnc->status.modem_rx_inhibited = 1U;
 		return EMBEDDED_TNC_OK;
 	}
 
 	tnc->status.current_mode = requested;
 	tnc->status.modem_tx_inhibited = 0U;
+	tnc->status.modem_rx_inhibited = 0U;
 	return EMBEDDED_TNC_OK;
 }
 
@@ -211,6 +214,49 @@ embedded_tnc_usb_ready(const struct kilotnc_usb_cdc *usb)
 }
 
 enum embedded_tnc_result
+embedded_tnc_emit_modem_rx(struct embedded_tnc *tnc,
+	const struct kilotnc_usb_cdc *usb,
+	const struct embedded_modem_rx_frame *frames, size_t frame_count)
+{
+	uint8_t encoded[EMBEDDED_TNC_ENCODE_MAX];
+	enum kilotnc_usb_result usb_result;
+	size_t encoded_len;
+	size_t written;
+	size_t i;
+
+	if (tnc == NULL || !embedded_tnc_usb_ready(usb) || frames == NULL)
+		return EMBEDDED_TNC_ERR_ARG;
+	if (tnc->status.modem_rx_enabled == 0U ||
+	    tnc->status.modem_rx_inhibited != 0U)
+		return EMBEDDED_TNC_OK;
+
+	for (i = 0U; i < frame_count; i++) {
+		if (kiss_encode_frame(0, KISS_CMD_DATA, frames[i].data,
+		    frames[i].len, encoded, sizeof(encoded), &encoded_len) !=
+		    KISS_OK) {
+			tnc->status.modem_rx_output_drops++;
+			continue;
+		}
+		usb_result = usb->write(usb->ctx, encoded, encoded_len,
+		    &written);
+		if (usb_result == KILOTNC_USB_ERR_WOULD_BLOCK ||
+		    usb_result == KILOTNC_USB_ERR_SMALL) {
+			tnc->status.modem_rx_output_drops++;
+			continue;
+		}
+		if (usb_result != KILOTNC_USB_OK || written != encoded_len) {
+			tnc->status.usb_errors++;
+			tnc->status.modem_rx_output_drops++;
+			continue;
+		}
+		tnc->status.usb_bytes_out += written;
+		tnc->status.modem_rx_kiss_frames++;
+	}
+
+	return EMBEDDED_TNC_OK;
+}
+
+enum embedded_tnc_result
 embedded_tnc_init(struct embedded_tnc *tnc)
 {
 	struct tnc_control_config config;
@@ -297,6 +343,18 @@ embedded_tnc_set_loopback(struct embedded_tnc *tnc, int enabled)
 		return EMBEDDED_TNC_ERR_ARG;
 
 	tnc->status.loopback_enabled = enabled != 0;
+	return EMBEDDED_TNC_OK;
+}
+
+enum embedded_tnc_result
+embedded_tnc_set_modem_rx(struct embedded_tnc *tnc, int enabled)
+{
+	if (tnc == NULL)
+		return EMBEDDED_TNC_ERR_ARG;
+
+	tnc->status.modem_rx_enabled = enabled != 0;
+	if (enabled != 0)
+		tnc->status.modem_rx_inhibited = 0U;
 	return EMBEDDED_TNC_OK;
 }
 

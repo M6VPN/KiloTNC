@@ -327,7 +327,7 @@ test_target_metadata(void)
 
 	features = KILOTNC_TARGET_FEATURES;
 	if (strcmp(KILOTNC_EMBEDDED_STAGE,
-	    "M2.7 embedded modem/audio boundary skeleton") !=
+	    "M2.8 embedded RX audio/modem boundary skeleton") !=
 	    0)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_NAME, "stm32h753-nucleo") != 0)
