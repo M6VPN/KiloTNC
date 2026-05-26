@@ -14,15 +14,23 @@
 #define TEST_BITS_MAX	(AFSK1200_MAX_TEST_BITS + 16U)
 #define TEST_PCM_MAX	(TEST_BITS_MAX * AFSK1200_SAMPLES_PER_BIT)
 
+static void test_add_dc(int16_t *, size_t, int32_t);
+static void test_add_noise(int16_t *, size_t, uint32_t, int32_t);
 static int test_afsk1200_full_chain(void);
 static int test_afsk1200_impairments(void);
 static int test_afsk1200_null_args(void);
 static int test_afsk1200_pcm(void);
+static void test_clip(int16_t *, size_t, int32_t, int32_t);
+static void test_copy_with_silence(const int16_t *, size_t, int16_t *,
+	size_t, size_t, size_t *);
+static uint32_t test_next_noise(uint32_t *);
 static int test_afsk1200_put_bit(uint8_t *, size_t, size_t *, uint8_t);
 static int test_afsk1200_unpack_bits(const uint8_t *, size_t, uint8_t *,
 	size_t);
 static int test_afsk1200_pack_bits(const uint8_t *, size_t, uint8_t *,
 	size_t);
+static void test_scale(int16_t *, size_t, int32_t, int32_t);
+static int16_t test_saturate(int32_t);
 static void test_fill_addr(struct ax25_addr *, const char *, uint8_t);
 
 int
@@ -184,37 +192,84 @@ test_afsk1200_impairments(void)
 	uint8_t decoded_nrzi[32];
 	int16_t pcm[AFSK1200_SAMPLES_PER_BIT * 32U];
 	int16_t impaired[(AFSK1200_SAMPLES_PER_BIT * 32U) + 96U];
+	int16_t silence[AFSK1200_SAMPLES_PER_BIT * 4U];
+	int16_t noise_only[AFSK1200_SAMPLES_PER_BIT * 16U];
 	struct afsk1200_metrics metrics;
 	size_t count;
 	size_t samples;
 	size_t impaired_samples;
 	size_t i;
-	uint32_t noise;
-	int32_t sample;
+	uint16_t silence_score;
+	uint16_t noise_score;
+	uint16_t valid_score;
 	enum afsk1200_result res;
+
+	(void)memset(silence, 0, sizeof(silence));
+	res = afsk1200_dcd_score(silence, sizeof(silence) / sizeof(silence[0]),
+	    &silence_score);
+	CHECK(res == AFSK1200_OK);
+	CHECK(silence_score < 1000U);
+
+	(void)memset(noise_only, 0, sizeof(noise_only));
+	test_add_noise(noise_only, sizeof(noise_only) / sizeof(noise_only[0]),
+	    0x12345678U, 600);
+	res = afsk1200_dcd_score(noise_only,
+	    sizeof(noise_only) / sizeof(noise_only[0]), &noise_score);
+	CHECK(res == AFSK1200_OK);
+	CHECK(noise_score < 30000U);
 
 	res = afsk1200_nrzi_encode(data_bits, 16U, nrzi, sizeof(nrzi), &count);
 	CHECK(res == AFSK1200_OK);
 	res = afsk1200_encode_pcm(nrzi, count, pcm, sizeof(pcm) /
 	    sizeof(pcm[0]), &samples);
 	CHECK(res == AFSK1200_OK);
+	res = afsk1200_dcd_score(pcm, samples, &valid_score);
+	CHECK(res == AFSK1200_OK);
+	CHECK(valid_score > noise_score);
 
-	(void)memset(impaired, 0, sizeof(impaired));
-	for (i = 0U; i < samples; i++) {
-		noise = (uint32_t)((i * 1103515245U) + 12345U);
-		sample = pcm[i];
-		sample = (sample * 3) / 4;
-		sample += 350;
-		sample += (int32_t)(noise % 401U) - 200;
-		if (sample > 9000)
-			sample = 9000;
-		if (sample < -9000)
-			sample = -9000;
-		impaired[i + 13U] = (int16_t)sample;
-	}
-	impaired_samples = samples + 53U;
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	test_scale(impaired, samples, 1, 2);
+	res = afsk1200_decode_pcm_search(impaired, samples, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
 
-	res = afsk1200_decode_pcm_metrics(impaired, impaired_samples,
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	test_scale(impaired, samples, 3, 2);
+	res = afsk1200_decode_pcm_search(impaired, samples, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
+
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	test_add_dc(impaired, samples, 350);
+	res = afsk1200_decode_pcm_search(impaired, samples, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
+
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	test_clip(impaired, samples, -9000, 9000);
+	res = afsk1200_decode_pcm_search(impaired, samples, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
+
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	test_add_noise(impaired, samples, 0xA5A55A5AU, 200);
+	res = afsk1200_decode_pcm_search(impaired, samples, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_OK);
+	CHECK(memcmp(decoded_nrzi, nrzi, count) == 0);
+
+	test_copy_with_silence(pcm, samples, impaired, 13U, 40U,
+	    &impaired_samples);
+	test_scale(&impaired[13U], samples, 3, 4);
+	test_add_dc(&impaired[13U], samples, 350);
+	test_add_noise(&impaired[13U], samples, 0xA5A55A5AU, 200);
+	test_clip(&impaired[13U], samples, -9000, 9000);
+
+	res = afsk1200_decode_pcm_search(impaired, impaired_samples,
 	    decoded_nrzi, sizeof(decoded_nrzi), &count, &metrics);
 	CHECK(res == AFSK1200_OK);
 	CHECK(count == 16U);
@@ -227,6 +282,22 @@ test_afsk1200_impairments(void)
 	CHECK(metrics.confidence_avg != 0U);
 	CHECK(metrics.dcd_score == metrics.confidence_avg);
 
+	res = afsk1200_decode_pcm_search(impaired, impaired_samples,
+	    decoded_nrzi, 1U, &count, &metrics);
+	CHECK(res == AFSK1200_ERR_SMALL);
+
+	res = afsk1200_decode_pcm_search(pcm, samples - 1U, decoded_nrzi,
+	    sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_ERR_BAD_LEN);
+
+	(void)memcpy(impaired, pcm, samples * sizeof(pcm[0]));
+	impaired_samples = samples - 3U;
+	for (i = 0U; i < impaired_samples; i++)
+		impaired[i] = impaired[i + 3U];
+	res = afsk1200_decode_pcm_search(impaired, impaired_samples,
+	    decoded_nrzi, sizeof(decoded_nrzi), &count, &metrics);
+	CHECK(res == AFSK1200_ERR_BAD_LEN);
+
 	return 0;
 }
 
@@ -238,6 +309,7 @@ test_afsk1200_null_args(void)
 	int16_t pcm[AFSK1200_SAMPLES_PER_BIT * 2U];
 	size_t count;
 	size_t samples;
+	uint16_t score;
 	enum afsk1200_result res;
 
 	res = afsk1200_nrzi_encode(NULL, 1U, out_bits, sizeof(out_bits),
@@ -282,6 +354,19 @@ test_afsk1200_null_args(void)
 	res = afsk1200_decode_pcm_metrics(pcm, AFSK1200_SAMPLES_PER_BIT,
 	    out_bits, sizeof(out_bits), &count, NULL);
 	CHECK(res == AFSK1200_OK);
+	res = afsk1200_decode_pcm_search(NULL, AFSK1200_SAMPLES_PER_BIT,
+	    out_bits, sizeof(out_bits), &count, NULL);
+	CHECK(res == AFSK1200_ERR_ARG);
+	res = afsk1200_decode_pcm_search(pcm, AFSK1200_SAMPLES_PER_BIT,
+	    NULL, sizeof(out_bits), &count, NULL);
+	CHECK(res == AFSK1200_ERR_ARG);
+	res = afsk1200_decode_pcm_search(pcm, AFSK1200_SAMPLES_PER_BIT,
+	    out_bits, sizeof(out_bits), NULL, NULL);
+	CHECK(res == AFSK1200_ERR_ARG);
+	res = afsk1200_dcd_score(NULL, AFSK1200_SAMPLES_PER_BIT, &score);
+	CHECK(res == AFSK1200_ERR_ARG);
+	res = afsk1200_dcd_score(pcm, AFSK1200_SAMPLES_PER_BIT, NULL);
+	CHECK(res == AFSK1200_ERR_ARG);
 
 	return 0;
 }
@@ -353,6 +438,92 @@ test_fill_addr(struct ax25_addr *addr, const char *callsign, uint8_t ssid)
 	(void)memcpy(addr->callsign, callsign, strlen(callsign) + 1U);
 	addr->ssid = ssid;
 	addr->repeated = 0;
+}
+
+static void
+test_add_dc(int16_t *pcm, size_t len, int32_t offset)
+{
+	size_t i;
+
+	for (i = 0U; i < len; i++)
+		pcm[i] = test_saturate((int32_t)pcm[i] + offset);
+}
+
+static void
+test_add_noise(int16_t *pcm, size_t len, uint32_t seed, int32_t amplitude)
+{
+	size_t i;
+	int32_t span;
+	int32_t noise;
+
+	span = (amplitude * 2) + 1;
+	for (i = 0U; i < len; i++) {
+		noise = (int32_t)(test_next_noise(&seed) % (uint32_t)span) -
+		    amplitude;
+		pcm[i] = test_saturate((int32_t)pcm[i] + noise);
+	}
+}
+
+static void
+test_clip(int16_t *pcm, size_t len, int32_t min, int32_t max)
+{
+	size_t i;
+	int32_t sample;
+
+	for (i = 0U; i < len; i++) {
+		sample = pcm[i];
+		if (sample < min)
+			sample = min;
+		if (sample > max)
+			sample = max;
+		pcm[i] = (int16_t)sample;
+	}
+}
+
+static void
+test_copy_with_silence(const int16_t *src, size_t src_len, int16_t *dst,
+	size_t lead, size_t trail, size_t *out_len)
+{
+	size_t i;
+
+	for (i = 0U; i < lead + src_len + trail; i++)
+		dst[i] = 0;
+	for (i = 0U; i < src_len; i++)
+		dst[i + lead] = src[i];
+	*out_len = lead + src_len + trail;
+}
+
+static uint32_t
+test_next_noise(uint32_t *state)
+{
+	uint32_t x;
+
+	x = *state;
+	x ^= x << 13U;
+	x ^= x >> 17U;
+	x ^= x << 5U;
+	*state = x;
+
+	return x;
+}
+
+static void
+test_scale(int16_t *pcm, size_t len, int32_t num, int32_t den)
+{
+	size_t i;
+
+	for (i = 0U; i < len; i++)
+		pcm[i] = test_saturate(((int32_t)pcm[i] * num) / den);
+}
+
+static int16_t
+test_saturate(int32_t sample)
+{
+	if (sample > 32767)
+		return 32767;
+	if (sample < -32768)
+		return -32768;
+	return (int16_t)sample;
 }
 
 static int

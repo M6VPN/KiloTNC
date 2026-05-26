@@ -57,6 +57,15 @@ afsk1200_decode_pcm_metrics(const int16_t *pcm, size_t sample_count,
 	uint8_t *out_nrzi_bits, size_t out_cap, size_t *out_bits,
 	struct afsk1200_metrics *metrics)
 {
+	return afsk1200_decode_pcm_search(pcm, sample_count, out_nrzi_bits,
+	    out_cap, out_bits, metrics);
+}
+
+enum afsk1200_result
+afsk1200_decode_pcm_search(const int16_t *pcm, size_t sample_count,
+	uint8_t *out_nrzi_bits, size_t out_cap, size_t *out_bits,
+	struct afsk1200_metrics *metrics)
+{
 	size_t bit_count;
 	size_t best_offset;
 	size_t best_bits;
@@ -167,6 +176,48 @@ afsk1200_decode_pcm_metrics(const int16_t *pcm, size_t sample_count,
 
 	afsk1200_metrics_finish(metrics);
 	*out_bits = bit_count;
+	return AFSK1200_OK;
+}
+
+enum afsk1200_result
+afsk1200_dcd_score(const int16_t *pcm, size_t sample_count, uint16_t *score)
+{
+	uint8_t bits[AFSK1200_MAX_TEST_BITS];
+	struct afsk1200_metrics metrics;
+	size_t bit_count;
+	size_t i;
+	uint64_t total_abs;
+	uint32_t amp_gate;
+	uint32_t calc;
+	int32_t sample;
+	enum afsk1200_result res;
+
+	if (score == NULL)
+		return AFSK1200_ERR_ARG;
+	*score = 0U;
+
+	res = afsk1200_decode_pcm_search(pcm, sample_count, bits,
+	    sizeof(bits), &bit_count, &metrics);
+	if (res == AFSK1200_ERR_BAD_LEN)
+		return AFSK1200_OK;
+	if (res != AFSK1200_OK)
+		return res;
+
+	total_abs = 0U;
+	for (i = 0U; i < sample_count; i++) {
+		sample = pcm[i];
+		if (sample < 0)
+			sample = -sample;
+		total_abs += (uint32_t)sample;
+	}
+
+	amp_gate = (uint32_t)(total_abs / sample_count);
+	if (amp_gate > 2000U)
+		amp_gate = 2000U;
+	calc = ((uint32_t)metrics.dcd_score * amp_gate) / 2000U;
+	if (calc > 65535U)
+		calc = 65535U;
+	*score = (uint16_t)calc;
 	return AFSK1200_OK;
 }
 

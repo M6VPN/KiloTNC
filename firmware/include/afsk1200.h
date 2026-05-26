@@ -43,6 +43,10 @@ enum afsk1200_result afsk1200_decode_pcm(const int16_t *, size_t,
 	uint8_t *, size_t, size_t *);
 enum afsk1200_result afsk1200_decode_pcm_metrics(const int16_t *, size_t,
 	uint8_t *, size_t, size_t *, struct afsk1200_metrics *);
+enum afsk1200_result afsk1200_decode_pcm_search(const int16_t *, size_t,
+	uint8_t *, size_t, size_t *, struct afsk1200_metrics *);
+enum afsk1200_result afsk1200_dcd_score(const int16_t *, size_t,
+	uint16_t *);
 enum afsk1200_result afsk1200_encode_pcm(const uint8_t *, size_t,
 	int16_t *, size_t, size_t *);
 enum afsk1200_result afsk1200_nrzi_decode(const uint8_t *, size_t,

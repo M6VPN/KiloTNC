@@ -121,13 +121,20 @@ M1.2 host-side tests checked with `make clean && make test` and `make sanitize` 
 
 M1.3 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
 
+- DCD score low for silence.
+- DCD score low for deterministic random noise.
+- DCD score higher for valid generated AFSK1200.
+- Decode search API output buffer-too-small handling.
 - Leading and trailing silence around generated AFSK1200 audio.
 - Small bit-window phase offset through leading silence.
 - Mild amplitude reduction.
+- Mild amplitude increase without overflow.
 - DC offset.
 - Mild deterministic additive noise.
 - Mild clipping.
 - Decoder metrics for bit counts, tone counts, detector energy, confidence, and diagnostic DCD score.
+- Sample count not divisible by 40 rejected safely.
+- NULL argument handling for search and DCD APIs.
 
 Pending:
 

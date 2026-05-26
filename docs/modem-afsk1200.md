@@ -56,6 +56,30 @@ signed 16-bit mono PCM samples
 
 The M1.3 decoder uses fixed 40-sample windows, leading/trailing silence trimming, per-window DC removal, simple tone detection, and best-offset selection across one bit period. It is expected to decode deterministic generated vectors with mild synthetic impairments.
 
+## M1.3 Decoder Realism
+
+M1.3 adds a bounded phase-search decode API:
+
+```text
+afsk1200_decode_pcm_search()
+```
+
+The search tries sample offsets across one 40-sample bit period, rejects non-silent partial tails, scores candidates by tone-decision confidence, and returns the best decoded bit stream. The existing `afsk1200_decode_pcm()` and `afsk1200_decode_pcm_metrics()` APIs remain available.
+
+Synthetic tests now cover:
+
+- Silence DCD score.
+- Random-noise DCD score.
+- Valid generated AFSK1200 DCD score.
+- Decoder metrics on clean and impaired generated vectors.
+- Amplitude reduction and increase.
+- DC offset.
+- Mild clipping.
+- Mild deterministic additive noise.
+- Leading and trailing silence.
+- Small phase offsets through leading silence.
+- Truncated sample count rejection.
+
 ## Metrics
 
 The metrics API reports:
@@ -64,9 +88,13 @@ The metrics API reports:
 - Mark and space bit counts.
 - Total mark and space detector energy.
 - Total, minimum, and average tone-decision confidence.
-- DCD score, currently equal to average confidence.
+- DCD score, currently based on average confidence.
 
 These metrics are diagnostic only. They do not yet represent production DCD behavior.
+
+## DCD Score
+
+`afsk1200_dcd_score()` returns a bounded host-side score from PCM input. It is designed to score silence and deterministic random noise lower than valid generated Bell 202 AFSK. It is not a final squelch, carrier detect, or radio DCD design.
 
 ## Limitations
 
@@ -78,6 +106,7 @@ These metrics are diagnostic only. They do not yet represent production DCD beha
 - No real sample clock drift tolerance claim.
 - No real-radio test claim.
 - No embedded audio DMA.
+- No embedded audio performance claim.
 - No production modem filtering.
 
 ## Sources checked
