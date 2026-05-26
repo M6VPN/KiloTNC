@@ -17,11 +17,22 @@ enum embedded_app_result {
 	EMBEDDED_APP_ERR_FAULT
 };
 
+enum embedded_app_state {
+	EMBEDDED_APP_INIT = 0,
+	EMBEDDED_APP_RUNNING,
+	EMBEDDED_APP_FAULT,
+	EMBEDDED_APP_STOPPED
+};
+
 struct embedded_app_status {
+	enum embedded_app_state state;
 	uint32_t tick_ms;
+	uint32_t control_ticks_10ms;
 	size_t steps;
 	size_t watchdog_kicks;
-	int ptt_state;
+	enum kilotnc_reset_cause reset_cause;
+	enum kilotnc_gpio_state ptt_state;
+	size_t fault_count;
 	int faulted;
 	int shutdown_requested;
 };

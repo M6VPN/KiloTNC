@@ -19,6 +19,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - PTT GPIO is not enabled until explicitly configured in test firmware.
 - Failures force the test PTT state off where the platform permits it.
 - M2.1 host-native embedded tests verify app init, shutdown, and fault paths force the stub PTT state off.
+- M2.2 host-native embedded tests verify simulated watchdog fault sets reset cause to watchdog, increments the platform fault counter, and forces the stub PTT state off.
 
 ## Watchdog And Timeout
 

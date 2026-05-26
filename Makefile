@@ -138,7 +138,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.1 embedded status: compile-only host-native skeleton.'
+	@printf '%s\n' 'M2.2 embedded status: host-native platform tick/watchdog/GPIO stubs.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'

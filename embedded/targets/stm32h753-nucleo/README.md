@@ -6,9 +6,10 @@ Board path:
 
 - NUCLEO-H753ZI or current equivalent STM32H753 Nucleo-144 board.
 
-M2.1 status:
+M2.2 status:
 
 - Compile-only skeleton.
+- Host-native platform stub tests.
 - No vendor project committed.
 - No STM32 HAL or Cube code committed.
 - No CMSIS tree committed.

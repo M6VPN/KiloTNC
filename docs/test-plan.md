@@ -541,6 +541,19 @@ M2.1 embedded compile-only gate:
 - No ARM toolchain is required.
 - No STM32 HAL, CMSIS, TinyUSB, Cube, Pico SDK, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.2 platform stub gate:
+
+- `make embedded-test` covers platform monotonic tick.
+- `make embedded-test` covers 10 ms control tick count.
+- `make embedded-test` covers watchdog kick count.
+- `make embedded-test` covers simulated watchdog fault.
+- `make embedded-test` covers watchdog reset-cause reporting.
+- `make embedded-test` covers PTT/test GPIO default low.
+- `make embedded-test` covers PTT/test GPIO safe-off on shutdown, app fault, and simulated watchdog fault.
+- `make embedded-test` covers diagnostic write counter.
+- `make embedded-test` covers platform fault counter.
+- `make embedded-test` remains host-native and does not require an ARM toolchain.
+
 Pending:
 
 - Full timing recovery loop.

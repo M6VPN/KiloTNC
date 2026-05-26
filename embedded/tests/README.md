@@ -1,6 +1,6 @@
 # Embedded Tests
 
-M2.1 adds a host-native embedded skeleton test.
+M2.2 expands the host-native embedded skeleton test with platform tick, watchdog, reset-cause, diagnostics, and test GPIO/PTT stub coverage.
 
 Planned M2 test sequence:
 

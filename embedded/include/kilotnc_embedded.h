@@ -7,6 +7,6 @@
 #include "kilotnc_board.h"
 #include "kilotnc_platform.h"
 
-#define KILOTNC_EMBEDDED_STAGE	"M2.1 compile-only skeleton"
+#define KILOTNC_EMBEDDED_STAGE	"M2.2 platform stub skeleton"
 
 #endif

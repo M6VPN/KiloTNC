@@ -11,4 +11,4 @@ Planned responsibilities:
 - Publish diagnostics and fault counters.
 - Enforce watchdog and max TX timeout policy.
 
-M2.1 adds a compile-only application skeleton with init, step, shutdown, fault, and status functions. It does not process real USB or audio data yet.
+M2.2 extends the application skeleton with app state, reset cause, 10 ms tick count, watchdog kick count, PTT state, and fault count in status. It does not process real USB or audio data yet.

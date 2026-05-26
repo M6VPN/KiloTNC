@@ -33,6 +33,19 @@ The target verifies:
 - Fault and shutdown force PTT off.
 - Target metadata is visible.
 
+## M2.2 Platform Stub Coverage
+
+`make embedded-test` now also verifies:
+
+- Monotonic millisecond tick state.
+- 10 ms control tick state.
+- Watchdog kick counter.
+- Simulated watchdog fault.
+- Reset-cause reporting.
+- Test GPIO/PTT default-off and safe-off behavior.
+- Diagnostic write counter.
+- Platform fault counter.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

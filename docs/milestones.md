@@ -79,9 +79,17 @@ M2.1 status:
 - Add host-native `make embedded-test`.
 - Keep ARM cross-compilation optional and absent from normal CI.
 
+M2.2 status:
+
+- Expand platform interface with monotonic tick and 10 ms control tick concepts.
+- Add watchdog kick and simulated watchdog fault behavior.
+- Add reset-cause reporting.
+- Add safe test GPIO/PTT state in the stub.
+- Add diagnostic write and platform fault counters.
+- Keep all behavior host-testable with no STM32 HAL or hardware register access.
+
 Next planned M2 passes:
 
-- M2.2: platform tick, watchdog, and GPIO test stubs.
 - M2.3: USB CDC KISS echo or loopback.
 - M2.4: diagnostics bridge.
 - M2.5: audio loopback or test path.

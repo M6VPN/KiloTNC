@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M2.1 embedded compile-only skeleton.
+Current stage: M2.2 platform tick/watchdog/GPIO test stubs.
 
 No PCB work, hardware build, RF transmit, real radio keying, real codec driver work, or embedded USB implementation has started.
 

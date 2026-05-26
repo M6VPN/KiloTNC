@@ -12,4 +12,15 @@ Planned adapters:
 - Diagnostics output.
 - Config and persistence.
 
-M2.1 adds the first compile-only platform boundary and a safe host-native stub. It does not add hardware drivers.
+M2.2 adds host-native platform stubs for:
+
+- Monotonic millisecond tick.
+- 10 ms control ticks.
+- Watchdog kick counter.
+- Simulated watchdog fault.
+- Reset-cause reporting.
+- Test GPIO/PTT state.
+- Diagnostic write counter.
+- Platform fault counter.
+
+The future STM32 adapter should implement the same interface. M2.2 does not add hardware drivers or register access.

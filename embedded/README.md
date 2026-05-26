@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.1 adds a compile-only, host-native embedded skeleton. No USB CDC, audio DMA, codec, GPIO PTT, HAL, or board driver code is implemented here yet.
+M2.2 adds host-native platform tick, watchdog, reset-cause, diagnostics, and test GPIO/PTT stubs. No USB CDC, audio DMA, codec, real GPIO PTT, HAL, or board driver code is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -22,4 +22,4 @@ Run the host-native skeleton test with:
 make embedded-test
 ```
 
-M2.2 should add platform tick, watchdog, and GPIO test stubs. M2.3 should add USB CDC KISS echo or loopback. Both remain separate from the host daemon.
+M2.3 should add USB CDC KISS echo or loopback. It remains separate from the host daemon and should still be host-testable first.
