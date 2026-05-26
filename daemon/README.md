@@ -1,10 +1,10 @@
 # kilotncd
 
-`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior.
+`kilotncd` is the planned KiloTNC host daemon. M1.14 implements a deterministic file/stdin-style skeleton for testing the portable core from a daemon-shaped command. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds local Unix socket once-mode and explicit stdin/stdout file-stream behavior. M1.17 adds local PTY KISS once-mode.
 
-It is not a background service yet. It does not use real audio devices, PTYs, serial PTT, CAT, GPIO, USB, or radio hardware.
+It is not a background service yet. It does not use real audio devices, serial PTT, CAT, GPIO, USB, or radio hardware.
 
-## M1.16 Scope
+## M1.17 Scope
 
 Implemented:
 
@@ -17,16 +17,17 @@ Implemented:
 - Status output with mode and diagnostics.
 - Localhost KISS TCP single-client once mode.
 - Local Unix socket single-client once mode.
+- Local PTY KISS single-client once mode.
 
 Not implemented:
 
 - Daemonization, fork, PID files, or syslog.
 - ALSA, sndio, OSS, PulseAudio, or PipeWire.
-- PTYs.
 - Serial PTT, CAT, GPIO, or hardware PTT.
 - Real radio receive or transmit.
 - Multi-client TCP server.
 - Persistent Unix socket server.
+- Persistent PTY service.
 - Remote internet service.
 
 ## Config Format
@@ -51,6 +52,9 @@ allow_nonlocal_bind=0
 kiss_unix_listen=build/daemon/kilotnc.sock
 kiss_unix_once=1
 unlink_stale_socket=0
+kiss_pty=1
+kiss_pty_once=1
+pty_path_out=build/daemon/kilotnc.pty
 ```
 
 Unknown keys, invalid numbers, invalid mode strings, overlong lines, and overlong paths are rejected.
@@ -102,6 +106,14 @@ Listen for one local Unix socket KISS client and write generated PCM:
 build/kilotncd --kiss-unix-listen build/daemon/kilotnc.sock --kiss-unix-once --pcm-out build/daemon/unix_tx.pcm --once
 ```
 
+Open one local PTY KISS adapter and write generated PCM:
+
+```text
+build/kilotncd --kiss-pty --kiss-pty-once --pty-path-out build/daemon/kilotnc.pty --pcm-out build/daemon/pty_tx.pcm --once
+```
+
+The PTY path file contains the slave device path that a local client can open as a serial-like KISS port.
+
 Use `-` for stdin or stdout on file-like inputs and outputs. Diagnostics are printed to stderr when binary output is written to stdout.
 
 Read KISS from stdin and write generated PCM to a file:
@@ -120,6 +132,8 @@ TCP KISS in M1.15 is localhost-only by default. Binding to anything other than `
 
 Unix socket KISS in M1.16 is local IPC only. The server accepts one client, processes bounded KISS input, exits, and removes the socket path on clean exit. Stale socket unlink is allowed under `build/` for tests, or when `--unlink-stale-socket` is explicitly set. TCP and Unix socket listeners cannot both be enabled in M1.16.
 
+PTY KISS in M1.17 is local-only and serial-like. It opens a pseudoterminal, writes the slave path to `--pty-path-out` when provided, processes one bounded KISS input transaction, exits, and does not access real serial hardware. TCP, Unix socket, and PTY listeners cannot be enabled together in M1.17.
+
 ## Safety Defaults
 
 - Mode defaults to `1200 AFSK AX.25`.
@@ -130,6 +144,7 @@ Unix socket KISS in M1.16 is local IPC only. The server accepts one client, proc
 - No network listeners.
 - TCP listeners start only when explicitly requested.
 - Unix socket listeners start only when explicitly requested.
+- PTY adapters start only when explicitly requested.
 - No hardware PTT.
 - No real audio device.
 - No internet-to-RF path.
@@ -141,7 +156,6 @@ Planned later adapters:
 - ALSA.
 - sndio.
 - OSS.
-- PTY.
 - Serial PTT and CAT.
 
 Future adapters must keep mode validation, DCD/channel access, diagnostics, and max TX timeout in the path.

@@ -357,6 +357,19 @@ M1.16 host-side checks on 2026-05-26:
 - Existing file-mode and localhost TCP daemon checks still pass.
 - No remote internet service, persistent multi-client server, real audio, PTY, serial, USB, GPIO, or hardware path is implemented.
 
+M1.17 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the PTY adapter.
+- `make daemon-test` starts a local PTY KISS once-mode adapter.
+- PTY mode writes a non-empty slave path file.
+- PTY test client opens the slave path and sends generated KISS to the daemon.
+- Daemon writes non-empty PCM output from PTY KISS input.
+- Config parser accepts `kiss_pty`, `kiss_pty_once`, and `pty_path_out`.
+- TCP and PTY listeners cannot both be enabled.
+- Unix socket and PTY listeners cannot both be enabled.
+- Existing file-mode, stdin/stdout, localhost TCP, and Unix socket daemon checks still pass.
+- No remote internet service, persistent multi-client server, real audio, serial PTT, CAT, USB, GPIO, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

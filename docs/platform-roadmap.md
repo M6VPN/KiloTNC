@@ -27,7 +27,7 @@ Planned daemon functions:
 - Serial/CAT/PTT adapters where available.
 - Linux, OpenBSD, FreeBSD, and NetBSD support where practical.
 
-The full daemon target is planned. The current implementation is a minimal host-side skeleton with file, stdin/stdout, localhost TCP once-mode, and local Unix socket once-mode adapters.
+The full daemon target is planned. The current implementation is a minimal host-side skeleton with file, stdin/stdout, localhost TCP once-mode, local Unix socket once-mode, and local PTY once-mode adapters.
 
 ### Network-Capable Hardware
 
@@ -71,7 +71,7 @@ The current implementation is host-side C. It does not include MCU HAL, host aud
 
 M1.13 generated vectors provide repeatable KISS, PCM, WAV, loopback, and diagnostics outputs for later MCU firmware, daemon, and hardware validation.
 
-M1.14 adds the first `kilotncd` skeleton around the shared core. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds a local Unix socket once-mode adapter and explicit stdin/stdout file-stream behavior. The daemon still has no real audio, remote network service, PTY, serial, USB, or hardware adapters.
+M1.14 adds the first `kilotncd` skeleton around the shared core. M1.15 adds a localhost-only KISS TCP test adapter. M1.16 adds a local Unix socket once-mode adapter and explicit stdin/stdout file-stream behavior. M1.17 adds a local PTY KISS once-mode adapter. The daemon still has no real audio, remote network service, real serial, USB, or hardware adapters.
 
 ## Target-Specific Adapters
 

@@ -13,11 +13,13 @@ TOOLBIN	= ${BUILD}/kilotnc_cli
 DAEMONBIN = ${BUILD}/kilotncd
 TCPCLIENTBIN = ${BUILD}/kilotncd_tcp_client
 UNIXCLIENTBIN = ${BUILD}/kilotncd_unix_client
+PTYCLIENTBIN = ${BUILD}/kilotncd_pty_client
 TOOL_SRCS = tools/kilotnc_cli.c \
 	  tools/wav_writer.c
 DAEMON_SRCS = daemon/kilotncd.c \
 	  daemon/kilotncd_config.c \
 	  daemon/kilotncd_file.c \
+	  daemon/kilotncd_pty.c \
 	  daemon/kilotncd_tcp.c \
 	  daemon/kilotncd_unix.c
 
@@ -86,9 +88,9 @@ tool-test: ${TOOLBIN}
 	test "$$(od -An -tx1 -j34 -N2 ${BUILD}/vectors/kilotnc.wav | tr -d ' \n')" = "1000"
 	if ./${TOOLBIN} generate-pcm --out ${BUILD}/vectors/bad.pcm --mode NINO_MODE=0; then exit 1; else exit 0; fi
 
-daemon: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN}
+daemon: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN}
 
-daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${TOOLBIN}
+daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${PTYCLIENTBIN} ${TOOLBIN}
 	mkdir -p ${BUILD}/daemon
 	./${TOOLBIN} generate-kiss --out ${BUILD}/daemon/input.kiss --dst APZKTN --src M6VPN --info "KiloTNC daemon"
 	./${TOOLBIN} generate-pcm --out ${BUILD}/daemon/input.pcm --dst APZKTN --src M6VPN --info "KiloTNC daemon" --mode NINO_MODE=6
@@ -106,6 +108,7 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${TOOLBIN}
 	./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18015 --kiss-tcp-once --pcm-out ${BUILD}/daemon/tcp-tx.pcm --once > ${BUILD}/daemon/tcp.log 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18015 ${BUILD}/daemon/input.kiss; wait $$pid
 	./${DAEMONBIN} --kiss-unix-listen ${BUILD}/daemon/kilotnc.sock --kiss-unix-once --pcm-out ${BUILD}/daemon/unix-tx.pcm --once > ${BUILD}/daemon/unix.log 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/daemon/kilotnc.sock ${BUILD}/daemon/input.kiss; wait $$pid
 	test ! -e ${BUILD}/daemon/kilotnc.sock
+	./${DAEMONBIN} --kiss-pty --kiss-pty-once --pty-path-out ${BUILD}/daemon/kilotnc.pty --pcm-out ${BUILD}/daemon/pty-tx.pcm --once > ${BUILD}/daemon/pty.log 2> ${BUILD}/daemon/pty.err & pid=$$!; sleep 1; test -s ${BUILD}/daemon/kilotnc.pty; ./${PTYCLIENTBIN} ${BUILD}/daemon/kilotnc.pty ${BUILD}/daemon/input.kiss; wait $$pid
 	printf 'unknown=1\n' > ${BUILD}/daemon/invalid.conf
 	if ./${DAEMONBIN} --config ${BUILD}/daemon/invalid.conf --status; then exit 1; else exit 0; fi
 	if ./${DAEMONBIN} --mode NINO_MODE=0 --kiss-in ${BUILD}/daemon/input.kiss --pcm-out ${BUILD}/daemon/bad.pcm --once; then exit 1; else exit 0; fi
@@ -114,7 +117,11 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${TOOLBIN}
 	./${DAEMONBIN} --config ${BUILD}/daemon/tcp.conf --once > ${BUILD}/daemon/config-tcp.log 2>&1 & pid=$$!; sleep 1; ./${TCPCLIENTBIN} 127.0.0.1 18016 ${BUILD}/daemon/input.kiss; wait $$pid
 	printf 'mode=NINO_MODE=6\nkiss_unix_listen=${BUILD}/daemon/config.sock\nkiss_unix_once=1\nunlink_stale_socket=0\npcm_out=${BUILD}/daemon/config-unix.pcm\n' > ${BUILD}/daemon/unix.conf
 	./${DAEMONBIN} --config ${BUILD}/daemon/unix.conf --once > ${BUILD}/daemon/config-unix.log 2>&1 & pid=$$!; sleep 1; ./${UNIXCLIENTBIN} ${BUILD}/daemon/config.sock ${BUILD}/daemon/input.kiss; wait $$pid
+	printf 'mode=NINO_MODE=6\nkiss_pty=1\nkiss_pty_once=1\npty_path_out=${BUILD}/daemon/config.pty\npcm_out=${BUILD}/daemon/config-pty.pcm\n' > ${BUILD}/daemon/pty.conf
+	./${DAEMONBIN} --config ${BUILD}/daemon/pty.conf --once > ${BUILD}/daemon/config-pty.log 2> ${BUILD}/daemon/config-pty.err & pid=$$!; sleep 1; test -s ${BUILD}/daemon/config.pty; ./${PTYCLIENTBIN} ${BUILD}/daemon/config.pty ${BUILD}/daemon/input.kiss; wait $$pid
 	if ./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18017 --kiss-unix-listen ${BUILD}/daemon/conflict.sock --kiss-tcp-once --kiss-unix-once --pcm-out ${BUILD}/daemon/conflict.pcm --once; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --kiss-tcp-listen 127.0.0.1:18018 --kiss-tcp-once --kiss-pty --kiss-pty-once --pcm-out ${BUILD}/daemon/conflict-pty.pcm --once; then exit 1; else exit 0; fi
+	if ./${DAEMONBIN} --kiss-unix-listen ${BUILD}/daemon/conflict.sock --kiss-unix-once --kiss-pty --kiss-pty-once --pcm-out ${BUILD}/daemon/conflict-unix-pty.pcm --once; then exit 1; else exit 0; fi
 	test -s ${BUILD}/daemon/input.kiss
 	test -s ${BUILD}/daemon/input.pcm
 	test -s ${BUILD}/daemon/tx.pcm
@@ -130,6 +137,10 @@ daemon-test: ${DAEMONBIN} ${TCPCLIENTBIN} ${UNIXCLIENTBIN} ${TOOLBIN}
 	test -s ${BUILD}/daemon/config-tcp.pcm
 	test -s ${BUILD}/daemon/unix-tx.pcm
 	test -s ${BUILD}/daemon/config-unix.pcm
+	test -s ${BUILD}/daemon/kilotnc.pty
+	test -s ${BUILD}/daemon/pty-tx.pcm
+	test -s ${BUILD}/daemon/config.pty
+	test -s ${BUILD}/daemon/config-pty.pcm
 
 ${SANBIN}: ${SRCS}
 	mkdir -p ${BUILD}
@@ -150,6 +161,10 @@ ${TCPCLIENTBIN}: daemon/kilotncd_tcp_client.c
 ${UNIXCLIENTBIN}: daemon/kilotncd_unix_client.c
 	mkdir -p ${BUILD}
 	${CC} ${CFLAGS} -o $@ daemon/kilotncd_unix_client.c
+
+${PTYCLIENTBIN}: daemon/kilotncd_pty_client.c
+	mkdir -p ${BUILD}
+	${CC} ${CFLAGS} -o $@ daemon/kilotncd_pty_client.c
 
 clean:
 	rm -rf ${BUILD}

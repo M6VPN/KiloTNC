@@ -10,6 +10,8 @@ M1.15 implements a localhost-only KISS TCP adapter for single-client once-mode t
 
 M1.16 implements a local Unix socket KISS once-mode adapter and explicit stdin/stdout file-stream behavior. It does not implement persistent socket serving, multi-client serving, real audio, PTYs, serial PTT, CAT, daemonization, or hardware access.
 
+M1.17 implements a local PTY KISS once-mode adapter. It does not implement persistent PTY service, real serial hardware, serial PTT, real audio, CAT, daemonization, or hardware access.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -64,10 +66,10 @@ Planned interfaces:
 
 - TCP server, bound to localhost by default. Single-client once mode exists in M1.15.
 - Unix socket. Single-client local once mode exists in M1.16.
-- PTY.
+- PTY. Single-client local once mode exists in M1.17.
 - stdin/stdout test mode. Explicit bounded stdin/stdout mode exists in M1.16.
 
-KISS-over-TCP and Unix sockets are host interfaces, not on-air protocols.
+KISS-over-TCP, Unix sockets, and PTYs are host interfaces, not on-air protocols.
 
 ## Radio Control
 
@@ -123,9 +125,10 @@ The daemon should use the shared mode registry.
 
 ## Sources checked
 
-| Source title                         | Date checked | Note                                      |
-| ------------------------------------ | ------------ | ----------------------------------------- |
-| ALSA PCM interface documentation     | 2026-05-26   | Linux PCM audio backend planning          |
-| sndio project and OpenBSD manual     | 2026-05-26   | OpenBSD audio backend planning            |
-| FreeBSD Architecture Handbook, Sound | 2026-05-26   | OSS/pcm context for FreeBSD audio         |
-| NetBSD audio(4) manual               | 2026-05-26   | NetBSD audio device interface context     |
+| Source title                             | Date checked | Note                                      |
+| ---------------------------------------- | ------------ | ----------------------------------------- |
+| ALSA PCM interface documentation         | 2026-05-26   | Linux PCM audio backend planning          |
+| sndio project and OpenBSD manual         | 2026-05-26   | OpenBSD audio backend planning            |
+| FreeBSD Architecture Handbook, Sound     | 2026-05-26   | OSS/pcm context for FreeBSD audio         |
+| NetBSD audio(4) manual                   | 2026-05-26   | NetBSD audio device interface context     |
+| OpenBSD posix_openpt and ptsname manuals | 2026-05-26   | PTY adapter API planning and portability  |
