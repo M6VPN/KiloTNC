@@ -1,6 +1,6 @@
 # Network Node Plan
 
-KiloTNC may grow optional internet and node services around the portable TNC core. These services are planned only. M1.15 adds a localhost-only daemon TCP KISS test adapter, but no internet listener, router, BBS, iGate, or remote-control code is implemented.
+KiloTNC may grow optional internet and node services around the portable TNC core. These services are planned only. M1.15 adds a localhost-only daemon TCP KISS test adapter. M1.16 adds a local Unix socket IPC adapter. No internet listener, router, BBS, iGate, or remote-control code is implemented.
 
 ## Scope
 
@@ -27,6 +27,12 @@ Default behavior should be:
 - Accept local clients only.
 - Require explicit operator configuration for remote clients.
 - Apply queue limits and rate limits before any RF transmit path.
+
+## Unix Socket IPC
+
+Unix socket KISS mode is local IPC. It is not network node functionality and does not expose a remote listener.
+
+M1.16 Unix socket mode accepts one local client, processes bounded KISS input, exits, and removes the socket path on clean exit. It does not implement persistent service, multi-client service, or remote access.
 
 ## Remote Control
 

@@ -340,6 +340,23 @@ M1.15 host-side checks on 2026-05-26:
 - No TCP listener starts unless requested.
 - No remote internet service, multi-client server, real audio, PTY, serial, USB, GPIO, or hardware path is implemented.
 
+M1.16 host-side checks on 2026-05-26:
+
+- `make daemon` builds `build/kilotncd` with the Unix socket adapter.
+- `make daemon-test` starts a single-client local Unix socket KISS listener.
+- Unix socket client sends generated KISS to the daemon.
+- Daemon writes non-empty PCM output from Unix socket KISS input.
+- Unix socket path is removed after clean exit.
+- Config parser accepts `kiss_unix_listen`, `kiss_unix_once`, and `unlink_stale_socket`.
+- TCP and Unix socket listeners cannot both be enabled.
+- `--kiss-in -` reads bounded KISS input from stdin for TX once.
+- `--pcm-out -` writes bounded PCM output to stdout for TX once.
+- `--kiss-out -` writes bounded KISS output to stdout for RX once.
+- Diagnostics are written to stderr when binary KISS or PCM output uses stdout.
+- Ambiguous stdin sources are rejected.
+- Existing file-mode and localhost TCP daemon checks still pass.
+- No remote internet service, persistent multi-client server, real audio, PTY, serial, USB, GPIO, or hardware path is implemented.
+
 Pending:
 
 - Full timing recovery loop.

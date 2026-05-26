@@ -46,6 +46,8 @@ kilotncd_config_init(struct kilotncd_config *config)
 	config->fullduplex = 0U;
 	config->kiss_tcp_once = 0U;
 	config->allow_nonlocal_bind = 0U;
+	config->kiss_unix_once = 0U;
+	config->unlink_stale_socket = 0U;
 	config->max_tx_ms = 30000U;
 
 	return KILOTNCD_CONFIG_OK;
@@ -145,6 +147,11 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 		config->have_kiss_tcp_listen = 1;
 		return KILOTNCD_CONFIG_OK;
 	}
+	if (strcmp(key, "kiss_unix_listen") == 0) {
+		config->have_kiss_unix_listen = 1;
+		return kilotncd_config_copy_path(config->kiss_unix_listen,
+		    sizeof(config->kiss_unix_listen), value);
+	}
 	if (strcmp(key, "kiss_tcp_once") == 0) {
 		if (kilotncd_config_parse_u8(value,
 		    &config->kiss_tcp_once) != KILOTNCD_CONFIG_OK)
@@ -158,6 +165,22 @@ kilotncd_config_apply_pair(struct kilotncd_config *config, const char *key,
 		    &config->allow_nonlocal_bind) != KILOTNCD_CONFIG_OK)
 			return KILOTNCD_CONFIG_ERR_PARSE;
 		if (config->allow_nonlocal_bind > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "kiss_unix_once") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->kiss_unix_once) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->kiss_unix_once > 1U)
+			return KILOTNCD_CONFIG_ERR_RANGE;
+		return KILOTNCD_CONFIG_OK;
+	}
+	if (strcmp(key, "unlink_stale_socket") == 0) {
+		if (kilotncd_config_parse_u8(value,
+		    &config->unlink_stale_socket) != KILOTNCD_CONFIG_OK)
+			return KILOTNCD_CONFIG_ERR_PARSE;
+		if (config->unlink_stale_socket > 1U)
 			return KILOTNCD_CONFIG_ERR_RANGE;
 		return KILOTNCD_CONFIG_OK;
 	}

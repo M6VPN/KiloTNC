@@ -29,6 +29,7 @@ struct kilotncd_config {
 	char kiss_out[KILOTNCD_PATH_MAX];
 	char pcm_in[KILOTNCD_PATH_MAX];
 	char pcm_out[KILOTNCD_PATH_MAX];
+	char kiss_unix_listen[KILOTNCD_PATH_MAX];
 	struct kilotncd_tcp_addr kiss_tcp_addr;
 	enum tnc_mode_id mode;
 	int mode_temporary;
@@ -37,6 +38,8 @@ struct kilotncd_config {
 	uint8_t fullduplex;
 	uint8_t kiss_tcp_once;
 	uint8_t allow_nonlocal_bind;
+	uint8_t kiss_unix_once;
+	uint8_t unlink_stale_socket;
 	uint32_t max_tx_ms;
 	int have_mode;
 	int have_kiss_in;
@@ -44,6 +47,7 @@ struct kilotncd_config {
 	int have_pcm_in;
 	int have_pcm_out;
 	int have_kiss_tcp_listen;
+	int have_kiss_unix_listen;
 };
 
 enum kilotncd_config_result kilotncd_config_apply_arg(

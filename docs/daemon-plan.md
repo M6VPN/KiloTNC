@@ -8,6 +8,8 @@ M1.14 implements a minimal deterministic daemon skeleton. It supports config par
 
 M1.15 implements a localhost-only KISS TCP adapter for single-client once-mode testing. It does not implement remote service, multi-client serving, real audio, PTYs, Unix sockets, serial PTT, CAT, daemonization, or hardware access.
 
+M1.16 implements a local Unix socket KISS once-mode adapter and explicit stdin/stdout file-stream behavior. It does not implement persistent socket serving, multi-client serving, real audio, PTYs, serial PTT, CAT, daemonization, or hardware access.
+
 ## Scope
 
 - Run on Linux and BSD systems where the selected adapters are available.
@@ -35,7 +37,7 @@ Planned configuration fields:
 - Network allowlist for any non-local client.
 - Diagnostics output level.
 
-No persistent daemon config parser is implemented yet.
+M1.14 implements a bounded daemon config file parser. Persistent storage and live config reload are not implemented.
 
 M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regression fixtures before real audio or socket adapters are added. M1.14 uses those fixtures for the first `make daemon-test` flow.
 
@@ -44,6 +46,7 @@ M1.13 raw PCM, WAV, KISS, and loopback vectors are intended as first daemon regr
 Planned first-pass backends:
 
 - POSIX raw device/file backend for deterministic tests. File mode exists in M1.14.
+- stdin/stdout file-stream mode for deterministic tests. Explicit bounded stdin/stdout handling exists in M1.16.
 - ALSA for Linux as the likely first real Linux audio backend.
 - sndio for OpenBSD as the likely BSD-friendly backend.
 - OSS as a possible fallback on BSDs where available.
@@ -60,9 +63,9 @@ PulseAudio and PipeWire are not first core targets because the first daemon shou
 Planned interfaces:
 
 - TCP server, bound to localhost by default. Single-client once mode exists in M1.15.
-- Unix socket.
+- Unix socket. Single-client local once mode exists in M1.16.
 - PTY.
-- stdin/stdout test mode.
+- stdin/stdout test mode. Explicit bounded stdin/stdout mode exists in M1.16.
 
 KISS-over-TCP and Unix sockets are host interfaces, not on-air protocols.
 

@@ -12,6 +12,7 @@
 #include "kilotncd_config.h"
 #include "kilotncd_file.h"
 #include "kilotncd_tcp.h"
+#include "kilotncd_unix.h"
 #include "tnc1200.h"
 #include "tnc_diag.h"
 #include "tnc_mode.h"
@@ -58,10 +59,13 @@ static int kilotncd_run_loopback_once(const struct kilotncd_config *);
 static int kilotncd_run_once(const struct kilotncd_config *);
 static int kilotncd_run_tcp_loopback_once(const struct kilotncd_config *);
 static int kilotncd_run_tcp_tx_once(const struct kilotncd_config *);
+static int kilotncd_run_unix_tx_once(const struct kilotncd_config *);
 static int kilotncd_run_rx_once(const struct kilotncd_config *);
 static int kilotncd_run_status(const struct kilotncd_config *);
 static int kilotncd_run_tx_once(const struct kilotncd_config *);
 static int kilotncd_tcp_ready(const struct kilotncd_config *);
+static int kilotncd_unix_ready(const struct kilotncd_config *);
+static int kilotncd_validate_config(const struct kilotncd_config *);
 static const char *kilotncd_support_name(enum tnc_mode_support);
 static void kilotncd_usage(void);
 
@@ -219,7 +223,9 @@ kilotncd_load_config(int argc, char **argv, struct kilotncd_config *config,
 	    kilotncd_config_load_file(config, config_path) !=
 	    KILOTNCD_CONFIG_OK)
 		return -1;
-	return kilotncd_parse_args(argc, argv, config, op);
+	if (kilotncd_parse_args(argc, argv, config, op) != 0)
+		return -1;
+	return kilotncd_validate_config(config);
 }
 
 static size_t
@@ -315,6 +321,21 @@ kilotncd_parse_args(int argc, char **argv, struct kilotncd_config *config,
 			    "allow_nonlocal_bind", "1") !=
 			    KILOTNCD_CONFIG_OK)
 				return -1;
+		} else if (strcmp(argv[i], "--kiss-unix-listen") == 0) {
+			if (i + 1 >= argc ||
+			    kilotncd_config_apply_arg(config,
+			    "kiss_unix_listen", argv[++i]) !=
+			    KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--kiss-unix-once") == 0) {
+			if (kilotncd_config_apply_arg(config,
+			    "kiss_unix_once", "1") != KILOTNCD_CONFIG_OK)
+				return -1;
+		} else if (strcmp(argv[i], "--unlink-stale-socket") == 0) {
+			if (kilotncd_config_apply_arg(config,
+			    "unlink_stale_socket", "1") !=
+			    KILOTNCD_CONFIG_OK)
+				return -1;
 		} else if (strcmp(argv[i], "--once") == 0) {
 			*op = KILOTNCD_OP_ONCE;
 		} else if (strcmp(argv[i], "--loopback-once") == 0) {
@@ -341,6 +362,8 @@ kilotncd_run_loopback_once(const struct kilotncd_config *config)
 
 	if (config->have_kiss_tcp_listen)
 		return kilotncd_run_tcp_loopback_once(config);
+	if (config->have_kiss_unix_listen)
+		return 1;
 	if (!config->have_kiss_in || !config->have_kiss_out)
 		return 1;
 	if (kilotncd_mode_implemented(config->mode) != 0)
@@ -375,13 +398,20 @@ static int
 kilotncd_run_once(const struct kilotncd_config *config)
 {
 	if (config->have_kiss_tcp_listen && config->have_pcm_out &&
-	    !config->have_pcm_in && !config->have_kiss_out)
+	    !config->have_pcm_in && !config->have_kiss_out &&
+	    !config->have_kiss_in)
 		return kilotncd_run_tcp_tx_once(config);
+	if (config->have_kiss_unix_listen && config->have_pcm_out &&
+	    !config->have_pcm_in && !config->have_kiss_out &&
+	    !config->have_kiss_in)
+		return kilotncd_run_unix_tx_once(config);
 	if (config->have_kiss_in && config->have_pcm_out &&
-	    !config->have_pcm_in && !config->have_kiss_out)
+	    !config->have_pcm_in && !config->have_kiss_out &&
+	    !config->have_kiss_tcp_listen && !config->have_kiss_unix_listen)
 		return kilotncd_run_tx_once(config);
 	if (config->have_pcm_in && config->have_kiss_out &&
-	    !config->have_kiss_in && !config->have_pcm_out)
+	    !config->have_kiss_in && !config->have_pcm_out &&
+	    !config->have_kiss_tcp_listen && !config->have_kiss_unix_listen)
 		return kilotncd_run_rx_once(config);
 
 	return 1;
@@ -417,6 +447,7 @@ static int
 kilotncd_run_tcp_tx_once(const struct kilotncd_config *config)
 {
 	struct tnc1200 tnc;
+	FILE *diag_fp;
 	size_t kiss_len;
 	size_t samples;
 
@@ -437,7 +468,8 @@ kilotncd_run_tcp_tx_once(const struct kilotncd_config *config)
 	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
 	    samples) != KILOTNCD_FILE_OK)
 		return 1;
-	if (kilotncd_diag(stdout, "diag", &tnc) != 0)
+	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
+	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
 		return 1;
 
 	return 0;
@@ -466,6 +498,39 @@ kilotncd_run_rx_once(const struct kilotncd_config *config)
 	    out_len) != KILOTNCD_FILE_OK)
 		return 1;
 	diag_fp = kilotncd_diag_stream(config->kiss_out, NULL);
+	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
+		return 1;
+
+	return 0;
+}
+
+static int
+kilotncd_run_unix_tx_once(const struct kilotncd_config *config)
+{
+	struct tnc1200 tnc;
+	FILE *diag_fp;
+	size_t kiss_len;
+	size_t samples;
+
+	if (kilotncd_unix_ready(config) != 0 ||
+	    kilotncd_mode_implemented(config->mode) != 0)
+		return 1;
+	if (kilotncd_unix_server_once(config->kiss_unix_listen,
+	    config->unlink_stale_socket, daemon_kiss_in,
+	    sizeof(daemon_kiss_in), &kiss_len, NULL, 0U) !=
+	    KILOTNCD_UNIX_OK)
+		return 1;
+	if (kilotncd_init_tnc(&tnc, config) != 0)
+		return 1;
+	if (tnc1200_host_input(&tnc, daemon_kiss_in, kiss_len) != TNC1200_OK)
+		return 1;
+	if (kilotncd_collect_tx(&tnc, daemon_pcm,
+	    sizeof(daemon_pcm) / sizeof(daemon_pcm[0]), &samples) != 0)
+		return 1;
+	if (kilotncd_file_write_pcm16(config->pcm_out, daemon_pcm,
+	    samples) != KILOTNCD_FILE_OK)
+		return 1;
+	diag_fp = kilotncd_diag_stream(config->pcm_out, NULL);
 	if (kilotncd_diag(diag_fp, "diag", &tnc) != 0)
 		return 1;
 
@@ -539,6 +604,34 @@ kilotncd_tcp_ready(const struct kilotncd_config *config)
 	return 0;
 }
 
+static int
+kilotncd_unix_ready(const struct kilotncd_config *config)
+{
+	if (!config->have_kiss_unix_listen || config->kiss_unix_once == 0U)
+		return -1;
+	return 0;
+}
+
+static int
+kilotncd_validate_config(const struct kilotncd_config *config)
+{
+	if (config->have_kiss_tcp_listen && config->have_kiss_unix_listen)
+		return -1;
+	if ((config->have_kiss_tcp_listen || config->have_kiss_unix_listen) &&
+	    config->have_kiss_in)
+		return -1;
+	if (config->have_kiss_in && config->have_pcm_in &&
+	    strcmp(config->kiss_in, "-") == 0 &&
+	    strcmp(config->pcm_in, "-") == 0)
+		return -1;
+	if (config->have_kiss_out && config->have_pcm_out &&
+	    strcmp(config->kiss_out, "-") == 0 &&
+	    strcmp(config->pcm_out, "-") == 0)
+		return -1;
+
+	return 0;
+}
+
 static const char *
 kilotncd_support_name(enum tnc_mode_support support)
 {
@@ -565,5 +658,7 @@ kilotncd_usage(void)
 	    "  kilotncd --mode NINO_MODE=6 --kiss-in frame.kiss "
 	    "--kiss-out out.kiss --loopback-once\n"
 	    "  kilotncd --kiss-tcp-listen 127.0.0.1:8001 "
-	    "--kiss-tcp-once --pcm-out tx.pcm --once\n");
+	    "--kiss-tcp-once --pcm-out tx.pcm --once\n"
+	    "  kilotncd --kiss-unix-listen build/daemon/kilotnc.sock "
+	    "--kiss-unix-once --pcm-out tx.pcm --once\n");
 }
