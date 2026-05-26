@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.7 host-side KISS-to-AFSK1200 integration harness.
+Current stage: M1.8 channel-access and PTT safety simulation.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 

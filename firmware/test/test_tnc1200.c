@@ -26,9 +26,12 @@ static int test_make_frame(const char *, uint8_t *, size_t, size_t *);
 static int test_make_kiss_data(const uint8_t *, size_t, uint8_t *, size_t,
 	size_t *);
 static int test_tnc1200_commands_errors(void);
+static int test_tnc1200_control_commands(void);
+static int test_tnc1200_dcd_gating(void);
 static int test_tnc1200_init_args(void);
 static int test_tnc1200_loopback(void);
 static int test_tnc1200_rx_to_kiss(void);
+static int test_tnc1200_tail_abort_timeout(void);
 static int test_tnc1200_tx_from_kiss(void);
 
 int
@@ -51,6 +54,15 @@ test_tnc1200(void)
 	subres = test_tnc1200_commands_errors();
 	if (subres != 0)
 		return subres;
+	subres = test_tnc1200_control_commands();
+	if (subres != 0)
+		return subres;
+	subres = test_tnc1200_dcd_gating();
+	if (subres != 0)
+		return subres;
+	subres = test_tnc1200_tail_abort_timeout();
+	if (subres != 0)
+		return subres;
 
 	return 0;
 }
@@ -61,21 +73,128 @@ test_collect_tnc_tx(struct tnc1200 *tnc, size_t chunk, int16_t *pcm,
 {
 	size_t emitted;
 	size_t off;
+	size_t idle_count;
 	enum tnc1200_result res;
 
 	off = 0U;
+	idle_count = 0U;
 	for (;;) {
 		if (off >= pcm_cap)
 			return __LINE__;
 		res = tnc1200_tx_process(tnc, &pcm[off], chunk, &emitted);
-		if (res == TNC1200_ERR_NO_DATA)
-			break;
+		if (res == TNC1200_ERR_NO_DATA) {
+			if (off != 0U)
+				break;
+			idle_count++;
+			if (idle_count > 5000U)
+				return __LINE__;
+			continue;
+		}
 		if (res != TNC1200_OK)
 			return __LINE__;
 		off += emitted;
 	}
 
 	*out_samples = off;
+	return 0;
+}
+
+static int
+test_tnc1200_control_commands(void)
+{
+	uint8_t frame[KILOTNC_AX25_MAX_FRAME];
+	uint8_t kiss_buf[TEST_TNC_KISS_MAX];
+	uint8_t cmd[4];
+	int16_t pcm[AFSK1200_SAMPLES_PER_BIT];
+	struct tnc1200 tnc;
+	struct tnc1200_stats stats;
+	size_t frame_len;
+	size_t kiss_len;
+	size_t emitted;
+
+	CHECK(test_make_frame("ctrl", frame, sizeof(frame), &frame_len) == 0);
+	CHECK(test_make_kiss_data(frame, frame_len, kiss_buf, sizeof(kiss_buf),
+	    &kiss_len) == 0);
+	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
+
+	cmd[0] = KISS_FEND;
+	cmd[1] = KISS_CMD_TXDELAY;
+	cmd[2] = 3U;
+	cmd[3] = KISS_FEND;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	cmd[1] = KISS_CMD_TXTAIL;
+	cmd[2] = 2U;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_NO_DATA);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_NO_DATA);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_OK);
+	CHECK(emitted != 0U);
+
+	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
+	cmd[1] = KISS_CMD_P;
+	cmd[2] = 0U;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_NO_DATA);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.channel_tx_persistence_deferrals != 0U);
+	CHECK(stats.tx_frames_started == 0U);
+
+	return 0;
+}
+
+static int
+test_tnc1200_dcd_gating(void)
+{
+	uint8_t frame[KILOTNC_AX25_MAX_FRAME];
+	uint8_t kiss_buf[TEST_TNC_KISS_MAX];
+	uint8_t cmd[4];
+	int16_t pcm[TEST_TNC_PCM_MAX];
+	struct tnc1200 tnc;
+	struct tnc1200_stats stats;
+	enum tnc_control_ptt ptt;
+	size_t frame_len;
+	size_t kiss_len;
+	size_t samples;
+	size_t emitted;
+
+	CHECK(test_make_frame("dcd", frame, sizeof(frame), &frame_len) == 0);
+	CHECK(test_make_kiss_data(frame, frame_len, kiss_buf, sizeof(kiss_buf),
+	    &kiss_len) == 0);
+
+	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
+	CHECK(tnc1200_set_dcd(&tnc, 1) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_NO_DATA);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_ptt_state(&tnc, &ptt) == TNC1200_OK);
+	CHECK(ptt == TNC_CONTROL_PTT_OFF);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.channel_tx_denied_busy != 0U);
+
+	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
+	cmd[0] = KISS_FEND;
+	cmd[1] = KISS_CMD_FULLDUPLEX;
+	cmd[2] = 1U;
+	cmd[3] = KISS_FEND;
+	CHECK(tnc1200_host_input(&tnc, cmd, sizeof(cmd)) == TNC1200_OK);
+	CHECK(tnc1200_set_dcd(&tnc, 1) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(test_collect_tnc_tx(&tnc, 17U, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &samples) == 0);
+	CHECK(samples != 0U);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.tx_frames_done == 1U);
+
 	return 0;
 }
 
@@ -235,16 +354,22 @@ test_tnc1200_init_args(void)
 	struct tnc1200 tnc;
 	struct tnc1200_config config;
 	struct tnc1200_stats stats;
+	enum tnc_control_ptt ptt;
 	size_t len;
+	int can_emit;
 
 	CHECK(tnc1200_init(NULL, NULL) == TNC1200_ERR_ARG);
 	CHECK(tnc1200_init(&tnc, NULL) == TNC1200_OK);
 	CHECK(tnc.tx_config.txdelay_flags == AFSK1200_TX_DEFAULT_TXDELAY_FLAGS);
 	CHECK(tnc.tx_config.txtail_flags == AFSK1200_TX_DEFAULT_TXTAIL_FLAGS);
 
+	(void)memset(&config, 0, sizeof(config));
 	config.txdelay_flags = 2U;
 	config.txtail_flags = 1U;
 	config.amplitude = 6000;
+	config.p = 255U;
+	config.slottime_10ms = 1U;
+	config.rng_seed = 1U;
 	CHECK(tnc1200_init(&tnc, &config) == TNC1200_OK);
 	CHECK(tnc.tx_config.txdelay_flags == 2U);
 	CHECK(tnc.tx_config.txtail_flags == 1U);
@@ -268,6 +393,11 @@ test_tnc1200_init_args(void)
 	CHECK(tnc1200_abort_tx(NULL) == TNC1200_ERR_ARG);
 	CHECK(tnc1200_stats(NULL, &stats) == TNC1200_ERR_ARG);
 	CHECK(tnc1200_stats(&tnc, NULL) == TNC1200_ERR_ARG);
+	CHECK(tnc1200_can_emit_audio(NULL, &can_emit) == TNC1200_ERR_ARG);
+	CHECK(tnc1200_can_emit_audio(&tnc, NULL) == TNC1200_ERR_ARG);
+	CHECK(tnc1200_ptt_state(NULL, &ptt) == TNC1200_ERR_ARG);
+	CHECK(tnc1200_ptt_state(&tnc, NULL) == TNC1200_ERR_ARG);
+	CHECK(tnc1200_set_dcd(NULL, 1) == TNC1200_ERR_ARG);
 
 	return 0;
 }
@@ -362,6 +492,76 @@ test_tnc1200_rx_to_kiss(void)
 	    sizeof(payload), &payload_len) == 0);
 	CHECK(payload_len == frame_len);
 	CHECK(memcmp(payload, frame, frame_len) == 0);
+
+	return 0;
+}
+
+static int
+test_tnc1200_tail_abort_timeout(void)
+{
+	uint8_t frame[KILOTNC_AX25_MAX_FRAME];
+	uint8_t kiss_buf[TEST_TNC_KISS_MAX];
+	int16_t pcm[TEST_TNC_PCM_MAX];
+	struct tnc1200 tnc;
+	struct tnc1200_config config;
+	struct tnc1200_stats stats;
+	enum tnc_control_ptt ptt;
+	size_t frame_len;
+	size_t kiss_len;
+	size_t samples;
+	size_t emitted;
+
+	CHECK(test_make_frame("tail", frame, sizeof(frame), &frame_len) == 0);
+	CHECK(test_make_kiss_data(frame, frame_len, kiss_buf, sizeof(kiss_buf),
+	    &kiss_len) == 0);
+
+	(void)memset(&config, 0, sizeof(config));
+	config.txdelay_flags = 0U;
+	config.txtail_flags = 2U;
+	config.amplitude = AFSK1200_PCM_AMPLITUDE;
+	config.p = 255U;
+	config.slottime_10ms = 1U;
+	config.max_tx_ms = 30000U;
+	config.rng_seed = 1U;
+	CHECK(tnc1200_init(&tnc, &config) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(test_collect_tnc_tx(&tnc, 83U, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &samples) == 0);
+	CHECK(samples != 0U);
+	CHECK(tnc1200_ptt_state(&tnc, &ptt) == TNC1200_OK);
+	CHECK(ptt == TNC_CONTROL_PTT_ON);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_NO_DATA);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_ptt_state(&tnc, &ptt) == TNC1200_OK);
+	CHECK(ptt == TNC_CONTROL_PTT_OFF);
+
+	CHECK(tnc1200_init(&tnc, &config) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_OK);
+	CHECK(emitted != 0U);
+	CHECK(tnc1200_abort_tx(&tnc) == TNC1200_OK);
+	CHECK(tnc1200_ptt_state(&tnc, &ptt) == TNC1200_OK);
+	CHECK(ptt == TNC_CONTROL_PTT_OFF);
+
+	(void)memset(&config, 0, sizeof(config));
+	config.txdelay_flags = 0U;
+	config.txtail_flags = 0U;
+	config.amplitude = AFSK1200_PCM_AMPLITUDE;
+	config.p = 255U;
+	config.slottime_10ms = 1U;
+	config.max_tx_ms = 10U;
+	config.rng_seed = 1U;
+	CHECK(tnc1200_init(&tnc, &config) == TNC1200_OK);
+	CHECK(tnc1200_host_input(&tnc, kiss_buf, kiss_len) == TNC1200_OK);
+	CHECK(tnc1200_tx_process(&tnc, pcm, sizeof(pcm) / sizeof(pcm[0]),
+	    &emitted) == TNC1200_ERR_TIMEOUT);
+	CHECK(emitted == 0U);
+	CHECK(tnc1200_ptt_state(&tnc, &ptt) == TNC1200_OK);
+	CHECK(ptt == TNC_CONTROL_PTT_OFF);
+	CHECK(tnc1200_stats(&tnc, &stats) == TNC1200_OK);
+	CHECK(stats.channel_tx_timeouts == 1U);
 
 	return 0;
 }

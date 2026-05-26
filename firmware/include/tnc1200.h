@@ -6,11 +6,13 @@
 
 #include <sys/types.h>
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "afsk1200_stream.h"
 #include "afsk1200_tx.h"
 #include "kiss.h"
+#include "tnc_control.h"
 
 enum tnc1200_result {
 	TNC1200_OK = 0,
@@ -18,13 +20,19 @@ enum tnc1200_result {
 	TNC1200_ERR_SMALL,
 	TNC1200_ERR_BUSY,
 	TNC1200_ERR_NO_DATA,
-	TNC1200_ERR_FRAME_DROPPED
+	TNC1200_ERR_FRAME_DROPPED,
+	TNC1200_ERR_TIMEOUT
 };
 
 struct tnc1200_config {
 	size_t txdelay_flags;
 	size_t txtail_flags;
 	int16_t amplitude;
+	uint8_t p;
+	uint8_t slottime_10ms;
+	uint8_t fullduplex;
+	uint32_t max_tx_ms;
+	uint32_t rng_seed;
 };
 
 struct tnc1200_stats {
@@ -41,6 +49,14 @@ struct tnc1200_stats {
 	size_t rx_frames_dropped;
 	size_t pcm_samples_in;
 	size_t pcm_samples_out;
+	size_t channel_tx_requests;
+	size_t channel_tx_grants;
+	size_t channel_tx_denied_busy;
+	size_t channel_tx_persistence_deferrals;
+	size_t channel_tx_timeouts;
+	size_t channel_tx_aborts;
+	size_t ptt_on_events;
+	size_t ptt_off_events;
 };
 
 struct tnc1200 {
@@ -48,7 +64,13 @@ struct tnc1200 {
 	struct afsk1200_tx tx;
 	struct afsk1200_stream rx;
 	struct afsk1200_tx_config tx_config;
+	struct tnc_control control;
+	struct tnc_control_config control_config;
 	struct tnc1200_stats stats;
+	uint8_t pending_frame[KILOTNC_AX25_MAX_FRAME];
+	size_t pending_frame_len;
+	bool pending_frame_valid;
+	bool tx_started;
 	uint8_t p;
 	uint8_t slottime;
 	uint8_t fullduplex;
@@ -57,12 +79,16 @@ struct tnc1200 {
 };
 
 enum tnc1200_result tnc1200_abort_tx(struct tnc1200 *);
+enum tnc1200_result tnc1200_can_emit_audio(const struct tnc1200 *, int *);
 enum tnc1200_result tnc1200_host_input(struct tnc1200 *, const uint8_t *,
 	size_t);
 enum tnc1200_result tnc1200_init(struct tnc1200 *,
 	const struct tnc1200_config *);
 enum tnc1200_result tnc1200_rx_process(struct tnc1200 *, const int16_t *,
 	size_t, uint8_t *, size_t, size_t *);
+enum tnc1200_result tnc1200_ptt_state(const struct tnc1200 *,
+	enum tnc_control_ptt *);
+enum tnc1200_result tnc1200_set_dcd(struct tnc1200 *, int);
 enum tnc1200_result tnc1200_stats(const struct tnc1200 *,
 	struct tnc1200_stats *);
 enum tnc1200_result tnc1200_tx_process(struct tnc1200 *, int16_t *, size_t,

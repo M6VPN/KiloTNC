@@ -217,13 +217,43 @@ M1.7 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Stats update for TX, RX, KISS parse errors, ignored commands, and samples.
 - Abort TX stops active transmission.
 
+M1.8 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- TNC control default and custom config init.
+- TNC control NULL argument handling.
+- PTT off after init.
+- DCD busy denies TX when FullDuplex is off.
+- FullDuplex allows TX despite DCD busy.
+- `p = 255` grants when the channel is clear.
+- `p = 0` defers when the channel is clear.
+- Deterministic p-persistence with fixed seed.
+- SlotTime delays repeated persistence attempts.
+- TXDELAY holds audio-not-ready while PTT is on.
+- Audio-ready after TXDELAY expires.
+- Complete TX enters TXTAIL.
+- PTT off after TXTAIL expires.
+- Abort forces PTT off.
+- Max TX timeout forces PTT off.
+- Control stats update for requests, grants, denials, deferrals, timeouts, aborts, and PTT transitions.
+- KISS TXDELAY command changes TXDELAY timing.
+- KISS TXtail command changes TXTAIL timing.
+- KISS P command changes p-persistence behavior.
+- KISS FullDuplex command changes DCD gating.
+- DCD busy prevents TX audio emission when FullDuplex is off.
+- DCD busy allows TX audio emission when FullDuplex is on.
+- TX PCM is not emitted before TXDELAY completes.
+- TXTAIL keeps simulated PTT active after frame samples complete.
+- Abort TX forces TX idle and PTT off.
+- Max TX timeout aborts TX.
+- Existing KISS-to-PCM-to-KISS loopback passes with `p = 255` and clear DCD.
+
 Pending:
 
 - Full timing recovery loop.
 - Production DCD.
 - Squelch/COS integration.
 - Embedded ring-buffer integration.
-- PTT safety layer.
+- Hardware PTT safety layer.
 - USB/KISS transmit queue.
 - KISS-to-modem channel access policy.
 - Real radio level control.

@@ -233,13 +233,39 @@ This module does not control PTT. PTT timing and fail-safe behavior remain a lat
 
 M1.7 adds the `tnc1200` host harness. It connects KISS data frames to AFSK1200 streaming TX and connects AFSK1200 streaming RX frames back to KISS data frames. This proves KISS-to-PCM-to-KISS loopback behavior without USB CDC, PTT, DMA, codec drivers, or hardware.
 
+## M1.8 Channel Access and PTT Simulation
+
+M1.8 adds host-side channel control around `tnc1200`. The AFSK1200 modem code still only generates and decodes PCM. The new control layer gates when TX PCM may start and tracks simulated PTT state.
+
+The M1.8 TX control path is:
+
+```text
+KISS data frame
+	|
+	one pending AX.25 frame
+	|
+	DCD and p-persistence gate
+	|
+	simulated PTT on
+	|
+	TXDELAY wait
+	|
+	AFSK1200 streaming TX PCM
+	|
+	TXTAIL wait
+	|
+	simulated PTT off
+```
+
+Abort and maximum TX timeout force simulated PTT off and clear pending transmit state. No real PTT pin, USB CDC device, DMA, or codec path is controlled in this stage.
+
 ## Limitations
 
 - Generated host vectors only.
 - Best-offset selection only, not a full timing recovery loop.
 - Diagnostic DCD score only, not production DCD.
 - Streaming host-side state only, not an embedded HAL or DMA integration.
-- No PTT safety layer.
+- Host-side PTT simulation only, not GPIO control.
 - No USB/KISS transmit queue.
 - No real radio level control.
 - No pre-emphasis/de-emphasis decision.
