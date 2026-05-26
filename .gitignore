@@ -1,0 +1,15 @@
+# KiloTNC - Developed by M6VPN (M6VPN@tuta.com)
+# KiloTNC/.gitignore
+
+.env
+*.log
+*.o
+*.elf
+*.bin
+*.hex
+*.uf2
+__pycache__/
+logs/
+build/
+cmake-build-*/
+
