@@ -13,6 +13,7 @@ int test_embedded_tnc(void);
 int test_embedded_usb_bridge(void);
 int test_target_metadata(void);
 int test_usb_cdc_stub(void);
+int test_usb_descriptor_plan(void);
 int test_usb_stack_boundary(void);
 
 int
@@ -39,6 +40,8 @@ main(void)
 	if (test_target_metadata() != 0)
 		return 1;
 	if (test_usb_stack_boundary() != 0)
+		return 1;
+	if (test_usb_descriptor_plan() != 0)
 		return 1;
 
 	return 0;

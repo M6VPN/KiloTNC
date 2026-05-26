@@ -71,3 +71,18 @@ M2.13 status:
 - The current implemented USB path remains the host-native USB CDC stub.
 - `tinyusb`, `stm32cube`, and `custom` are recognized by the boundary but unsupported.
 - No real USB stack, descriptors, endpoints, interrupts, hardware access, HAL, CMSIS, TinyUSB import, STM32Cube import, vendor SDK, or generated project is present.
+
+M2.14 status:
+
+- USB descriptor planning is represented by `usb_descriptor_plan`.
+- Planned descriptor profiles are `kiss-only` and `kiss-plus-diag`.
+- No final VID or PID is claimed.
+- No binary descriptors are bound to a real USB stack.
+- STM32H753 remains the flagship target for this path.
+- STM32H743 remains a possible first custom serious board path.
+- STM32H735 remains a cost-reduced candidate only after resource validation.
+- STM32H750 remains a candidate only after memory and flash validation.
+- RP2350 is a separate low-cost target path, not a drop-in board variant.
+- ESP32-S3 is a possible connectivity companion only, not the modem DSP core.
+- Board abstraction planning is documented in [docs/m2-board-abstraction-plan.md](../../../docs/m2-board-abstraction-plan.md).
+- MCU family planning is documented in [docs/m2-mcu-family-plan.md](../../../docs/m2-mcu-family-plan.md).

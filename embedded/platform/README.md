@@ -32,3 +32,7 @@ M2.4 diagnostics reads platform counters through the existing app/platform bound
 M2.5 adds a host-native audio stub. It exposes 48 kHz mono signed 16-bit format metadata, fixed RX/TX sample buffers, RX injection, TX capture, sample counters, and overflow/underflow counters. It does not implement ADC, DAC, SAI, I2S, DMA, codec, or hardware audio paths.
 
 M2.13 adds a USB stack boundary placeholder. The only implemented USB path remains the host-native USB CDC stub. `tinyusb`, `stm32cube`, and `custom` are recognized as planned stack names but return unsupported. No TinyUSB, STM32Cube, CMSIS, HAL, descriptor, endpoint, interrupt, hardware register, or vendor SDK include is added.
+
+M2.14 adds USB descriptor planning metadata for KISS-only and KISS-plus-diagnostics CDC ACM profiles. The descriptor plan is host-tested data only. It does not provide binary descriptors, VID/PID claims, endpoint handlers, TinyUSB binding, STM32Cube binding, or hardware USB access.
+
+M2.14 also adds board abstraction planning. STM32H753 remains the flagship target, while H743, H735, and H750 remain future STM32H7-family possibilities behind board and resource metadata. RP2350 is a separate low-cost target path, and ESP32-S3 is a possible connectivity companion only.

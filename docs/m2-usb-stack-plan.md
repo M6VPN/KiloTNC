@@ -1,6 +1,6 @@
 # M2 USB Stack Plan
 
-M2.13 records the future USB CDC stack direction for the `stm32h753-nucleo` target path.
+M2.13 records the future USB CDC stack direction for the `stm32h753-nucleo` target path. M2.14 adds host-tested USB descriptor planning metadata without binding descriptors to a real stack.
 
 ## Scope
 
@@ -63,11 +63,14 @@ M2.13 adds only `usb_stack_boundary`, which recognizes planned stack names and r
 
 Planned descriptor direction:
 
-- One CDC ACM interface for KISS.
-- Optional second CDC ACM interface for diagnostics later.
-- Stable manufacturer, product, and serial string policy later.
-- No final VID or PID claim in M2.13.
-- No generated descriptor source file in M2.13.
+- KISS-only profile: one planned CDC ACM function for the KISS byte stream.
+- KISS-plus-diagnostics profile: two planned CDC ACM functions, one for KISS and one for diagnostics.
+- Stable manufacturer, product, configuration, and serial string policy later.
+- No final VID or PID claim in M2.14.
+- No generated binary descriptor arrays in M2.14.
+- No descriptor is bound to TinyUSB, STM32Cube USB Device, or any real device stack.
+
+M2.14 adds `usb_descriptor_plan`, which formats and validates descriptor planning metadata for host tests only. It keeps packet sizes as placeholders and keeps the implemented USB stack target as `stub`.
 
 ## Safety
 
@@ -104,3 +107,5 @@ Sources checked on 2026-05-27:
   - Notes USBX middleware as part of STM32Cube MCU components and version consistency with Cube firmware packages.
 - STM32H7 Nucleo-144 boards user manual UM2407: https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf
   - Documents STLINK-V3E USB Micro-B connector CN1 and USB OTG FS connector CN13.
+- Arm MDK USB CDC ACM class reference: https://arm-software.github.io/MDK-Middleware/latest/USB/USB_Classes.html
+  - Documents CDC ACM control and data interface descriptor classes and bulk data endpoint roles.

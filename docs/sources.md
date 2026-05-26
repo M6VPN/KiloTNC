@@ -34,6 +34,9 @@ Sources checked through 2026-05-27.
 | STM32H753BI product page, STMicroelectronics  | 2026-05-26   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753bi.html | H753 class and crypto-capable variant    |
 | NUCLEO-H753ZI product page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/evaluation-tools/nucleo-h753zi.html               | Nucleo-144 board status, ST-LINK, connector, and schematic-pack references |
 | STM32H753ZI product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html | H753ZI memory, USB, timer, watchdog, ADC, DAC, SAI, and I2S class |
+| STM32H743ZI product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h743zi.html | H743ZI memory and future custom board planning |
+| STM32H735ZG product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h735zg.html | H735ZG cost-reduced candidate memory planning |
+| STM32H750 Value line page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html | H750 flash and memory planning caution |
 | STM32H753xI datasheet, STMicroelectronics     | 2026-05-27   | https://www.st.com/resource/en/datasheet/stm32h753zi.pdf                | Future pin and peripheral verification |
 | STM32H7 Nucleo-144 boards user manual, ST     | 2026-05-27   | https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf | NUCLEO-H753ZI board connectors, LEDs, USB OTG FS, VCP, Ethernet conflicts, and solder bridges |
 | STM32H743/753 documentation page, STMicroelectronics | 2026-05-27 | https://www.st.com/en/microcontrollers-microprocessors/stm32h743-753/documentation.html | RM0433 reference manual listing for future peripheral behavior checks |
@@ -43,6 +46,7 @@ Sources checked through 2026-05-27.
 | RP2350 documentation, Raspberry Pi            | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/rp2350.html  | RP2350 experimental target features      |
 | Pico-series documentation, Raspberry Pi       | 2026-05-26   | https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html | Pico 2 board features                    |
 | RP2350 datasheet, Raspberry Pi                | 2026-05-26   | https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf          | RP2350 USB and PIO details               |
+| ESP32-S3 product page, Espressif              | 2026-05-27   | https://www.espressif.com/en/products/socs/esp32-s3                    | Connectivity companion role planning     |
 | TLV320AIC3204 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3204                                | Codec sample rate, I2S, programmable I/O |
 | TLV320AIC3104 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3104                                | Codec sample rate, I2S, analog I/O       |
 
@@ -70,6 +74,7 @@ Sources checked through 2026-05-27.
 | STM32CubeH7 getting started user manual   | 2026-05-27   | https://www.st.com/resource/en/user_manual/dm00386433-getting-started-with-stm32cubeh7-for-stm32h7-series-stmicroelectronics.pdf | STM32CubeH7 middleware includes USB Host and Device libraries |
 | STM32 USBX middleware repository          | 2026-05-27   | https://github.com/STMicroelectronics/stm32-mw-usbx                                                      | STM32Cube USBX middleware and version consistency  |
 | STM32H7 Nucleo-144 boards user manual, ST | 2026-05-27   | https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf         | CN1 STLINK USB and CN13 USB OTG FS connector       |
+| Arm MDK USB CDC ACM class reference       | 2026-05-27   | https://arm-software.github.io/MDK-Middleware/latest/USB/USB_Classes.html                                | CDC ACM interface and endpoint role planning       |
 
 ## File Formats
 

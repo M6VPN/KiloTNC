@@ -81,14 +81,32 @@ M2.12 adds opt-in target-local build metadata and a skip-safe compile wrapper fo
 
 The check object-compiles safe skeleton sources only when `arm-none-eabi-gcc` is available. It does not link firmware, produce ELF, BIN, or HEX output, add startup code, add a linker script, import vendor SDKs, access hardware registers, or flash a board.
 
+## M2.14 Hardware Tier Plan
+
+Detailed MCU family planning is in [m2-mcu-family-plan.md](m2-mcu-family-plan.md).
+
+| Stage                         | Recommended MCU                                      |
+| ----------------------------- | ---------------------------------------------------- |
+| Current M2/M3 development     | STM32H753 Nucleo / STM32H753ZI                       |
+| First custom serious board    | STM32H753ZI or STM32H743ZI                           |
+| Cost-reduced production board | STM32H735ZG, after proving RAM/flash margins         |
+| Ultra-cheap/simple TNC variant | RP2350 or smaller STM32, separate target            |
+| Connectivity companion        | ESP32-S3, not modem DSP core                         |
+
+STM32H753 remains the flagship target. H743, H735, and H750 stay future-compatible planning paths through MCU family, board, USB stack, audio, PTT/GPIO, and diagnostics abstraction. RP2350 is a separate simple or low-cost target path. ESP32-S3 is a possible connectivity companion, not the modem DSP core.
+
 ## Sources Checked
 
 Sources checked on 2026-05-26:
 
 - STMicroelectronics NUCLEO-H753ZI product page: https://www.st.com/en/evaluation-tools/nucleo-h753zi.html
 - STMicroelectronics STM32H753ZI product page: https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html
+- STMicroelectronics STM32H743ZI product page: https://www.st.com/en/microcontrollers-microprocessors/stm32h743zi.html
+- STMicroelectronics STM32H735ZG product page: https://www.st.com/en/microcontrollers-microprocessors/stm32h735zg.html
+- STMicroelectronics STM32H750 Value line page: https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html
 - STMicroelectronics STM32H753xI datasheet: https://www.st.com/resource/en/datasheet/stm32h753zi.pdf
 - STMicroelectronics STM32H7 Nucleo-144 boards user manual UM2407: https://www.st.com/resource/en/user_manual/dm00499160-stm32h7-nucleo-144-boards-mb1364-stmicroelectronics.pdf
 - STMicroelectronics community report for NUCLEO-H743ZI2 CubeIDE obsolete status: https://community.st.com/t5/stm32cubeide-mcus/nucleo-h743zi2-board-not-supported-in-stm32cubeide-obsolete/td-p/823344
 - Raspberry Pi Pico-series microcontrollers documentation: https://www.raspberrypi.com/documentation/microcontrollers/raspberry-pi-pico.html
 - Raspberry Pi RP2350 datasheet: https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf
+- Espressif ESP32-S3 product page: https://www.espressif.com/en/products/socs/esp32-s3

@@ -31,6 +31,8 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.11 resource planning keeps the test PTT GPIO as `TBD` and marks all real pin assignments unverified.
 - M2.12 target object checks do not link firmware, create flashable images, assign pins, access hardware registers, or key PTT.
 - M2.13 USB stack planning keeps TinyUSB and STM32Cube unlinked and keeps the USB CDC stub as the only implemented path.
+- M2.14 USB descriptor planning is metadata only and does not activate hardware USB, assign endpoints to a stack, or claim a final VID/PID.
+- M2.14 board variant planning keeps PTT safe-off semantics required across H753, H743, H735, H750, RP2350, and any ESP32-S3 companion path.
 
 ## Watchdog And Timeout
 
@@ -81,6 +83,16 @@ M2 firmware planning must include:
 - USB RX and TX queues must remain bounded.
 - Malformed USB KISS input must be counted and recovered without unsafe state changes.
 - TinyUSB and STM32Cube paths remain unsupported until explicitly integrated behind the boundary.
+
+## M2.14 Descriptor And Board Safety Rules
+
+- USB descriptor planning does not imply hardware USB is active.
+- No final VID or PID is claimed.
+- No binary descriptor arrays are bound to a stack.
+- Board variants must preserve PTT off on boot, reset, watchdog fault, shutdown, and malformed input.
+- H735 and H750 paths must not be enabled until memory, flash, and resource margins are checked.
+- RP2350 must remain a separate target path, not a hidden substitute for STM32H753.
+- ESP32-S3 companion planning must not place modem DSP or PTT authority on the companion.
 
 ## Diagnostics Visibility
 

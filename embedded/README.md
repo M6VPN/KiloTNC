@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.12 adds an opt-in STM32H753 target object check. No real USB diagnostics channel, USB stack, descriptors, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
+M2.14 adds USB descriptor planning metadata and MCU family abstraction notes. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, or hardware audio path is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -55,3 +55,5 @@ The M2.11 resource metadata header records planned USB, test PTT GPIO, diagnosti
 M2.12 adds target-local build metadata in `target_sources.mk` and `target_build.mk`, plus `check_target_compile.sh`. The check compiles only target skeleton objects under `build/embedded-target/` when `arm-none-eabi-gcc` is available, skips cleanly when it is absent, and does not link or create ELF, BIN, HEX, startup, linker, HAL, CMSIS, TinyUSB, or vendor output.
 
 M2.13 adds USB CDC stack selection planning and a dependency-boundary placeholder. The future preferred path is a TinyUSB adapter boundary, with STM32Cube USB Device as fallback. The current implemented path remains the host-native USB CDC stub only.
+
+M2.14 adds a host-tested USB descriptor plan for KISS-only and KISS-plus-diagnostics CDC ACM profiles. It also records STM32H753 as the flagship target while keeping STM32H743, STM32H735, and STM32H750 as validation-gated future STM32H7 paths. RP2350 remains a separate simple target path, and ESP32-S3 remains a possible connectivity companion only.

@@ -25,3 +25,12 @@ Planned direction:
 - Keep VID, PID, string descriptors, endpoint layout, and optional diagnostics CDC interface as future planning items.
 
 No real USB stack, TinyUSB source, STM32Cube USB Device source, CMSIS, HAL, descriptors, endpoint handlers, interrupt handlers, hardware register access, or generated vendor project is added in M2.13.
+
+M2.14 descriptor planning is tracked in `embedded/app/usb_descriptor_plan.c` and [docs/m2-usb-stack-plan.md](../../../docs/m2-usb-stack-plan.md).
+
+Planned descriptor profiles:
+
+- `kiss-only`: one CDC ACM function for KISS.
+- `kiss-plus-diag`: two CDC ACM functions, one for KISS and one for future diagnostics.
+
+M2.14 does not claim a final VID or PID. It does not add binary USB descriptor arrays, endpoint numbers, TinyUSB descriptor callbacks, STM32Cube descriptor tables, hardware USB access, or a host-visible USB device.

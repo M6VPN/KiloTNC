@@ -253,6 +253,28 @@ STM32CUBE_H7_PATH=/path/to/STM32CubeH7
 KILOTNC_USB_STACK=tinyusb
 ```
 
+## M2.14 USB Descriptor And Board Metadata
+
+`make embedded-test` now also verifies:
+
+- KISS-only USB descriptor planning metadata.
+- KISS-plus-diagnostics USB descriptor planning metadata.
+- No final VID or PID is claimed.
+- Descriptor plan formatting rejects too-small buffers.
+- STM32H753 remains marked as the flagship target.
+- H743 remains a possible related STM32H7 path.
+- H735 and H750 remain validation-gated future paths.
+- No connectivity companion is present on the target.
+
+The descriptor planning module does not emit binary USB descriptors, include TinyUSB or STM32Cube headers, define endpoints for hardware, or bind descriptor data to a real stack.
+
+Board and MCU family planning is documented in:
+
+```text
+docs/m2-mcu-family-plan.md
+docs/m2-board-abstraction-plan.md
+```
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

@@ -189,9 +189,19 @@ M2.13 status:
 - Keep only the USB CDC stub implemented.
 - Keep TinyUSB, STM32Cube, CMSIS, HAL, descriptors, endpoints, hardware registers, vendor projects, real USB, and flashable firmware out of the repo.
 
+M2.14 status:
+
+- Add USB descriptor planning metadata for KISS-only and KISS-plus-diagnostics CDC ACM profiles.
+- Keep descriptor data host-tested and not bound to a real USB stack.
+- Keep final VID and PID unclaimed.
+- Add MCU family planning for STM32H753 flagship, STM32H743 first custom path, STM32H735 cost-reduced path, STM32H750 memory-gated path, RP2350 separate simple path, and ESP32-S3 companion role.
+- Add board abstraction planning for MCU class, MCU part, board, hardware revision, and feature flags.
+- Update target metadata with family and board planning flags.
+- Keep TinyUSB, STM32Cube, CMSIS, HAL, binary descriptors, endpoints, hardware registers, vendor projects, real USB, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.14: USB descriptor skeleton planning, still data-only and not used by a real USB stack.
+- M2.15: Clock, reset, watchdog planning and metadata, still no HAL code.
 
 M2 scope:
 

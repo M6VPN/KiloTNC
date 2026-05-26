@@ -728,6 +728,22 @@ M2.13 USB CDC stack selection and dependency-boundary gate:
 - `make embedded-test` verifies formatter bounds and NULL argument handling.
 - No TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, USB descriptors, endpoint handlers, interrupt handlers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.14 USB descriptor skeleton and MCU family abstraction gate:
+
+- `embedded/include/kilotnc_usb_descriptors.h` exists.
+- `embedded/app/usb_descriptor_plan.c` exists.
+- `embedded/tests/test_usb_descriptor_plan.c` exists.
+- `make embedded-test` covers KISS-only descriptor planning metadata.
+- `make embedded-test` covers KISS-plus-diagnostics descriptor planning metadata.
+- `make embedded-test` verifies no final VID or PID is claimed.
+- `make embedded-test` verifies descriptor profile parsing and formatting.
+- `make embedded-test` verifies descriptor formatter bounds and NULL argument handling.
+- `make embedded-test` covers STM32H753 flagship metadata.
+- `make embedded-test` covers H743, H735, and H750 future planning flags.
+- `docs/m2-mcu-family-plan.md` exists.
+- `docs/m2-board-abstraction-plan.md` exists.
+- No TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, binary USB descriptors, endpoint handlers, interrupt handlers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

@@ -14,7 +14,9 @@
 
 static int test_target_config_absent_assignments(void);
 static int test_target_config_absent_features(void);
+static int test_target_config_family_plan(void);
 static int test_target_config_feature_flags(void);
+static int test_target_resource_family_plan(void);
 static int test_target_resource_flags(void);
 static int test_target_config_strings(void);
 static int test_target_resource_strings(void);
@@ -54,6 +56,23 @@ test_target_config_absent_features(void)
 }
 
 static int
+test_target_config_family_plan(void)
+{
+	if (KILOTNC_TARGET_STM32H753_NUCLEO_FLAGSHIP != 1)
+		return __LINE__;
+	if (KILOTNC_TARGET_STM32H753_NUCLEO_H743_POSSIBLE != 1)
+		return __LINE__;
+	if (KILOTNC_TARGET_STM32H753_NUCLEO_H735_NEEDS_VALIDATION != 1)
+		return __LINE__;
+	if (KILOTNC_TARGET_STM32H753_NUCLEO_H750_NEEDS_VALIDATION != 1)
+		return __LINE__;
+	if (KILOTNC_TARGET_STM32H753_NUCLEO_HAS_COMPANION != 0)
+		return __LINE__;
+
+	return 0;
+}
+
+static int
 test_target_config_feature_flags(void)
 {
 	uint32_t features;
@@ -66,6 +85,23 @@ test_target_config_feature_flags(void)
 	if ((features & KILOTNC_BOARD_FEATURE_SAI_I2S_PLANNED) == 0U)
 		return __LINE__;
 	if ((features & KILOTNC_BOARD_FEATURE_GPIO_TEST_PTT_PLANNED) == 0U)
+		return __LINE__;
+
+	return 0;
+}
+
+static int
+test_target_resource_family_plan(void)
+{
+	if (KILOTNC_STM32H753_FLAGSHIP_TARGET != 1)
+		return __LINE__;
+	if (KILOTNC_STM32H753_H743_FUTURE_COMPATIBLE != 1)
+		return __LINE__;
+	if (KILOTNC_STM32H753_H735_NEEDS_RESOURCE_CHECK != 1)
+		return __LINE__;
+	if (KILOTNC_STM32H753_H750_NEEDS_MEMORY_CHECK != 1)
+		return __LINE__;
+	if (KILOTNC_STM32H753_CONNECTIVITY_COMPANION_PRESENT != 0)
 		return __LINE__;
 
 	return 0;
@@ -103,6 +139,12 @@ test_target_config_strings(void)
 		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_MCU_FAMILY, "STM32H753") != 0)
 		return __LINE__;
+	if (strcmp(KILOTNC_TARGET_STM32H753_NUCLEO_MCU_GROUP,
+	    "stm32h7") != 0)
+		return __LINE__;
+	if (strcmp(KILOTNC_TARGET_STM32H753_NUCLEO_BOARD_FAMILY,
+	    "nucleo-144") != 0)
+		return __LINE__;
 	if (strcmp(KILOTNC_TARGET_BOARD_CLASS,
 	    "NUCLEO-H753ZI Nucleo-144") != 0)
 		return __LINE__;
@@ -118,6 +160,11 @@ test_target_resource_strings(void)
 		return __LINE__;
 	if (strcmp(KILOTNC_STM32H753_COMPILE_GATE,
 	    "KILOTNC_TARGET_STM32H753_NUCLEO") != 0)
+		return __LINE__;
+	if (strcmp(KILOTNC_STM32H753_MCU_FAMILY_GROUP,
+	    "stm32h7") != 0)
+		return __LINE__;
+	if (strcmp(KILOTNC_STM32H753_BOARD_FAMILY, "nucleo-144") != 0)
 		return __LINE__;
 	if (strcmp(KILOTNC_STM32H753_TEST_PTT_GPIO_PORT, "TBD") != 0)
 		return __LINE__;
@@ -142,10 +189,16 @@ test_target_metadata(void)
 	line = test_target_config_feature_flags();
 	if (line != 0)
 		goto fail;
+	line = test_target_config_family_plan();
+	if (line != 0)
+		goto fail;
 	line = test_target_config_absent_features();
 	if (line != 0)
 		goto fail;
 	line = test_target_resource_flags();
+	if (line != 0)
+		goto fail;
+	line = test_target_resource_family_plan();
 	if (line != 0)
 		goto fail;
 	line = test_target_config_absent_assignments();
