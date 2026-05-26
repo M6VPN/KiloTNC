@@ -136,11 +136,28 @@ M1.3 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Sample count not divisible by 40 rejected safely.
 - NULL argument handling for search and DCD APIs.
 
+M1.4 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- Continuous PCM extraction of one AX.25 UI frame.
+- Leading and trailing silence around an HDLC-framed packet.
+- Multiple leading and trailing HDLC flags.
+- Two valid frames decoded from one PCM buffer.
+- Bad-FCS frame skipped before a later valid frame.
+- Repeated flags only return no frame and do not create empty frames.
+- Deterministic random noise returns no frame or partial safely.
+- Truncated final frame returns partial safely.
+- Output frame array too small returns a bounded error.
+- Oversize frame is dropped and counted.
+- Stats counters for decoded bits, flags, candidate frames, valid frames, bad FCS, oversize frames, DCD score, and confidence.
+- NULL argument handling.
+- Mild deterministic additive noise, DC offset, and leading phase offset on a generated packet.
+
 Pending:
 
 - Full timing recovery loop.
 - Production DCD.
 - Squelch/COS integration.
+- Streaming RX state machine and ring-buffer API.
 - Real noisy decode.
 - Real sample clock drift handling.
 - Real-radio testing.

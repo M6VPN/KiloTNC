@@ -96,11 +96,53 @@ These metrics are diagnostic only. They do not yet represent production DCD beha
 
 `afsk1200_dcd_score()` returns a bounded host-side score from PCM input. It is designed to score silence and deterministic random noise lower than valid generated Bell 202 AFSK. It is not a final squelch, carrier detect, or radio DCD design.
 
+## M1.4 Continuous Frame Acquisition
+
+M1.4 adds a bounded whole-buffer frame acquisition API:
+
+```text
+afsk1200_rx_decode_frames()
+```
+
+The M1.4 receive pipeline is:
+
+```text
+continuous PCM stream
+	|
+	AFSK1200 tone decode and metrics
+	|
+	NRZI decode
+	|
+	HDLC flag search and frame extraction
+	|
+	HDLC unstuff
+	|
+	AX.25 FCS validation
+	|
+	raw AX.25 UI frame bytes with FCS
+```
+
+HDLC flags are detected in the decoded bit stream. Bits before the first flag are ignored. Repeated flags are treated as idle or preamble and do not create empty frames. Frame bits between flag pairs are unstuffed and checked with AX.25 FCS before being returned.
+
+The acquisition layer can return multiple valid frames from one PCM buffer. If a candidate frame has bad FCS or malformed HDLC, the layer counts it and keeps scanning for later valid frames.
+
+Frame acquisition stats report:
+
+- Decoded bit count.
+- Flags seen.
+- Candidate frames seen.
+- Valid frames returned.
+- Bad-FCS frame count.
+- Oversize frame count.
+- Malformed frame count.
+- DCD score and average confidence from the AFSK decoder.
+
 ## Limitations
 
 - Generated host vectors only.
 - Best-offset selection only, not a full timing recovery loop.
 - Diagnostic DCD score only, not production DCD.
+- Whole-buffer frame acquisition only, not a streaming ring-buffer API.
 - No squelch/COS integration.
 - Mild synthetic noise only.
 - No real sample clock drift tolerance claim.

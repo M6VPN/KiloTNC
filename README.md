@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.3 AFSK1200 decoder realism and DCD metrics.
+Current stage: M1.4 AFSK1200 continuous frame acquisition.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
