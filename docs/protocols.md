@@ -154,6 +154,12 @@ Mercury:
 - Bridge support means host-side TCP TNC compatibility testing and audio/PTT/CAT support.
 - Mercury on-air compatibility is with Mercury peers, not VARA peers.
 
+## Host and Network Interface Scope
+
+KISS-over-TCP, Unix sockets, PTYs, and stdin/stdout are daemon host interfaces. They are not on-air protocols.
+
+Internet bridging is future research and is disabled by default in planning. Any future internet-originated packet path must pass through operator policy, mode validation, queue limits, DCD/channel access, and max TX watchdog logic before RF transmission.
+
 ## Sources checked
 
 | Source title                                      | Date checked | Note                                                |

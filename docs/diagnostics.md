@@ -47,6 +47,8 @@ This layer is intended to feed a later diagnostic CDC CLI and embedded fault rep
 
 M1.11 exposes formatted snapshots through `kilotnc_cli diag` and prints snapshots after KISS-to-PCM, PCM-to-KISS, and loopback commands.
 
+M1.12 planning treats the same snapshot format as the status source for the host CLI, planned `kilotncd` daemon status, and future diagnostic CDC or local control sockets.
+
 ## Limitations
 
 - No USB CDC CLI yet.

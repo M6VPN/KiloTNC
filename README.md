@@ -17,7 +17,7 @@ No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an ext
 
 ## Status
 
-Current stage: M1.11 host CLI/test tool.
+Current stage: M1.12 platform roadmap and daemon/network planning.
 
 No hardware or PCB work has started. PCB work is blocked until protocol and architecture documents are reviewed.
 
@@ -37,6 +37,14 @@ Bridge targets:
 - VARA through host software, USB audio, PTT, and CAT where possible.
 - ARDOP through host software.
 - Mercury through host software and TCP TNC compatibility testing.
+
+Planned platform targets:
+
+- Linux/BSD daemon target using the portable core and host audio interfaces.
+- Future internet/node services with safety gates and local-only defaults.
+- Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
+
+These platform targets are planning items. They are not implemented in M1.12.
 
 ## Milestones
 

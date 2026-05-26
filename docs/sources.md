@@ -36,6 +36,16 @@ Sources checked on 2026-05-26.
 | TLV320AIC3204 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3204                                | Codec sample rate, I2S, programmable I/O |
 | TLV320AIC3104 product page, Texas Instruments | 2026-05-26   | https://www.ti.com/product/TLV320AIC3104                                | Codec sample rate, I2S, analog I/O       |
 
+## Host Platforms
+
+| Source title                         | Date checked | URL                                                            | Note                                  |
+| ------------------------------------ | ------------ | -------------------------------------------------------------- | ------------------------------------- |
+| ALSA PCM interface documentation     | 2026-05-26   | https://www.alsa-project.org/alsa-doc/alsa-lib/pcm.html        | Linux PCM audio backend planning      |
+| sndio project page                   | 2026-05-26   | https://sndio.org/                                             | sndio platform scope                  |
+| sndio OpenBSD manual                 | 2026-05-26   | https://man.openbsd.org/sndio                                  | OpenBSD audio backend planning        |
+| FreeBSD Architecture Handbook, Sound | 2026-05-26   | https://docs.freebsd.org/en/books/arch-handbook/sound/         | FreeBSD pcm and OSS interface context |
+| NetBSD audio(4) manual               | 2026-05-26   | https://man.netbsd.org/NetBSD-10.0/audio.4                     | NetBSD audio device interface context |
+
 ## Use Restrictions
 
 Dire Wolf may be used as an external interoperability reference and test tool only. No Dire Wolf source code is copied into this repository in this pass.

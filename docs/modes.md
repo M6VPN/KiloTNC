@@ -68,6 +68,18 @@ M1.11 adds `kilotnc_cli`, which accepts the same mode parser inputs:
 
 The CLI rejects planned and research modes for TX/RX operations. The `mode` command can still inspect registry entries.
 
+## Shared Platform Use
+
+The mode registry is shared by firmware, host tools, and the planned daemon target.
+
+`NINO_MODE=` is intended for:
+
+- Host CLI mode selection.
+- Future daemon configuration.
+- Future firmware compatibility options.
+
+Nino-compatible values remain boundary inputs. KiloTNC uses internal mode IDs after parsing.
+
 ## Sources checked
 
 | Source title                         | Date checked | Note                                        |

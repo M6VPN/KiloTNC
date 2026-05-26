@@ -57,6 +57,27 @@ Codec audio path, PTT safety, CAT bridge, radio connector
 
 VARA native modulation is not planned. VARA support means host-side external software using KiloTNC audio, PTT, and CAT facilities where the host software supports that arrangement.
 
+## Shared Core and Platform Targets
+
+The portable core is shared by firmware, host tools, and planned daemon work:
+
+- KISS parser and encoder.
+- AX.25, HDLC, and FCS.
+- AFSK1200 RX/TX.
+- TNC1200 host harness.
+- Mode registry.
+- Diagnostics.
+- Channel-access and PTT safety simulation.
+
+Target-specific adapters are planned around that core:
+
+- MCU firmware target: USB CDC KISS, codec audio, PTT, COS, CAT, watchdogs, and fail-safe operation on physical hardware.
+- Linux/BSD daemon target: host audio, host KISS services, serial/CAT/PTT adapters, and diagnostics without KiloTNC hardware.
+- Network/node target: optional local KISS-over-TCP, future node services, and remote diagnostics behind explicit safety gates.
+- Future network-capable hardware target: Ethernet or Wi-Fi variants after the Rev A USB/audio/PTT design is proven.
+
+The daemon, network node, and network-capable hardware targets are planned only. They are not implemented in M1.12.
+
 ## MCU Decision
 
 Primary target: STM32H743/STM32H753 class.
@@ -119,4 +140,3 @@ PCB design starts only after:
 | IL2P Specification Draft v0.6                     | 2026-05-26   | IL2P relationship to KISS and AX.25          |
 | ARDOP Specification Revision 0.3.1                | 2026-05-26   | External modem bridge and PTT/CAT context    |
 | Mercury GitHub README, Rhizomatica                | 2026-05-26   | Mercury external modem and TCP interface     |
-

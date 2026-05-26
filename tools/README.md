@@ -2,6 +2,8 @@
 
 `kilotnc_cli` is a host-side debug tool for the portable KiloTNC harness. It is not embedded firmware and does not talk to USB, radios, GPIO, or hardware audio devices.
 
+The planned `kilotncd` daemon is separate from this CLI. The CLI remains a manual debug and test-vector tool.
+
 Build it with:
 
 ```text

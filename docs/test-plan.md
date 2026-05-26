@@ -296,6 +296,15 @@ M1.11 host-side checks on 2026-05-26:
 - CLI uses bounded file reads and writes.
 - CLI raw PCM helpers read and write signed 16-bit little-endian mono PCM.
 
+M1.12 documentation gate on 2026-05-26:
+
+- Platform roadmap exists and marks daemon, node, and network hardware targets as planned.
+- Daemon plan exists for a hardware-independent Linux/BSD `kilotncd`.
+- Network node plan exists and keeps remote RF paths disabled by default.
+- Network hardware plan exists and keeps Ethernet/Wi-Fi out of Rev A requirements.
+- Architecture, protocol, mode, diagnostics, tool, and README docs reference planned platform targets without marking them implemented.
+- Safety defaults for remote clients, DCD/channel access, max TX timeout, and PTT separation are documented.
+
 Pending:
 
 - Full timing recovery loop.
