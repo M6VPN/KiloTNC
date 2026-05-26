@@ -199,6 +199,42 @@ tnc1200_set_dcd(struct tnc1200 *tnc, int busy)
 }
 
 enum tnc1200_result
+tnc1200_status(const struct tnc1200 *tnc, struct tnc1200_status *status)
+{
+	struct afsk1200_stream_stats rx_stats;
+	enum tnc_control_ptt ptt;
+	int active;
+	int can_emit;
+
+	if (tnc == NULL || status == NULL)
+		return TNC1200_ERR_ARG;
+
+	(void)memset(status, 0, sizeof(*status));
+	if (afsk1200_stream_stats(&tnc->rx, &rx_stats) !=
+	    AFSK1200_STREAM_OK)
+		return TNC1200_ERR_ARG;
+	if (afsk1200_tx_is_active(&tnc->tx, &active) != AFSK1200_TX_OK)
+		return TNC1200_ERR_ARG;
+	if (tnc_control_can_emit_audio(&tnc->control, &can_emit) !=
+	    TNC_CONTROL_OK)
+		return TNC1200_ERR_ARG;
+	if (tnc_control_ptt_state(&tnc->control, &ptt) != TNC_CONTROL_OK)
+		return TNC1200_ERR_ARG;
+
+	status->rx_dcd_score = rx_stats.dcd_score;
+	status->rx_confidence_avg = rx_stats.confidence_avg;
+	status->p = tnc->p;
+	status->slottime_10ms = tnc->slottime;
+	status->fullduplex = tnc->fullduplex;
+	status->ptt_state = (uint8_t)ptt;
+	status->tx_active = active != 0 ? 1U : 0U;
+	status->audio_ready = can_emit != 0 ? 1U : 0U;
+	status->dcd_busy = tnc->control.dcd_busy ? 1U : 0U;
+
+	return TNC1200_OK;
+}
+
+enum tnc1200_result
 tnc1200_stats(const struct tnc1200 *tnc, struct tnc1200_stats *stats)
 {
 	if (tnc == NULL || stats == NULL)

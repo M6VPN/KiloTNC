@@ -59,6 +59,18 @@ struct tnc1200_stats {
 	size_t ptt_off_events;
 };
 
+struct tnc1200_status {
+	uint16_t rx_dcd_score;
+	uint16_t rx_confidence_avg;
+	uint8_t p;
+	uint8_t slottime_10ms;
+	uint8_t fullduplex;
+	uint8_t ptt_state;
+	uint8_t tx_active;
+	uint8_t audio_ready;
+	uint8_t dcd_busy;
+};
+
 struct tnc1200 {
 	struct kiss_parser kiss;
 	struct afsk1200_tx tx;
@@ -89,6 +101,8 @@ enum tnc1200_result tnc1200_rx_process(struct tnc1200 *, const int16_t *,
 enum tnc1200_result tnc1200_ptt_state(const struct tnc1200 *,
 	enum tnc_control_ptt *);
 enum tnc1200_result tnc1200_set_dcd(struct tnc1200 *, int);
+enum tnc1200_result tnc1200_status(const struct tnc1200 *,
+	struct tnc1200_status *);
 enum tnc1200_result tnc1200_stats(const struct tnc1200 *,
 	struct tnc1200_stats *);
 enum tnc1200_result tnc1200_tx_process(struct tnc1200 *, int16_t *, size_t,

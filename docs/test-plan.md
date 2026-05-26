@@ -247,6 +247,23 @@ M1.8 host-side tests checked with `make clean && make test` and `make sanitize` 
 - Max TX timeout aborts TX.
 - Existing KISS-to-PCM-to-KISS loopback passes with `p = 255` and clear DCD.
 
+M1.9 host-side tests checked with `make clean && make test` and `make sanitize` on 2026-05-26:
+
+- Diagnostics init and NULL argument handling.
+- Snapshot capture from fresh TNC1200.
+- Snapshot capture after KISS TX input.
+- Snapshot capture after TX PCM output.
+- Snapshot capture after RX PCM to KISS output.
+- P, SlotTime, and FullDuplex capture after KISS commands.
+- DCD busy state capture.
+- PTT state, TX active state, and audio-ready capture through TXDELAY.
+- RX DCD score and confidence capture after generated RX PCM.
+- One recorded fault updates `last_fault`.
+- More than 16 faults overwrite the fixed ring in deterministic order.
+- Fault output buffer too small behavior.
+- Snapshot formatter stable text output.
+- Snapshot formatter truncation handling.
+
 Pending:
 
 - Full timing recovery loop.
