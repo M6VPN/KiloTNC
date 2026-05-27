@@ -1,10 +1,8 @@
 # KiloTNC
 
-KiloTNC is a resilient hardware TNC project for amateur packet radio. The first design target is a robust AX.25/KISS TNC with clean audio, fail-safe PTT, diagnostics, and a path toward IL2Pc support.
+KiloTNC is a hardware TNC project for amateur packet radio. The first design target is a robust AX.25/KISS TNC with clean audio, fail-safe PTT, diagnostics, and a path toward IL2Pc support.
 
-The project may support host-side bridge modes for external software modems such as VARA, ARDOP, and Mercury. VARA is treated only as an external software modem bridge target, not as a native implementation.
-
-No Dire Wolf code is copied into this repo. Dire Wolf may be used only as an external interoperability reference and test tool unless the project license changes.
+KiloTNC will support host-side bridge modes for external software modems such as VARA, ARDOP, and Mercury (VARA is an external software modem bridge target, not as a native implementation).
 
 ## Table of Contents
 
@@ -45,6 +43,7 @@ Planned platform targets:
 - Linux/BSD daemon target using the portable core and host audio interfaces.
 - Future internet/node services with safety gates and local-only defaults.
 - Future Ethernet or Wi-Fi hardware variants after the USB/audio/PTT path is proven.
+- LoRa experimentations
 
 These platform targets remain planning items except for the minimal host daemon file adapter, daemon config profiles, foreground daemon loop skeleton, one-shot daemon control/status commands, raw PCM audio backend abstraction, compile-gated ALSA, sndio, and OSS stub boundaries, daemon radio-control abstraction with no-PTT and log backends, stdin/stdout mode, localhost-only TCP KISS test adapter, local Unix socket once-mode adapter, local PTY once-mode adapter, KISS compatibility tests across local daemon transports, external black-box interoperability planning placeholders, the M2.1 embedded compile-only skeleton, M2.2 platform stubs, the M2.3 host-native USB CDC KISS bridge skeleton, the M2.4 embedded diagnostics bridge, the M2.5 host-native audio loopback/test path, the M2.6 embedded TNC core integration skeleton, the M2.7 embedded modem/audio boundary skeleton, the M2.8 embedded RX audio/modem boundary skeleton, the M2.9 embedded full host-test loopback skeleton, the M2.10 compile-gated STM32H753 target skeleton, the M2.11 STM32H753 pin/resource planning layer, the M2.12 opt-in STM32H753 cross-compile skeleton, the M2.13 USB CDC stack selection and dependency-boundary planning, the M2.14 USB descriptor planning plus MCU family abstraction metadata, the M2.15 STM32H7 clock/reset/watchdog planning metadata, and the M2.16 memory/flash/CPU budget planning metadata.
 
