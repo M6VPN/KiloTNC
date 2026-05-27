@@ -208,9 +208,17 @@ M2.15 status:
 - Add host-native metadata tests for finalized flags and conservative constants.
 - Keep RCC code, reset register reads, watchdog setup, startup code, linker scripts, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
 
+M2.16 status:
+
+- Add memory, flash, and CPU budget planning.
+- Add budget metadata for current control tick, audio sample rate, frame limits, USB queues, audio buffers, modem chunks, and diagnostics ring.
+- Keep budget finalized, linker-map available, stack high-water measured, and CPU-cycle measured flags false.
+- Gate H735 and H750 on future measured RAM, flash, and CPU margins.
+- Keep final embedded memory usage claims, linker scripts, startup code, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.16: Target memory, flash, and CPU budget planning.
+- M2.17: Embedded queue and backpressure planning.
 
 M2 scope:
 

@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.15 adds STM32H7 clock, reset, boot, and watchdog planning metadata. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, or watchdog setup is implemented here yet.
+M2.16 adds memory, flash, and CPU budget planning metadata. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, watchdog setup, final memory map, or final CPU measurement is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -59,3 +59,5 @@ M2.13 adds USB CDC stack selection planning and a dependency-boundary placeholde
 M2.14 adds a host-tested USB descriptor plan for KISS-only and KISS-plus-diagnostics CDC ACM profiles. It also records STM32H753 as the flagship target while keeping STM32H743, STM32H735, and STM32H750 as validation-gated future STM32H7 paths. RP2350 remains a separate simple target path, and ESP32-S3 remains a possible connectivity companion only.
 
 M2.15 adds target metadata for 10 ms control ticks, 1 ms platform timebase planning, 48000 Hz audio sample-rate planning, reset-cause categories, and watchdog quorum policy. Clock tree, PLL values, USB clock, audio clock, reset-cause registers, watchdog registers, and real boot integration remain unfinalized.
+
+M2.16 adds host-tested budget metadata for current fixed-buffer planning. Budget finalized, linker-map available, stack high-water measured, and CPU-cycle measured flags remain false. H735 and H750 remain gated on future measured RAM, flash, and CPU margins.

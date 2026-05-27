@@ -1,0 +1,54 @@
+/* KiloTNC - Developed by M6VPN (M6VPN@tuta.com) */
+/* KiloTNC/embedded/include/kilotnc_budget.h */
+
+#ifndef KILOTNC_BUDGET_H
+#define KILOTNC_BUDGET_H
+
+#include "audio_stub.h"
+#include "embedded_audio.h"
+#include "kilotnc_audio.h"
+#include "kilotnc_embedded_modem.h"
+#include "kilotnc_embedded_tnc.h"
+#include "kilotnc_limits.h"
+#include "target_clock.h"
+#include "tnc_diag.h"
+#include "usb_cdc_stub.h"
+
+/*
+ * M2.16 metadata only. These values are planning guards for host tests and
+ * must not be treated as final embedded linker-map measurements.
+ */
+#define KILOTNC_BUDGET_FINALIZED			0U
+#define KILOTNC_BUDGET_LINKER_MAP_AVAILABLE		0U
+#define KILOTNC_BUDGET_STACK_HIGH_WATER_MEASURED	0U
+#define KILOTNC_BUDGET_CPU_CYCLES_MEASURED		0U
+#define KILOTNC_BUDGET_HEAP_ALLOWED_RT_PATH		0U
+
+#define KILOTNC_BUDGET_CONTROL_TICK_MS \
+	KILOTNC_TARGET_CONTROL_TICK_MS
+#define KILOTNC_BUDGET_AUDIO_SAMPLE_RATE_HZ \
+	KILOTNC_TARGET_AUDIO_SAMPLE_RATE_HZ
+#define KILOTNC_BUDGET_AX25_MAX_FRAME_BYTES \
+	KILOTNC_AX25_MAX_FRAME
+#define KILOTNC_BUDGET_KISS_MAX_FRAME_BYTES \
+	KILOTNC_KISS_MAX_FRAME
+#define KILOTNC_BUDGET_DIAG_FAULT_RING_ENTRIES \
+	TNC_DIAG_FAULT_RING
+#define KILOTNC_BUDGET_USB_RX_QUEUE_BYTES \
+	USB_CDC_STUB_BUFFER_MAX
+#define KILOTNC_BUDGET_USB_TX_QUEUE_BYTES \
+	USB_CDC_STUB_BUFFER_MAX
+#define KILOTNC_BUDGET_AUDIO_RX_STUB_SAMPLES \
+	AUDIO_STUB_BUFFER_MAX
+#define KILOTNC_BUDGET_AUDIO_TX_STUB_SAMPLES \
+	AUDIO_STUB_BUFFER_MAX
+#define KILOTNC_BUDGET_AUDIO_BLOCK_SAMPLES \
+	EMBEDDED_AUDIO_BLOCK_MAX
+#define KILOTNC_BUDGET_MODEM_TX_CHUNK_SAMPLES \
+	EMBEDDED_MODEM_TX_CHUNK_MAX
+#define KILOTNC_BUDGET_MODEM_RX_CHUNK_SAMPLES \
+	EMBEDDED_MODEM_RX_CHUNK_MAX
+#define KILOTNC_BUDGET_TNC_USB_READ_BYTES \
+	EMBEDDED_TNC_USB_READ_MAX
+
+#endif

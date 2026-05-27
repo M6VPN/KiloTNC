@@ -95,6 +95,22 @@ Future H743, H735, and H750 variants must satisfy the same platform contract as 
 
 H735 and H750 variants remain validation-gated until memory, flash, clock, and watchdog margins are checked against the same contract.
 
+## Memory And Flash Gates
+
+Memory, flash, and CPU budget planning is tracked in [m2-memory-flash-cpu-budget.md](m2-memory-flash-cpu-budget.md).
+
+H753 and H743 remain the main high-headroom paths until linker-map and runtime high-water measurements exist.
+
+H735 remains a cost-reduced candidate only after:
+
+- ARM linker-map flash and RAM use are measured.
+- Runtime stack high-water marks are measured.
+- USB and audio queue high-water marks are measured.
+- Modem RX/TX worst-case paths are measured.
+- Watchdog progress timing is measured.
+
+H750 remains gated on an additional flash and memory-placement review because the H750 Value line uses a much smaller embedded flash class than H753/H743.
+
 ## Sources Checked
 
 Sources checked on 2026-05-27:

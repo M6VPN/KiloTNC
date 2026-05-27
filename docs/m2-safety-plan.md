@@ -34,6 +34,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.14 USB descriptor planning is metadata only and does not activate hardware USB, assign endpoints to a stack, or claim a final VID/PID.
 - M2.14 board variant planning keeps PTT safe-off semantics required across H753, H743, H735, H750, RP2350, and any ESP32-S3 companion path.
 - M2.15 clock, reset, boot, and watchdog planning keeps clock setup, watchdog enable, and reset register reads as future hardware-adapter work only.
+- M2.16 memory, flash, and CPU budget planning keeps measured usage flags false until linker maps, high-water marks, and cycle measurements exist.
 
 ## Watchdog And Timeout
 
@@ -104,6 +105,14 @@ M2 firmware planning must include:
 - Watchdog fault must force PTT off and must be visible in diagnostics.
 - USB and audio input must not be able to key PTT during boot.
 - Clock tree values, PLL values, reset register reads, and watchdog register values remain unfinalized in M2.15.
+
+## M2.16 Memory And Queue Safety Rules
+
+- Memory exhaustion must not produce unsafe PTT behavior.
+- Queue overflow must drop and count data instead of crashing.
+- Real-time paths must keep heap usage zero or explicitly bounded.
+- H735 and H750 paths must not be accepted until linker-map and runtime high-water measurements prove margin.
+- Future CPU budget checks must include malformed KISS input, worst-case modem RX/TX, and watchdog progress timing.
 
 ## Diagnostics Visibility
 

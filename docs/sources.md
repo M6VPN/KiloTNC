@@ -35,8 +35,8 @@ Sources checked through 2026-05-27.
 | NUCLEO-H753ZI product page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/evaluation-tools/nucleo-h753zi.html               | Nucleo-144 board status, ST-LINK, connector, and schematic-pack references |
 | STM32H753ZI product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h753zi.html | H753ZI memory, USB, timer, watchdog, ADC, DAC, SAI, and I2S class |
 | STM32H743ZI product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h743zi.html | H743ZI memory and future custom board planning |
-| STM32H735ZG product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h735zg.html | H735ZG cost-reduced candidate memory planning |
-| STM32H750 Value line page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html | H750 flash and memory planning caution |
+| STM32H735ZG product page, STMicroelectronics  | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h735zg.html | H735ZG cost-reduced candidate flash and RAM planning |
+| STM32H750 Value line page, STMicroelectronics | 2026-05-27   | https://www.st.com/en/microcontrollers-microprocessors/stm32h750-value-line.html | H750 flash, RAM, and memory planning caution |
 | STM32H753xI datasheet, STMicroelectronics     | 2026-05-27   | https://www.st.com/resource/en/datasheet/stm32h753zi.pdf                | Future pin and peripheral verification |
 | STM32H7 Nucleo-144 boards user manual, ST     | 2026-05-27   | https://www.st.com/resource/en/user_manual/um2407-stm32h7-nucleo144-board-stmicroelectronics.pdf | NUCLEO-H753ZI board connectors, LEDs, USB OTG FS, VCP, Ethernet conflicts, and solder bridges |
 | STM32H743/753 documentation page, STMicroelectronics | 2026-05-27 | https://www.st.com/en/microcontrollers-microprocessors/stm32h743-753/documentation.html | RM0433 reference manual listing for future peripheral behavior checks |

@@ -758,6 +758,21 @@ M2.15 STM32H7 clock/reset/watchdog planning and metadata gate:
 - `make embedded-test` verifies target metadata headers include without HAL, CMSIS, or vendor headers.
 - No PLL values, RCC values, watchdog register values, reset register reads, startup vectors, linker scripts, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.16 target memory/flash/CPU budget planning gate:
+
+- `docs/m2-memory-flash-cpu-budget.md` exists.
+- `embedded/include/kilotnc_budget.h` exists.
+- `embedded/tests/test_budget_metadata.c` exists.
+- `make embedded-test` verifies budget finalized flag remains false.
+- `make embedded-test` verifies linker map available flag remains false.
+- `make embedded-test` verifies stack high-water measured flag remains false.
+- `make embedded-test` verifies CPU cycles measured flag remains false.
+- `make embedded-test` verifies audio sample-rate metadata is 48000 Hz.
+- `make embedded-test` verifies control tick metadata is 10 ms.
+- `make embedded-test` verifies key buffer sizes are nonzero and bounded.
+- H735 and H750 remain gated on future measured RAM, flash, and CPU margins.
+- No final embedded memory usage claim, linker script, startup vectors, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

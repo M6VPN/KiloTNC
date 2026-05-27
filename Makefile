@@ -391,6 +391,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/platform/usb_cdc_stub.c \
 	  embedded/platform/usb_stack_boundary.c \
 	  embedded/tests/test_audio_stub.c \
+	  embedded/tests/test_budget_metadata.c \
 	  embedded/tests/test_embedded_app.c \
 	  embedded/tests/test_embedded_audio.c \
 	  embedded/tests/test_embedded_diag.c \
@@ -426,6 +427,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/platform/usb_cdc_stub.c \
 		embedded/platform/usb_stack_boundary.c \
 		embedded/tests/test_audio_stub.c \
+		embedded/tests/test_budget_metadata.c \
 		embedded/tests/test_embedded_app.c \
 		embedded/tests/test_embedded_audio.c \
 		embedded/tests/test_embedded_diag.c \

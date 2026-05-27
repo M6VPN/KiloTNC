@@ -298,6 +298,32 @@ embedded/targets/stm32h753-nucleo/target_watchdog_config.h
 
 These headers do not include STM32 HAL, CMSIS, vendor headers, register values, startup code, linker data, or hardware addresses.
 
+## M2.16 Budget Metadata
+
+`make embedded-test` now also verifies:
+
+- Budget finalized flag remains false.
+- Linker map available flag remains false.
+- Stack high-water measured flag remains false.
+- CPU cycles measured flag remains false.
+- Audio sample-rate metadata remains 48000 Hz.
+- Control tick metadata remains 10 ms.
+- Key buffer sizes are nonzero and bounded.
+
+The budget metadata is in:
+
+```text
+embedded/include/kilotnc_budget.h
+```
+
+Budget planning is documented in:
+
+```text
+docs/m2-memory-flash-cpu-budget.md
+```
+
+Future target builds must add linker-map review, stack high-water checks, queue high-water checks, and CPU cycle measurements before H735 or H750 can be accepted. Host binary size is not an MCU flash estimate.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:
