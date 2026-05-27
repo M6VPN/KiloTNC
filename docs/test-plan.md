@@ -744,6 +744,20 @@ M2.14 USB descriptor skeleton and MCU family abstraction gate:
 - `docs/m2-board-abstraction-plan.md` exists.
 - No TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, binary USB descriptors, endpoint handlers, interrupt handlers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.15 STM32H7 clock/reset/watchdog planning and metadata gate:
+
+- `docs/m2-clock-reset-watchdog-plan.md` exists.
+- `embedded/targets/stm32h753-nucleo/target_clock.h` exists.
+- `embedded/targets/stm32h753-nucleo/target_reset.h` exists.
+- `embedded/targets/stm32h753-nucleo/target_watchdog_config.h` exists.
+- `make embedded-test` verifies control tick metadata is 10 ms.
+- `make embedded-test` verifies audio sample-rate metadata is 48000 Hz.
+- `make embedded-test` verifies clock tree finalized flag remains false.
+- `make embedded-test` verifies reset-cause finalized flag remains false.
+- `make embedded-test` verifies watchdog finalized flag remains false.
+- `make embedded-test` verifies target metadata headers include without HAL, CMSIS, or vendor headers.
+- No PLL values, RCC values, watchdog register values, reset register reads, startup vectors, linker scripts, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

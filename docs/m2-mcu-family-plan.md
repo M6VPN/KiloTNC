@@ -81,6 +81,20 @@ The embedded architecture must keep these layers separate:
 
 The portable core remains shared. STM32H7 target code, board resource metadata, and future USB/audio/PTT adapters must remain behind explicit boundaries.
 
+## Clock, Reset, And Watchdog Contract
+
+Future H743, H735, and H750 variants must satisfy the same platform contract as the H753 flagship:
+
+- Stable platform timebase.
+- 10 ms control tick.
+- 48 kHz audio-rate planning where the audio path is enabled.
+- Reset-cause capture before diagnostics output.
+- Watchdog policy that requires task progress before refresh.
+- PTT safe/off before USB or audio input is accepted.
+- Diagnostics visibility for reset cause and watchdog fault state.
+
+H735 and H750 variants remain validation-gated until memory, flash, clock, and watchdog margins are checked against the same contract.
+
 ## Sources Checked
 
 Sources checked on 2026-05-27:

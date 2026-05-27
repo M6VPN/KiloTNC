@@ -13,3 +13,7 @@ Intentionally absent in M2.10:
 - No hardware PTT pin.
 - No GPIO register access.
 - No STM32 HAL GPIO calls.
+
+M2.15 safe boot planning is tracked in [docs/m2-clock-reset-watchdog-plan.md](../../../docs/m2-clock-reset-watchdog-plan.md). Future startup must force PTT or the test GPIO safe/off before USB, audio, or host input can affect app state.
+
+No real GPIO setup, PTT pin assignment, reset-time pin state code, HAL, CMSIS, or hardware register access is added.

@@ -36,3 +36,5 @@ M2.13 adds a USB stack boundary placeholder. The only implemented USB path remai
 M2.14 adds USB descriptor planning metadata for KISS-only and KISS-plus-diagnostics CDC ACM profiles. The descriptor plan is host-tested data only. It does not provide binary descriptors, VID/PID claims, endpoint handlers, TinyUSB binding, STM32Cube binding, or hardware USB access.
 
 M2.14 also adds board abstraction planning. STM32H753 remains the flagship target, while H743, H735, and H750 remain future STM32H7-family possibilities behind board and resource metadata. RP2350 is a separate low-cost target path, and ESP32-S3 is a possible connectivity companion only.
+
+M2.15 adds clock, reset, boot, and watchdog planning metadata. The future platform adapter must provide a timebase, 10 ms control tick, reset-cause capture, watchdog policy, and safe-off boot ordering. The current platform stub remains host-test only and does not configure clocks, read reset registers, enable hardware watchdogs, or access GPIO hardware.

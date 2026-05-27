@@ -13,3 +13,13 @@ Intentionally absent in M2.10:
 - No clock assumptions.
 - No hardware fault injection.
 - No real board reset test.
+
+M2.15 planning is tracked in [docs/m2-clock-reset-watchdog-plan.md](../../../docs/m2-clock-reset-watchdog-plan.md). `target_watchdog_config.h` records conservative metadata only:
+
+- Independent watchdog policy planned.
+- Window watchdog not selected.
+- Watchdog quorum planned for main loop, USB, audio, and PTT-control progress.
+- Hardware watchdog enable at boot remains off.
+- Watchdog register values remain unfinalized.
+
+No real watchdog setup, watchdog register values, reset register reads, startup integration, HAL, CMSIS, or hardware access is added.

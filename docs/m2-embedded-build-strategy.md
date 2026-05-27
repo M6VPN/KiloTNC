@@ -275,6 +275,29 @@ docs/m2-mcu-family-plan.md
 docs/m2-board-abstraction-plan.md
 ```
 
+## M2.15 Clock, Reset, And Watchdog Metadata
+
+`make embedded-test` now also verifies:
+
+- Control tick metadata is 10 ms.
+- Platform timebase metadata is 1 ms.
+- Audio sample-rate metadata is 48000 Hz.
+- Clock tree finalized flag remains false.
+- PLL, USB clock, audio clock, timer clock, and HSE finalized flags remain false.
+- Reset-cause finalized flag remains false.
+- Watchdog finalized flag remains false.
+- Hardware watchdog enable at boot remains false.
+
+The metadata lives in:
+
+```text
+embedded/targets/stm32h753-nucleo/target_clock.h
+embedded/targets/stm32h753-nucleo/target_reset.h
+embedded/targets/stm32h753-nucleo/target_watchdog_config.h
+```
+
+These headers do not include STM32 HAL, CMSIS, vendor headers, register values, startup code, linker data, or hardware addresses.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

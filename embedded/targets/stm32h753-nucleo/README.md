@@ -86,3 +86,13 @@ M2.14 status:
 - ESP32-S3 is a possible connectivity companion only, not the modem DSP core.
 - Board abstraction planning is documented in [docs/m2-board-abstraction-plan.md](../../../docs/m2-board-abstraction-plan.md).
 - MCU family planning is documented in [docs/m2-mcu-family-plan.md](../../../docs/m2-mcu-family-plan.md).
+
+M2.15 status:
+
+- Clock, reset, boot, and watchdog planning is documented in [docs/m2-clock-reset-watchdog-plan.md](../../../docs/m2-clock-reset-watchdog-plan.md).
+- Planning metadata is recorded in `target_clock.h`, `target_reset.h`, and `target_watchdog_config.h`.
+- The planned control tick is 10 ms.
+- The planned audio sample rate remains 48000 Hz.
+- Clock tree, PLL values, USB clock, audio clock, reset-cause capture, and watchdog policy remain unfinalized.
+- No RCC code, watchdog register values, reset register reads, HAL, CMSIS, startup code, linker script, hardware register access, or flashable firmware is added.
+- Future boot order must force PTT safe/off before USB, audio, or host input can affect state.

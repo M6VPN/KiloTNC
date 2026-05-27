@@ -34,3 +34,7 @@ Planned descriptor profiles:
 - `kiss-plus-diag`: two CDC ACM functions, one for KISS and one for future diagnostics.
 
 M2.14 does not claim a final VID or PID. It does not add binary USB descriptor arrays, endpoint numbers, TinyUSB descriptor callbacks, STM32Cube descriptor tables, hardware USB access, or a host-visible USB device.
+
+M2.15 clock planning is tracked in [docs/m2-clock-reset-watchdog-plan.md](../../../docs/m2-clock-reset-watchdog-plan.md). USB clock source and PLL values remain `TBD` and must be verified by future USB stack work before any real USB device path exists.
+
+Safe boot planning requires PTT safe/off before USB byte-stream input can affect app state. M2.15 does not add USB clock setup, endpoint hardware setup, register access, HAL, CMSIS, TinyUSB, STM32Cube, or descriptor binding.

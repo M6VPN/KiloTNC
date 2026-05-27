@@ -199,9 +199,18 @@ M2.14 status:
 - Update target metadata with family and board planning flags.
 - Keep TinyUSB, STM32Cube, CMSIS, HAL, binary descriptors, endpoints, hardware registers, vendor projects, real USB, and flashable firmware out of the repo.
 
+M2.15 status:
+
+- Add STM32H7 clock, reset, boot, and watchdog planning.
+- Add metadata headers for target clock, reset, and watchdog policy.
+- Record 10 ms control tick and 48000 Hz audio sample-rate planning constants.
+- Keep clock tree, PLL values, USB clock, audio clock, reset-cause handling, and watchdog policy unfinalized.
+- Add host-native metadata tests for finalized flags and conservative constants.
+- Keep RCC code, reset register reads, watchdog setup, startup code, linker scripts, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.15: Clock, reset, watchdog planning and metadata, still no HAL code.
+- M2.16: Target memory, flash, and CPU budget planning.
 
 M2 scope:
 

@@ -33,6 +33,7 @@ STM32H753 remains the flagship target, but H743, H735, and H750 should stay poss
 The abstraction must prevent these from being mixed together:
 
 - MCU memory and peripheral limits.
+- MCU clock, reset, and watchdog constraints.
 - Board connector and solder-bridge choices.
 - USB stack choice.
 - Audio adapter choice.
@@ -66,12 +67,16 @@ Allowed now:
 - Planned feature flags.
 - Compatibility notes.
 - `TBD` placeholders for unverified resources.
+- Clock, reset, boot, and watchdog planning flags.
 
 Not allowed now:
 
 - Pin assignments.
 - Alternate-function selections.
 - Clock tree setup.
+- PLL values.
+- Reset register reads.
+- Watchdog register values.
 - HAL init code.
 - USB descriptors bound to a stack.
 - PTT GPIO driver code.

@@ -33,6 +33,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.13 USB stack planning keeps TinyUSB and STM32Cube unlinked and keeps the USB CDC stub as the only implemented path.
 - M2.14 USB descriptor planning is metadata only and does not activate hardware USB, assign endpoints to a stack, or claim a final VID/PID.
 - M2.14 board variant planning keeps PTT safe-off semantics required across H753, H743, H735, H750, RP2350, and any ESP32-S3 companion path.
+- M2.15 clock, reset, boot, and watchdog planning keeps clock setup, watchdog enable, and reset register reads as future hardware-adapter work only.
 
 ## Watchdog And Timeout
 
@@ -93,6 +94,16 @@ M2 firmware planning must include:
 - H735 and H750 paths must not be enabled until memory, flash, and resource margins are checked.
 - RP2350 must remain a separate target path, not a hidden substitute for STM32H753.
 - ESP32-S3 companion planning must not place modem DSP or PTT authority on the companion.
+
+## M2.15 Boot And Watchdog Safety Rules
+
+- PTT or the test GPIO must be forced safe/off as early as possible in future startup.
+- Reset cause must be captured early and reported through diagnostics.
+- Real watchdog enable must wait until the safe-off path is proven.
+- Watchdog refresh must require progress from the main loop, USB adapter, audio adapter, and PTT-control path.
+- Watchdog fault must force PTT off and must be visible in diagnostics.
+- USB and audio input must not be able to key PTT during boot.
+- Clock tree values, PLL values, reset register reads, and watchdog register values remain unfinalized in M2.15.
 
 ## Diagnostics Visibility
 
