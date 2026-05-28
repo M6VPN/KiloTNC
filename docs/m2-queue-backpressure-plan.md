@@ -31,6 +31,8 @@ Planned embedded queues:
 
 Config commands and future commit requests belong on the control path. They must not bypass validation, mode support checks, max TX timeout policy, or PTT safe-off state.
 
+Queue congestion must not prevent the control/PTT task from reporting scheduler progress. If a future data queue can block control progress, that queue design is unsafe and must be revised before hardware work.
+
 ## Backpressure Rules
 
 - No unbounded buffers.

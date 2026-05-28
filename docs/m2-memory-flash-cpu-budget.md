@@ -210,6 +210,12 @@ Current queue policy metadata references the existing USB, audio, frame, diagnos
 
 M2.18 adds no linker flash region, flash erase, flash write, EEPROM emulation, or persistent storage backend.
 
+## M2.19 Scheduler State Budget Impact
+
+The cooperative scheduler adds small fixed RAM state for task masks, cycle counters, fault counters, watchdog-allowed state, and last failed task. It does not add stacks, RTOS task control blocks, interrupt queues, DMA descriptors, or heap use.
+
+Future memory budget work must include scheduler state, task-progress high-water counters, and any later event queues used to connect scheduler policy to real platform adapters.
+
 ## Sources Checked
 
 Sources checked on 2026-05-27:

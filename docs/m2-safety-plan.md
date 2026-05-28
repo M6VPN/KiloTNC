@@ -136,6 +136,16 @@ M2 firmware planning must include:
 - Invalid modes must be rejected and counted.
 - Persistence APIs must not pretend success while storage is unimplemented.
 
+## M2.19 Scheduler And Watchdog Safety Rules
+
+- Watchdog refresh must require scheduler quorum from required tasks.
+- Main/app and control/PTT tasks are always required.
+- USB, audio, and modem tasks become required only when the active test path needs them.
+- Diagnostics and config tasks must not block watchdog refresh or PTT safe-off.
+- A stalled required task is a scheduler fault.
+- Scheduler fault must prevent watchdog kick, force PTT off, abort active simulated modem TX, and appear in diagnostics.
+- Malformed USB/KISS input and queue congestion must not starve the control/PTT task.
+
 ## Diagnostics Visibility
 
 M2 must expose enough diagnostics for board tests:
@@ -149,6 +159,7 @@ M2 must expose enough diagnostics for board tests:
 - Embedded modem TX active, request, done, rejected, abort, and sample counters.
 - Embedded modem RX frame, sample, audio error, and output drop counters.
 - Full loopback USB, audio, modem, watchdog, timeout, and final PTT counters.
+- Scheduler task masks, watchdog quorum state, fault count, and last failed task.
 - TX active state.
 - Max TX timeout event.
 - Fault counter snapshot.
@@ -175,5 +186,6 @@ Before any future real radio PTT connection:
 14. Malformed RX audio is tested without changing PTT state.
 15. Full host-test loopback is tested without changing PTT state.
 16. Full host-test loopback timeout and watchdog fault paths are tested.
+17. Scheduler quorum blocks watchdog kick when a required task stalls.
 
 Only after these gates should a later milestone consider hardware PTT connection planning.

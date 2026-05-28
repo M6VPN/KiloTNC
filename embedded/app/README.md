@@ -27,6 +27,8 @@ M2.8 extends the modem hook with RX audio processing. Tests can enable modem RX 
 
 M2.9 adds a full host-test loopback helper. It injects USB KISS input, enables simulated modem TX/RX, copies generated TX audio samples into the RX stub, and verifies KISS output from the USB stub. The helper is bounded by max iterations, records counters, and does not add real USB, audio, GPIO, or RF behavior.
 
-M2.17 documents queue boundaries between USB RX/TX, KISS frames, modem TX/RX frames, audio TX/RX samples, diagnostics events, and control/PTT events. The current app code still uses host-test stubs and direct calls; runtime queues, ISR boundaries, DMA boundaries, and scheduler behavior remain future work.
+M2.17 documents queue boundaries between USB RX/TX, KISS frames, modem TX/RX frames, audio TX/RX samples, diagnostics events, and control/PTT events. The current app code still uses host-test stubs and direct calls; runtime queues, ISR boundaries, and DMA boundaries remain future work.
 
 M2.18 adds an embedded config validator. The embedded TNC initializes from config defaults and applies KISS timing, p-persistence, FullDuplex, and SETHW mode requests through the validator. Persistence APIs are stubs that return not implemented, and config changes do not write flash or key PTT.
+
+M2.19 adds an embedded cooperative scheduler model. Task IDs cover main, USB, audio, modem TX, modem RX, control/PTT, diagnostics, and config work. `embedded_app_step()` marks main/control progress, services attached host-test stubs, completes the scheduler cycle, and kicks the watchdog only when required tasks have progressed. A missing required task causes a scheduler fault, aborts active simulated modem TX, and forces PTT off.

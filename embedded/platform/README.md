@@ -40,3 +40,5 @@ M2.14 also adds board abstraction planning. STM32H753 remains the flagship targe
 M2.15 adds clock, reset, boot, and watchdog planning metadata. The future platform adapter must provide a timebase, 10 ms control tick, reset-cause capture, watchdog policy, and safe-off boot ordering. The current platform stub remains host-test only and does not configure clocks, read reset registers, enable hardware watchdogs, or access GPIO hardware.
 
 M2.17 adds queue and backpressure planning for future ISR, DMA, USB, audio, diagnostics, and control boundaries. Platform adapters must keep queue overflow bounded and counted. Safety and control events must not be silently dropped, and watchdog progress must not depend on congested USB, audio, or diagnostics queues.
+
+M2.19 adds host-tested scheduler quorum rules above the platform layer. Future platform tick and watchdog adapters must refresh the real watchdog only after scheduler quorum allows it. Platform code must keep the control/PTT safe-off path independent of congested USB, audio, diagnostics, or config work.

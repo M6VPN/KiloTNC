@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "kilotnc_platform.h"
+#include "kilotnc_scheduler.h"
 
 struct embedded_audio;
 struct embedded_modem;
@@ -37,15 +38,23 @@ struct embedded_app_status {
 	uint32_t control_ticks_10ms;
 	size_t steps;
 	size_t watchdog_kicks;
+	size_t scheduler_cycles;
+	size_t scheduler_faults;
+	uint32_t scheduler_enabled_mask;
+	uint32_t scheduler_required_mask;
+	uint32_t scheduler_progress_mask;
+	enum embedded_task_id scheduler_last_failed_task;
 	enum kilotnc_reset_cause reset_cause;
 	enum kilotnc_gpio_state ptt_state;
 	size_t fault_count;
 	int faulted;
 	int shutdown_requested;
+	int scheduler_watchdog_allowed;
 };
 
 struct embedded_app {
 	const struct kilotnc_platform *platform;
+	struct embedded_scheduler scheduler;
 	struct embedded_audio *audio_bridge;
 	struct embedded_modem *modem;
 	const struct kilotnc_audio *modem_audio;

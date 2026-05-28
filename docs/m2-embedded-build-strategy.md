@@ -381,6 +381,35 @@ docs/m2-config-persistence-plan.md
 
 M2.18 does not add flash writes, EEPROM emulation, filesystem persistence, linker flash regions, wear-leveling, or storage commits.
 
+## M2.19 Scheduler Metadata
+
+`make embedded-test` now also verifies:
+
+- Scheduler task enabled, required, and progress masks.
+- Required main/control task quorum.
+- Watchdog allowed after required task progress.
+- Watchdog blocked when a required task stalls.
+- Scheduler fault state and last failed task.
+- App-step integration with watchdog quorum.
+- Scheduler fault PTT safe-off.
+- Active simulated modem TX abort on scheduler fault.
+- Scheduler fields in diagnostics.
+
+The scheduler metadata is in:
+
+```text
+embedded/include/kilotnc_scheduler.h
+embedded/app/embedded_scheduler.c
+```
+
+Scheduler and watchdog planning is documented in:
+
+```text
+docs/m2-scheduler-watchdog-plan.md
+```
+
+M2.19 does not add RTOS integration, interrupt handlers, DMA, real timers, hardware watchdog setup, or hardware task scheduling.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

@@ -142,7 +142,7 @@ interop-help:
 	@printf '%s\n' 'Set KILOTNC_INTEROP_RUN=1 only for explicit local tests.'
 
 embedded-help:
-	@printf '%s\n' 'M2.12 embedded status: opt-in STM32H753 target object check.'
+	@printf '%s\n' 'M2.19 embedded status: host-tested cooperative scheduler model.'
 	@printf '%s\n' 'Run make embedded-test for the skeleton test.'
 	@printf '%s\n' 'No ARM toolchain is required for normal CI.'
 	@printf '%s\n' 'Planned target: stm32h753-nucleo'
@@ -384,6 +384,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/app/embedded_diag.c \
 	  embedded/app/embedded_loopback.c \
 	  embedded/app/embedded_modem.c \
+	  embedded/app/embedded_scheduler.c \
 	  embedded/app/embedded_tnc.c \
 	  embedded/app/embedded_usb_bridge.c \
 	  embedded/app/usb_descriptor_plan.c \
@@ -400,6 +401,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_embedded_loopback.c \
 	  embedded/tests/test_embedded_main.c \
 	  embedded/tests/test_embedded_modem.c \
+	  embedded/tests/test_embedded_scheduler.c \
 	  embedded/tests/test_embedded_tnc.c \
 	  embedded/tests/test_embedded_usb_bridge.c \
 	  embedded/tests/test_queue_policy.c \
@@ -423,6 +425,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/app/embedded_diag.c \
 		embedded/app/embedded_loopback.c \
 		embedded/app/embedded_modem.c \
+		embedded/app/embedded_scheduler.c \
 		embedded/app/embedded_tnc.c \
 		embedded/app/embedded_usb_bridge.c \
 		embedded/app/usb_descriptor_plan.c \
@@ -439,6 +442,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_embedded_loopback.c \
 		embedded/tests/test_embedded_main.c \
 		embedded/tests/test_embedded_modem.c \
+		embedded/tests/test_embedded_scheduler.c \
 		embedded/tests/test_embedded_tnc.c \
 		embedded/tests/test_embedded_usb_bridge.c \
 		embedded/tests/test_queue_policy.c \

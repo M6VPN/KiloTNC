@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.18 adds embedded configuration and persistence planning metadata. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, watchdog setup, real ISR, real DMA, flash write, EEPROM emulation, final memory map, or final CPU measurement is implemented here yet.
+M2.19 adds an embedded cooperative scheduler/task-progress model. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, watchdog setup, real ISR, real DMA, RTOS integration, flash write, EEPROM emulation, final memory map, or final CPU measurement is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -65,3 +65,5 @@ M2.16 adds host-tested budget metadata for current fixed-buffer planning. Budget
 M2.17 adds host-tested queue policy metadata for planned USB, KISS, modem, audio, diagnostics, and control queues. Overflow policy is explicit for each queue, and the control/PTT event queue is safety critical with a safety-fault policy instead of silent drops. This is metadata only and does not add runtime ISR, DMA, scheduler, USB, audio, or PTT behavior.
 
 M2.18 adds host-tested config validation metadata. Defaults select 1200 AFSK AX.25, validate bounded KISS timing and p-persistence settings, model Nino-compatible SETHW 6 and temporary/no-flash SETHW 22, and expose config state through diagnostics. Load and persist APIs return not implemented and perform no flash, EEPROM, filesystem, or storage writes.
+
+M2.19 adds a host-tested cooperative scheduler model. The embedded app marks main/control progress by default, can require USB/audio/modem tasks in tests, gates watchdog kicks on required-task quorum, faults when a required task stalls, aborts simulated modem TX on scheduler fault, and keeps PTT off. It does not add real timers, interrupts, DMA, RTOS tasks, or a hardware watchdog.

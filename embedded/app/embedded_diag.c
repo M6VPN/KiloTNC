@@ -49,9 +49,20 @@ embedded_diag_capture(const struct embedded_app *app,
 	snapshot->platform_ticks = app_status.tick_ms;
 	snapshot->watchdog_kicks =
 	    embedded_diag_size_to_u32(app_status.watchdog_kicks);
+	snapshot->scheduler_cycles =
+	    embedded_diag_size_to_u32(app_status.scheduler_cycles);
+	snapshot->scheduler_faults =
+	    embedded_diag_size_to_u32(app_status.scheduler_faults);
+	snapshot->scheduler_enabled_mask = app_status.scheduler_enabled_mask;
+	snapshot->scheduler_required_mask = app_status.scheduler_required_mask;
+	snapshot->scheduler_progress_mask = app_status.scheduler_progress_mask;
 	snapshot->app_state = (uint8_t)app_status.state;
 	snapshot->reset_cause = (uint8_t)app_status.reset_cause;
 	snapshot->ptt_state = (uint8_t)app_status.ptt_state;
+	snapshot->scheduler_watchdog_allowed =
+	    app_status.scheduler_watchdog_allowed != 0;
+	snapshot->scheduler_last_failed_task =
+	    (uint8_t)app_status.scheduler_last_failed_task;
 
 	if (app->platform != NULL && app->platform->diag_count != NULL &&
 	    app->platform->diag_count(app->platform->ctx, &diag_writes) ==
@@ -223,6 +234,10 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 
 	ret = snprintf(buf, buflen, "app_steps=%u app_faults=%u "
 	    "platform_ticks=%u watchdog_kicks=%u diagnostics_writes=%u "
+	    "scheduler_cycles=%u scheduler_faults=%u "
+	    "scheduler_enabled=0x%08x scheduler_required=0x%08x "
+	    "scheduler_progress=0x%08x scheduler_watchdog_allowed=%u "
+	    "scheduler_last_failed=%u "
 	    "usb_rx_bytes=%u usb_tx_bytes=%u usb_rx_overflows=%u "
 	    "usb_tx_overflows=%u kiss_frames_in=%u kiss_frames_out=%u "
 	    "kiss_parse_errors=%u kiss_ignored=%u kiss_overlength=%u "
@@ -255,7 +270,11 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "app_state=%u reset_cause=%u ptt=%u usb_connected=%u",
 	    snapshot->app_steps, snapshot->app_faults,
 	    snapshot->platform_ticks, snapshot->watchdog_kicks,
-	    snapshot->diagnostics_writes, snapshot->usb_rx_bytes,
+	    snapshot->diagnostics_writes, snapshot->scheduler_cycles,
+	    snapshot->scheduler_faults, snapshot->scheduler_enabled_mask,
+	    snapshot->scheduler_required_mask, snapshot->scheduler_progress_mask,
+	    snapshot->scheduler_watchdog_allowed,
+	    snapshot->scheduler_last_failed_task, snapshot->usb_rx_bytes,
 	    snapshot->usb_tx_bytes, snapshot->usb_rx_overflows,
 	    snapshot->usb_tx_overflows, snapshot->kiss_frames_in,
 	    snapshot->kiss_frames_out, snapshot->kiss_parse_errors,

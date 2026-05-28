@@ -85,6 +85,12 @@ No real flash layout, linker region, erase, write, or commit marker is implement
 - Power-loss safety should use double-bank records and commit markers.
 - M2.18 implements none of the storage path.
 
+## Scheduler Priority
+
+Config validation and future persistence commit work are low-priority control tasks. They must not block the watchdog quorum, audio path, USB byte movement, modem RX/TX progress, or PTT safe-off path.
+
+Future commit work must be broken into bounded steps and must report progress through the scheduler only after safety-critical tasks remain healthy.
+
 ## NinoTNC Compatibility
 
 - `NINO_MODE=6` maps to implemented 1200 AFSK AX.25.

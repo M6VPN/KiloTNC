@@ -22,6 +22,11 @@ struct embedded_diag_snapshot {
 	uint32_t platform_ticks;
 	uint32_t watchdog_kicks;
 	uint32_t diagnostics_writes;
+	uint32_t scheduler_cycles;
+	uint32_t scheduler_faults;
+	uint32_t scheduler_enabled_mask;
+	uint32_t scheduler_required_mask;
+	uint32_t scheduler_progress_mask;
 	uint32_t usb_rx_bytes;
 	uint32_t usb_tx_bytes;
 	uint32_t usb_rx_overflows;
@@ -85,6 +90,8 @@ struct embedded_diag_snapshot {
 	uint8_t app_state;
 	uint8_t reset_cause;
 	uint8_t ptt_state;
+	uint8_t scheduler_watchdog_allowed;
+	uint8_t scheduler_last_failed_task;
 	uint8_t usb_connected;
 };
 

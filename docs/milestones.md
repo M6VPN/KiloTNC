@@ -234,9 +234,19 @@ M2.18 status:
 - Expose config fields through diagnostics.
 - Keep flash writes, flash erase, EEPROM emulation, filesystem persistence, linker flash regions, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
 
+M2.19 status:
+
+- Add embedded cooperative scheduler/task-progress model.
+- Add fixed-size task masks and quorum state.
+- Gate watchdog kicks on required task progress.
+- Fault when a required task stalls.
+- Force PTT off and abort active simulated modem TX on scheduler fault.
+- Expose scheduler fields through diagnostics.
+- Keep RTOS integration, interrupt handlers, DMA, hardware timers, hardware watchdog setup, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.19: Embedded cooperative scheduler/task-progress model or embedded fault policy consolidation.
+- M2.20: Embedded fault policy consolidation or M2 readiness review before real target/HAL work.
 
 M2 scope:
 

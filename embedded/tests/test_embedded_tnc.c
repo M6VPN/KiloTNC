@@ -248,7 +248,7 @@ test_embedded_tnc_diag(void)
 	struct embedded_tnc tnc;
 	struct embedded_app app;
 	struct embedded_diag_snapshot snapshot;
-	char formatted[1536];
+	char formatted[4096];
 	uint8_t kiss[32];
 	size_t formatted_len;
 	size_t kiss_len;

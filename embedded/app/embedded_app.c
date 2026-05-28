@@ -9,14 +9,29 @@
 #include "embedded_audio.h"
 #include "embedded_app.h"
 #include "embedded_modem.h"
+#include "embedded_scheduler.h"
 #include "embedded_tnc.h"
 #include "embedded_usb_bridge.h"
 
+static enum embedded_app_result embedded_app_mark_task(struct embedded_app *,
+	enum embedded_task_id);
 static enum embedded_app_result embedded_app_ptt_off(struct embedded_app *);
 static enum embedded_app_result embedded_app_refresh_status(
 	struct embedded_app *);
+static enum embedded_app_result embedded_app_scheduler_fault(
+	struct embedded_app *, enum embedded_task_id);
 static enum embedded_app_result embedded_app_set_fault(struct embedded_app *);
 static int embedded_app_platform_ready(const struct kilotnc_platform *);
+
+static enum embedded_app_result
+embedded_app_mark_task(struct embedded_app *app, enum embedded_task_id task)
+{
+	if (embedded_scheduler_mark_progress(&app->scheduler, task) !=
+	    EMBEDDED_SCHEDULER_OK)
+		return embedded_app_scheduler_fault(app, task);
+
+	return EMBEDDED_APP_OK;
+}
 
 static enum embedded_app_result
 embedded_app_ptt_off(struct embedded_app *app)
@@ -32,6 +47,8 @@ embedded_app_ptt_off(struct embedded_app *app)
 static enum embedded_app_result
 embedded_app_refresh_status(struct embedded_app *app)
 {
+	struct embedded_scheduler_status scheduler_status;
+
 	if (app->platform->monotonic_ms(app->platform->ctx,
 	    &app->status.tick_ms) != KILOTNC_PLATFORM_OK)
 		return EMBEDDED_APP_ERR_PLATFORM;
@@ -44,8 +61,29 @@ embedded_app_refresh_status(struct embedded_app *app)
 	if (app->platform->fault_count(app->platform->ctx,
 	    &app->status.fault_count) != KILOTNC_PLATFORM_OK)
 		return EMBEDDED_APP_ERR_PLATFORM;
+	if (embedded_scheduler_status(&app->scheduler, &scheduler_status) !=
+	    EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
+
+	app->status.scheduler_cycles = scheduler_status.cycles_completed;
+	app->status.scheduler_faults = scheduler_status.fault_count;
+	app->status.scheduler_enabled_mask = scheduler_status.enabled_mask;
+	app->status.scheduler_required_mask = scheduler_status.required_mask;
+	app->status.scheduler_progress_mask = scheduler_status.progress_mask;
+	app->status.scheduler_last_failed_task =
+	    scheduler_status.last_failed_task;
+	app->status.scheduler_watchdog_allowed =
+	    scheduler_status.watchdog_allowed;
 
 	return EMBEDDED_APP_OK;
+}
+
+static enum embedded_app_result
+embedded_app_scheduler_fault(struct embedded_app *app,
+	enum embedded_task_id task)
+{
+	(void)embedded_scheduler_force_fault(&app->scheduler, task);
+	return embedded_app_set_fault(app);
 }
 
 static enum embedded_app_result
@@ -53,6 +91,8 @@ embedded_app_set_fault(struct embedded_app *app)
 {
 	enum embedded_app_result result;
 
+	(void)embedded_scheduler_force_fault(&app->scheduler,
+	    EMBEDDED_TASK_CONTROL);
 	app->status.state = EMBEDDED_APP_FAULT;
 	app->status.faulted = 1;
 	if (app->modem != NULL)
@@ -110,6 +150,8 @@ embedded_app_init(struct embedded_app *app,
 	(void)memset(app, 0, sizeof(*app));
 	app->platform = platform;
 	app->status.state = EMBEDDED_APP_INIT;
+	if (embedded_scheduler_init(&app->scheduler) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
 	result = embedded_app_ptt_off(app);
 	if (result != EMBEDDED_APP_OK)
 		return result;
@@ -155,6 +197,7 @@ enum embedded_app_result
 embedded_app_step(struct embedded_app *app)
 {
 	uint32_t control_ticks;
+	int watchdog_allowed;
 	int watchdog_faulted;
 
 	if (app == NULL || !embedded_app_platform_ready(app->platform))
@@ -168,29 +211,37 @@ embedded_app_step(struct embedded_app *app)
 	    &watchdog_faulted) != KILOTNC_PLATFORM_OK)
 		return EMBEDDED_APP_ERR_PLATFORM;
 	if (watchdog_faulted != 0) {
-		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+		if (embedded_app_scheduler_fault(app, EMBEDDED_TASK_CONTROL) !=
+		    EMBEDDED_APP_OK)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
 
 	if (app->platform->tick_10ms(app->platform->ctx, &control_ticks) !=
 	    KILOTNC_PLATFORM_OK) {
-		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+		if (embedded_app_scheduler_fault(app, EMBEDDED_TASK_CONTROL) !=
+		    EMBEDDED_APP_OK)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
-	if (app->platform->watchdog_kick(app->platform->ctx) !=
-	    KILOTNC_PLATFORM_OK) {
-		(void)embedded_app_set_fault(app);
+	if (embedded_app_mark_task(app, EMBEDDED_TASK_MAIN) !=
+	    EMBEDDED_APP_OK)
 		return EMBEDDED_APP_ERR_FAULT;
-	}
+	if (embedded_app_mark_task(app, EMBEDDED_TASK_CONTROL) !=
+	    EMBEDDED_APP_OK)
+		return EMBEDDED_APP_ERR_FAULT;
 	if (app->tnc != NULL && app->tnc_usb != NULL &&
 	    embedded_tnc_process_usb(app->tnc, app->tnc_usb) !=
 	    EMBEDDED_TNC_OK) {
-		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+		if (embedded_app_scheduler_fault(app, EMBEDDED_TASK_USB) !=
+		    EMBEDDED_APP_OK)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
+	if (app->tnc != NULL && app->tnc_usb != NULL &&
+	    embedded_app_mark_task(app, EMBEDDED_TASK_USB) !=
+	    EMBEDDED_APP_OK)
+		return EMBEDDED_APP_ERR_FAULT;
 	if (app->modem != NULL && app->modem_audio != NULL &&
 	    app->tnc != NULL && app->tnc_usb != NULL) {
 		struct embedded_modem_rx_frame rx_frames[
@@ -201,7 +252,8 @@ embedded_app_step(struct embedded_app *app)
 
 		if (embedded_tnc_status(app->tnc, &tnc_status) !=
 		    EMBEDDED_TNC_OK) {
-			if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+			if (embedded_app_scheduler_fault(app,
+			    EMBEDDED_TASK_MODEM_RX) != EMBEDDED_APP_OK)
 				return EMBEDDED_APP_ERR_PLATFORM;
 			return EMBEDDED_APP_ERR_FAULT;
 		}
@@ -212,7 +264,8 @@ embedded_app_step(struct embedded_app *app)
 			    EMBEDDED_MODEM_RX_FRAME_CAP, &rx_count);
 			if (rx_result != EMBEDDED_MODEM_OK &&
 			    rx_result != EMBEDDED_MODEM_ERR_SMALL) {
-				if (embedded_app_set_fault(app) !=
+				if (embedded_app_scheduler_fault(app,
+				    EMBEDDED_TASK_MODEM_RX) !=
 				    EMBEDDED_APP_OK)
 					return EMBEDDED_APP_ERR_PLATFORM;
 				return EMBEDDED_APP_ERR_FAULT;
@@ -220,11 +273,15 @@ embedded_app_step(struct embedded_app *app)
 			if (rx_count != 0U &&
 			    embedded_tnc_emit_modem_rx(app->tnc, app->tnc_usb,
 			    rx_frames, rx_count) != EMBEDDED_TNC_OK) {
-				if (embedded_app_set_fault(app) !=
+				if (embedded_app_scheduler_fault(app,
+				    EMBEDDED_TASK_MODEM_RX) !=
 				    EMBEDDED_APP_OK)
 					return EMBEDDED_APP_ERR_PLATFORM;
 				return EMBEDDED_APP_ERR_FAULT;
 			}
+			if (embedded_app_mark_task(app, EMBEDDED_TASK_MODEM_RX) !=
+			    EMBEDDED_APP_OK)
+				return EMBEDDED_APP_ERR_FAULT;
 		}
 	}
 	if (app->modem != NULL && app->modem_audio != NULL) {
@@ -234,22 +291,56 @@ embedded_app_step(struct embedded_app *app)
 		    app->modem_audio, EMBEDDED_MODEM_TX_CHUNK_MAX);
 		if (modem_result != EMBEDDED_MODEM_OK &&
 		    modem_result != EMBEDDED_MODEM_DONE) {
-			if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+			if (embedded_app_scheduler_fault(app,
+			    EMBEDDED_TASK_MODEM_TX) != EMBEDDED_APP_OK)
 				return EMBEDDED_APP_ERR_PLATFORM;
 			return EMBEDDED_APP_ERR_FAULT;
 		}
+		if (embedded_app_mark_task(app, EMBEDDED_TASK_MODEM_TX) !=
+		    EMBEDDED_APP_OK)
+			return EMBEDDED_APP_ERR_FAULT;
 	}
 	if (app->usb_bridge != NULL &&
 	    embedded_usb_bridge_service(app->usb_bridge) !=
 	    EMBEDDED_USB_BRIDGE_OK) {
-		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+		if (embedded_app_scheduler_fault(app, EMBEDDED_TASK_USB) !=
+		    EMBEDDED_APP_OK)
+			return EMBEDDED_APP_ERR_PLATFORM;
+		return EMBEDDED_APP_ERR_FAULT;
+	}
+	if (app->usb_bridge != NULL &&
+	    embedded_app_mark_task(app, EMBEDDED_TASK_USB) !=
+	    EMBEDDED_APP_OK)
+		return EMBEDDED_APP_ERR_FAULT;
+	if (app->audio_bridge != NULL &&
+	    embedded_audio_process(app->audio_bridge) != EMBEDDED_AUDIO_OK) {
+		if (embedded_app_scheduler_fault(app, EMBEDDED_TASK_AUDIO) !=
+		    EMBEDDED_APP_OK)
 			return EMBEDDED_APP_ERR_PLATFORM;
 		return EMBEDDED_APP_ERR_FAULT;
 	}
 	if (app->audio_bridge != NULL &&
-	    embedded_audio_process(app->audio_bridge) != EMBEDDED_AUDIO_OK) {
+	    embedded_app_mark_task(app, EMBEDDED_TASK_AUDIO) !=
+	    EMBEDDED_APP_OK)
+		return EMBEDDED_APP_ERR_FAULT;
+	if (embedded_scheduler_cycle_complete(&app->scheduler) !=
+	    EMBEDDED_SCHEDULER_OK) {
 		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
 			return EMBEDDED_APP_ERR_PLATFORM;
+		return EMBEDDED_APP_ERR_FAULT;
+	}
+	if (embedded_scheduler_watchdog_allowed(&app->scheduler,
+	    &watchdog_allowed) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
+	if (watchdog_allowed == 0) {
+		if (embedded_app_set_fault(app) != EMBEDDED_APP_OK)
+			return EMBEDDED_APP_ERR_PLATFORM;
+		return EMBEDDED_APP_ERR_FAULT;
+	}
+	if (app->platform->watchdog_kick(app->platform->ctx) !=
+	    KILOTNC_PLATFORM_OK) {
+		(void)embedded_app_scheduler_fault(app,
+		    EMBEDDED_TASK_CONTROL);
 		return EMBEDDED_APP_ERR_FAULT;
 	}
 
@@ -266,6 +357,9 @@ embedded_app_audio_bridge(struct embedded_app *app,
 	if (app == NULL || !embedded_app_platform_ready(app->platform))
 		return EMBEDDED_APP_ERR_ARG;
 
+	if (embedded_scheduler_enable_task(&app->scheduler,
+	    EMBEDDED_TASK_AUDIO, bridge != NULL) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
 	app->audio_bridge = bridge;
 	return EMBEDDED_APP_OK;
 }
@@ -278,6 +372,12 @@ embedded_app_modem(struct embedded_app *app, struct embedded_modem *modem,
 	    modem == NULL || audio == NULL)
 		return EMBEDDED_APP_ERR_ARG;
 
+	if (embedded_scheduler_enable_task(&app->scheduler,
+	    EMBEDDED_TASK_MODEM_TX, 1) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
+	if (embedded_scheduler_enable_task(&app->scheduler,
+	    EMBEDDED_TASK_MODEM_RX, 1) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
 	app->modem = modem;
 	app->modem_audio = audio;
 	return EMBEDDED_APP_OK;
@@ -291,6 +391,9 @@ embedded_app_tnc(struct embedded_app *app, struct embedded_tnc *tnc,
 	    tnc == NULL || usb == NULL)
 		return EMBEDDED_APP_ERR_ARG;
 
+	if (embedded_scheduler_enable_task(&app->scheduler,
+	    EMBEDDED_TASK_USB, 1) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
 	app->tnc = tnc;
 	app->tnc_usb = usb;
 	return EMBEDDED_APP_OK;
@@ -303,6 +406,9 @@ embedded_app_usb_bridge(struct embedded_app *app,
 	if (app == NULL || !embedded_app_platform_ready(app->platform))
 		return EMBEDDED_APP_ERR_ARG;
 
+	if (embedded_scheduler_enable_task(&app->scheduler,
+	    EMBEDDED_TASK_USB, bridge != NULL) != EMBEDDED_SCHEDULER_OK)
+		return EMBEDDED_APP_ERR_PLATFORM;
 	app->usb_bridge = bridge;
 	return EMBEDDED_APP_OK;
 }

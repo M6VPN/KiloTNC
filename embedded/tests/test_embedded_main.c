@@ -11,6 +11,7 @@ int test_embedded_config(void);
 int test_embedded_diag(void);
 int test_embedded_loopback(void);
 int test_embedded_modem(void);
+int test_embedded_scheduler(void);
 int test_embedded_tnc(void);
 int test_embedded_usb_bridge(void);
 int test_queue_policy(void);
@@ -33,6 +34,8 @@ main(void)
 	if (test_embedded_config() != 0)
 		return 1;
 	if (test_embedded_modem() != 0)
+		return 1;
+	if (test_embedded_scheduler() != 0)
 		return 1;
 	if (test_usb_cdc_stub() != 0)
 		return 1;

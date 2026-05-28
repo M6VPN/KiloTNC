@@ -807,6 +807,22 @@ M2.18 embedded configuration and persistence planning gate:
 - `make embedded-test` verifies config changes leave PTT off.
 - No real flash write, flash erase, EEPROM emulation, filesystem persistence, linker flash-region use, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.19 embedded cooperative scheduler/task-progress gate:
+
+- `docs/m2-scheduler-watchdog-plan.md` exists.
+- `embedded/include/kilotnc_scheduler.h` exists.
+- `embedded/app/embedded_scheduler.c` exists.
+- `embedded/tests/test_embedded_scheduler.c` exists.
+- `make embedded-test` verifies scheduler task masks.
+- `make embedded-test` verifies required-task quorum.
+- `make embedded-test` verifies watchdog allowed and blocked state.
+- `make embedded-test` verifies missing required task creates a scheduler fault.
+- `make embedded-test` verifies app integration marks main/control progress.
+- `make embedded-test` verifies scheduler fault forces PTT off.
+- `make embedded-test` verifies scheduler fault aborts active simulated modem TX.
+- `make embedded-test` verifies diagnostics include scheduler fields.
+- No RTOS integration, interrupt handlers, DMA, real timers, hardware watchdog setup, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

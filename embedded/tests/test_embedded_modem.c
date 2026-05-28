@@ -382,7 +382,7 @@ test_embedded_modem_diag(void)
 	struct embedded_tnc tnc;
 	struct embedded_app app;
 	struct embedded_diag_snapshot snapshot;
-	char formatted[1536];
+	char formatted[4096];
 	uint8_t kiss[128];
 	size_t formatted_len;
 	size_t kiss_len;
@@ -621,7 +621,7 @@ test_embedded_modem_rx_diag(void)
 	struct embedded_tnc tnc;
 	struct embedded_app app;
 	struct embedded_diag_snapshot snapshot;
-	char formatted[1536];
+	char formatted[4096];
 	int16_t pcm[TEST_MODEM_PCM_MAX];
 	size_t formatted_len;
 	size_t offset;
