@@ -26,3 +26,5 @@ M2.7 adds an optional embedded modem hook. Tests can enable simulated modem TX s
 M2.8 extends the modem hook with RX audio processing. Tests can enable modem RX so `embedded_app_step()` reads samples from the audio RX stub, decodes frames through the portable AFSK1200 streaming RX path, and writes KISS data frames to the USB CDC stub. RX is disabled by default and does not control PTT.
 
 M2.9 adds a full host-test loopback helper. It injects USB KISS input, enables simulated modem TX/RX, copies generated TX audio samples into the RX stub, and verifies KISS output from the USB stub. The helper is bounded by max iterations, records counters, and does not add real USB, audio, GPIO, or RF behavior.
+
+M2.17 documents queue boundaries between USB RX/TX, KISS frames, modem TX/RX frames, audio TX/RX samples, diagnostics events, and control/PTT events. The current app code still uses host-test stubs and direct calls; runtime queues, ISR boundaries, DMA boundaries, and scheduler behavior remain future work.

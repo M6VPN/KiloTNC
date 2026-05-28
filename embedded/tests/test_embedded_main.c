@@ -12,6 +12,7 @@ int test_embedded_loopback(void);
 int test_embedded_modem(void);
 int test_embedded_tnc(void);
 int test_embedded_usb_bridge(void);
+int test_queue_policy(void);
 int test_target_metadata(void);
 int test_usb_cdc_stub(void);
 int test_usb_descriptor_plan(void);
@@ -39,6 +40,8 @@ main(void)
 	if (test_embedded_diag() != 0)
 		return 1;
 	if (test_embedded_loopback() != 0)
+		return 1;
+	if (test_queue_policy() != 0)
 		return 1;
 	if (test_target_metadata() != 0)
 		return 1;

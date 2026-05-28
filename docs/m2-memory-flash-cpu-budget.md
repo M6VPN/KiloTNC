@@ -183,6 +183,19 @@ Before accepting cost-reduced or constrained targets:
 
 These constants are not final target measurements.
 
+## M2.17 Queue Capacity Impact
+
+`docs/m2-queue-backpressure-plan.md` defines planned queue boundaries and overflow policy. Queue capacities must be included in future RAM budget and linker-map review.
+
+Current queue policy metadata references the existing USB, audio, frame, diagnostics, and control planning constants where possible. Future runtime queue work must update this budget with:
+
+- Actual queue storage per target.
+- Queue high-water marks.
+- Overflow counters.
+- ISR or DMA ownership rules.
+- Safety/control queue fault behavior.
+- Diagnostics/event queue retention behavior.
+
 ## Sources Checked
 
 Sources checked on 2026-05-27:

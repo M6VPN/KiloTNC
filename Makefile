@@ -400,6 +400,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_embedded_modem.c \
 	  embedded/tests/test_embedded_tnc.c \
 	  embedded/tests/test_embedded_usb_bridge.c \
+	  embedded/tests/test_queue_policy.c \
 	  embedded/tests/test_target_metadata.c \
 	  embedded/tests/test_usb_cdc_stub.c \
 	  embedded/tests/test_usb_descriptor_plan.c \
@@ -436,6 +437,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_embedded_modem.c \
 		embedded/tests/test_embedded_tnc.c \
 		embedded/tests/test_embedded_usb_bridge.c \
+		embedded/tests/test_queue_policy.c \
 		embedded/tests/test_target_metadata.c \
 		embedded/tests/test_usb_cdc_stub.c \
 		embedded/tests/test_usb_descriptor_plan.c \

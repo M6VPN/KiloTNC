@@ -216,9 +216,18 @@ M2.16 status:
 - Gate H735 and H750 on future measured RAM, flash, and CPU margins.
 - Keep final embedded memory usage claims, linker scripts, startup code, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
 
+M2.17 status:
+
+- Add embedded queue and backpressure planning.
+- Add queue policy metadata for USB RX/TX, KISS frames, modem TX/RX frames, audio TX/RX samples, diagnostics events, and control/PTT events.
+- Keep overflow policy explicit for every planned queue.
+- Mark control/PTT events safety critical with a safety-fault policy instead of silent drops.
+- Document KiloNode as a future sibling/reference source for AX.25 improvements without importing or copying code.
+- Keep real ISR, DMA, scheduler, USB hardware, audio hardware, PTT hardware, HAL, CMSIS, hardware registers, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.17: Embedded queue and backpressure planning.
+- M2.18: Embedded configuration and persistence planning or embedded cooperative loop planning.
 
 M2 scope:
 

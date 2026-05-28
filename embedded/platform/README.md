@@ -38,3 +38,5 @@ M2.14 adds USB descriptor planning metadata for KISS-only and KISS-plus-diagnost
 M2.14 also adds board abstraction planning. STM32H753 remains the flagship target, while H743, H735, and H750 remain future STM32H7-family possibilities behind board and resource metadata. RP2350 is a separate low-cost target path, and ESP32-S3 is a possible connectivity companion only.
 
 M2.15 adds clock, reset, boot, and watchdog planning metadata. The future platform adapter must provide a timebase, 10 ms control tick, reset-cause capture, watchdog policy, and safe-off boot ordering. The current platform stub remains host-test only and does not configure clocks, read reset registers, enable hardware watchdogs, or access GPIO hardware.
+
+M2.17 adds queue and backpressure planning for future ISR, DMA, USB, audio, diagnostics, and control boundaries. Platform adapters must keep queue overflow bounded and counted. Safety and control events must not be silently dropped, and watchdog progress must not depend on congested USB, audio, or diagnostics queues.

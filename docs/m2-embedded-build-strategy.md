@@ -324,6 +324,32 @@ docs/m2-memory-flash-cpu-budget.md
 
 Future target builds must add linker-map review, stack high-water checks, queue high-water checks, and CPU cycle measurements before H735 or H750 can be accepted. Host binary size is not an MCU flash estimate.
 
+## M2.17 Queue Policy Metadata
+
+`make embedded-test` now also verifies:
+
+- Queue policy finalized flag remains false.
+- Every planned queue has a nonzero name.
+- Every planned queue has a nonzero capacity.
+- Every planned queue has an explicit overflow policy.
+- Control/PTT event queue is safety critical.
+- Control/PTT event queue uses a safety-fault policy instead of silent drops.
+- Queue policy formatting rejects too-small buffers.
+
+The queue policy metadata is in:
+
+```text
+embedded/include/kilotnc_queue_policy.h
+```
+
+Queue and backpressure planning is documented in:
+
+```text
+docs/m2-queue-backpressure-plan.md
+```
+
+Future target builds must keep ISR, DMA, USB, audio, diagnostics, and control queues bounded and counted. M2.17 does not add runtime queues, interrupt handlers, DMA ownership, RTOS tasks, or scheduler behavior.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

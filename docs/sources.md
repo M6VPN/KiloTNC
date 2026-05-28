@@ -1,6 +1,6 @@
 # Sources
 
-Sources checked through 2026-05-27.
+Sources checked through 2026-05-28.
 
 ## Protocols
 
@@ -16,6 +16,7 @@ Sources checked through 2026-05-27.
 | TARPN NinoTNC N9600A Operator Manual                     | 2026-05-26   | https://tarpn.net/t/nino-tnc/n9600a/n9600a_operation.html                                                | NinoTNC modes, SETHW +16 behavior, compatibility    |
 | TARPN Protocols and Modulation page                      | 2026-05-26   | https://tarpn.net/t/builder/builders_tarpn_protocols.html                                               | NinoTNC modulation and bitrate overview             |
 | FX.25 Forward Error Correction page                      | 2026-05-26   | https://en.wikipedia.org/wiki/FX.25_Forward_Error_Correction                                            | FX.25 research context and archived spec pointer    |
+| M6VPN/KiloNode GitHub repository                         | 2026-05-28   | https://github.com/M6VPN/KiloNode                                                                       | Future sibling/reference source for reviewed AX.25 work only |
 
 ## External Modems
 

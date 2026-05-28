@@ -106,6 +106,12 @@ Implementation boundaries:
 - FCS validation rejects corrupted AX.25 frames before delivery to the host.
 - NRZI is a modem/line-coding step where relevant, not an AX.25 address or FCS rule.
 
+## KiloNode Future AX.25 Work
+
+`M6VPN/KiloNode` is a sibling project with ongoing AX.25 work. Future KiloTNC AX.25 improvements may evaluate KiloNode as a reference source, but KiloTNC does not import or copy KiloNode code in M2.17.
+
+Any future KiloNode-derived or shared AX.25 work must be reviewed, tested, and deliberately merged behind the same portable-core APIs. It must preserve fixed-buffer/no-heap rules, keep existing KiloTNC tests passing, add golden vectors and compatibility tests, and document provenance if code is intentionally reused later.
+
 ## Native Modem Scope
 
 1200 baud Bell 202 AFSK is the first native modem target. The initial work must include WAV test vectors and golden decode/encode cases before radio tests.
@@ -181,3 +187,4 @@ Internet bridging is future research and is disabled by default in planning. Any
 | VARA Modem official site                         | 2026-05-26   | VARA external software modem and license model      |
 | ARDOP Specification Revision 0.3.1                | 2026-05-26   | ARDOP open protocol and host/radio interface        |
 | Mercury GitHub README, Rhizomatica                | 2026-05-26   | Mercury external modem and TCP TNC interface        |
+| M6VPN/KiloNode GitHub repository                  | 2026-05-28   | Future sibling/reference source for AX.25 work only |

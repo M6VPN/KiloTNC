@@ -2,7 +2,7 @@
 
 This directory is the M2 workspace for future dev-board firmware.
 
-M2.16 adds memory, flash, and CPU budget planning metadata. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, watchdog setup, final memory map, or final CPU measurement is implemented here yet.
+M2.17 adds queue and backpressure planning metadata. No real USB diagnostics channel, USB stack, binary descriptors, final VID/PID, ADC, DAC, SAI, I2S, audio DMA, codec, real GPIO PTT, HAL, board driver code, startup vector table, linker script, flashable firmware image, hardware audio path, clock setup, reset register read, watchdog setup, real ISR, real DMA, final memory map, or final CPU measurement is implemented here yet.
 
 The host-side M1 portable core remains in `firmware/`. Embedded firmware will use adapters around that portable core rather than copying daemon file, socket, PTY, or host audio code.
 
@@ -61,3 +61,5 @@ M2.14 adds a host-tested USB descriptor plan for KISS-only and KISS-plus-diagnos
 M2.15 adds target metadata for 10 ms control ticks, 1 ms platform timebase planning, 48000 Hz audio sample-rate planning, reset-cause categories, and watchdog quorum policy. Clock tree, PLL values, USB clock, audio clock, reset-cause registers, watchdog registers, and real boot integration remain unfinalized.
 
 M2.16 adds host-tested budget metadata for current fixed-buffer planning. Budget finalized, linker-map available, stack high-water measured, and CPU-cycle measured flags remain false. H735 and H750 remain gated on future measured RAM, flash, and CPU margins.
+
+M2.17 adds host-tested queue policy metadata for planned USB, KISS, modem, audio, diagnostics, and control queues. Overflow policy is explicit for each queue, and the control/PTT event queue is safety critical with a safety-fault policy instead of silent drops. This is metadata only and does not add runtime ISR, DMA, scheduler, USB, audio, or PTT behavior.

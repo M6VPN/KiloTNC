@@ -773,6 +773,22 @@ M2.16 target memory/flash/CPU budget planning gate:
 - H735 and H750 remain gated on future measured RAM, flash, and CPU margins.
 - No final embedded memory usage claim, linker script, startup vectors, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.17 embedded queue/backpressure planning gate:
+
+- `docs/m2-queue-backpressure-plan.md` exists.
+- `embedded/include/kilotnc_queue_policy.h` exists.
+- `embedded/tests/test_queue_policy.c` exists.
+- `make embedded-test` verifies every planned queue has a nonzero name.
+- `make embedded-test` verifies every planned queue has a nonzero capacity.
+- `make embedded-test` verifies each queue has an explicit overflow policy.
+- `make embedded-test` verifies control/PTT queue metadata is safety critical.
+- `make embedded-test` verifies control/PTT queue policy does not silently drop events.
+- `make embedded-test` verifies diagnostics queue policy is explicit.
+- `make embedded-test` verifies queue policy formatter rejects too-small buffers.
+- `make embedded-test` verifies queue policy finalized flag remains false.
+- KiloNode is documented as a future sibling/reference source for AX.25 work with no code import.
+- No real ISR, DMA, scheduler, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

@@ -35,6 +35,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.14 board variant planning keeps PTT safe-off semantics required across H753, H743, H735, H750, RP2350, and any ESP32-S3 companion path.
 - M2.15 clock, reset, boot, and watchdog planning keeps clock setup, watchdog enable, and reset register reads as future hardware-adapter work only.
 - M2.16 memory, flash, and CPU budget planning keeps measured usage flags false until linker maps, high-water marks, and cycle measurements exist.
+- M2.17 queue and backpressure planning keeps overflow policy explicit for every planned queue and marks control/PTT events as safety critical.
 
 ## Watchdog And Timeout
 
@@ -113,6 +114,16 @@ M2 firmware planning must include:
 - Real-time paths must keep heap usage zero or explicitly bounded.
 - H735 and H750 paths must not be accepted until linker-map and runtime high-water measurements prove margin.
 - Future CPU budget checks must include malformed KISS input, worst-case modem RX/TX, and watchdog progress timing.
+
+## M2.17 Queue And Backpressure Safety Rules
+
+- Queue overflow must never key PTT.
+- Safety and control events must not be silently dropped.
+- Watchdog refresh must not depend on a congested data queue.
+- Malformed USB or KISS input must not starve the safety loop.
+- USB TX overflow must drop and count data or diagnostics deterministically.
+- Audio RX overflow and audio TX underflow must be counted and must not bypass safe-off state.
+- Control/PTT event queue overflow is a safety fault until a verified runtime policy exists.
 
 ## Diagnostics Visibility
 
