@@ -225,9 +225,18 @@ M2.17 status:
 - Document KiloNode as a future sibling/reference source for AX.25 improvements without importing or copying code.
 - Keep real ISR, DMA, scheduler, USB hardware, audio hardware, PTT hardware, HAL, CMSIS, hardware registers, and flashable firmware out of the repo.
 
+M2.18 status:
+
+- Add embedded configuration and persistence planning.
+- Add fixed-size config metadata, defaults, validation, and host tests.
+- Model Nino-compatible SETHW 6 and temporary/no-flash SETHW 22.
+- Keep load and persist APIs returning not implemented.
+- Expose config fields through diagnostics.
+- Keep flash writes, flash erase, EEPROM emulation, filesystem persistence, linker flash regions, HAL, CMSIS, hardware registers, real USB, real GPIO, real audio, and flashable firmware out of the repo.
+
 Next planned M2 passes:
 
-- M2.18: Embedded configuration and persistence planning or embedded cooperative loop planning.
+- M2.19: Embedded cooperative scheduler/task-progress model or embedded fault policy consolidation.
 
 M2 scope:
 

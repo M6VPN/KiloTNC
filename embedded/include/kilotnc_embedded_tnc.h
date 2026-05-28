@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "kiss.h"
+#include "kilotnc_config.h"
 #include "kilotnc_embedded_modem.h"
 #include "kilotnc_usb_cdc.h"
 #include "tnc_control.h"
@@ -29,6 +30,8 @@ enum embedded_tnc_result {
 struct embedded_tnc_status {
 	enum tnc_mode_id current_mode;
 	enum tnc_mode_id last_requested_mode;
+	uint16_t config_schema_version;
+	uint32_t max_tx_ms;
 	uint8_t last_nino_sethw;
 	uint8_t last_mode_temporary;
 	uint8_t txdelay;
@@ -50,6 +53,8 @@ struct embedded_tnc_status {
 	size_t mode_set_requests;
 	size_t unsupported_mode_requests;
 	size_t invalid_mode_requests;
+	size_t config_validation_errors;
+	size_t persistence_unsupported;
 	size_t modem_tx_requests;
 	size_t modem_tx_accepted;
 	size_t modem_tx_rejected;
@@ -66,6 +71,7 @@ struct embedded_modem;
 struct embedded_tnc {
 	struct kiss_parser parser;
 	struct tnc_control control;
+	struct embedded_config config;
 	struct embedded_modem *modem;
 	struct embedded_tnc_status status;
 	uint8_t sethw[KILOTNC_SETHW_MAX_PAYLOAD];

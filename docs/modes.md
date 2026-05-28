@@ -37,6 +37,9 @@ KISS SetHardware command 6 is parsed as a compatibility mode request when the pa
 - Values 16 through 30 map to the same modes as 0 through 14 and set a temporary/no-flash flag.
 - Values 15, 31, and higher are rejected for SETHW mode selection.
 - KiloTNC does not write persistent storage or flash in M1.10.
+- M2.18 embedded config metadata preserves the temporary/no-flash mapping for values 16 through 30, but persistence remains unimplemented.
+- Embedded SETHW mode 6 may request persistent-style behavior, but it does not write flash until explicit persistence support exists.
+- Embedded SETHW mode 22 remains temporary/no-flash behavior.
 
 Examples:
 

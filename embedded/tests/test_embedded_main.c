@@ -7,6 +7,7 @@ int test_embedded_app(void);
 int test_audio_stub(void);
 int test_budget_metadata(void);
 int test_embedded_audio(void);
+int test_embedded_config(void);
 int test_embedded_diag(void);
 int test_embedded_loopback(void);
 int test_embedded_modem(void);
@@ -28,6 +29,8 @@ main(void)
 	if (test_budget_metadata() != 0)
 		return 1;
 	if (test_embedded_audio() != 0)
+		return 1;
+	if (test_embedded_config() != 0)
 		return 1;
 	if (test_embedded_modem() != 0)
 		return 1;

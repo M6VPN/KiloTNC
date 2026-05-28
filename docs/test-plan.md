@@ -789,6 +789,24 @@ M2.17 embedded queue/backpressure planning gate:
 - KiloNode is documented as a future sibling/reference source for AX.25 work with no code import.
 - No real ISR, DMA, scheduler, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
 
+M2.18 embedded configuration and persistence planning gate:
+
+- `docs/m2-config-persistence-plan.md` exists.
+- `embedded/include/kilotnc_config.h` exists.
+- `embedded/app/embedded_config.c` exists.
+- `embedded/tests/test_embedded_config.c` exists.
+- `make embedded-test` verifies defaults validate.
+- `make embedded-test` verifies default mode is 1200 AFSK AX.25.
+- `make embedded-test` verifies default max TX timeout is nonzero.
+- `make embedded-test` verifies p, SlotTime, TXDELAY, TXTAIL, and FullDuplex validation.
+- `make embedded-test` verifies SETHW 6 is accepted as non-temporary.
+- `make embedded-test` verifies SETHW 22 is accepted as temporary/no-flash.
+- `make embedded-test` verifies unsupported and invalid mode requests are rejected for active use.
+- `make embedded-test` verifies load and persist return not implemented.
+- `make embedded-test` verifies diagnostics include config fields.
+- `make embedded-test` verifies config changes leave PTT off.
+- No real flash write, flash erase, EEPROM emulation, filesystem persistence, linker flash-region use, TinyUSB, STM32Cube, CMSIS, HAL, vendor headers, hardware register access, real USB, real GPIO, real audio, real PTT, PCB, or RF path is introduced.
+
 Pending:
 
 - Full timing recovery loop.

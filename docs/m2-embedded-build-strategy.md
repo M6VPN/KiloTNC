@@ -350,6 +350,37 @@ docs/m2-queue-backpressure-plan.md
 
 Future target builds must keep ISR, DMA, USB, audio, diagnostics, and control queues bounded and counted. M2.17 does not add runtime queues, interrupt handlers, DMA ownership, RTOS tasks, or scheduler behavior.
 
+## M2.18 Config Metadata
+
+`make embedded-test` now also verifies:
+
+- Config defaults validate.
+- Default mode is 1200 AFSK AX.25.
+- Default max TX timeout is nonzero.
+- KISS TXDELAY, P, SlotTime, TXTAIL, and FullDuplex settings validate.
+- Nino-compatible SETHW 6 is accepted as non-temporary.
+- Nino-compatible SETHW 22 is accepted as temporary/no-flash.
+- Known but unimplemented modes are rejected for active use.
+- Invalid modes are rejected.
+- Load and persist APIs return not implemented.
+- Diagnostics include config fields.
+- Config changes do not change PTT state.
+
+The config metadata is in:
+
+```text
+embedded/include/kilotnc_config.h
+embedded/app/embedded_config.c
+```
+
+Config and persistence planning is documented in:
+
+```text
+docs/m2-config-persistence-plan.md
+```
+
+M2.18 does not add flash writes, EEPROM emulation, filesystem persistence, linker flash regions, wear-leveling, or storage commits.
+
 ## Future Build Approaches
 
 Candidate approaches for M2.1 and later:

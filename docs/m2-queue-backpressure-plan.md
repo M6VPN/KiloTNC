@@ -29,6 +29,8 @@ Planned embedded queues:
 | Diagnostics/event queue | Platform/app to diagnostics | Bounded event and fault records |
 | Control/PTT event queue | Control path | Future safe state transitions only |
 
+Config commands and future commit requests belong on the control path. They must not bypass validation, mode support checks, max TX timeout policy, or PTT safe-off state.
+
 ## Backpressure Rules
 
 - No unbounded buffers.

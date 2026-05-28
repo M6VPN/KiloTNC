@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "embedded_config.h"
 #include "embedded_modem.h"
 #include "embedded_tnc.h"
 
@@ -28,25 +29,55 @@ static enum embedded_tnc_result
 embedded_tnc_apply_commands(struct embedded_tnc *tnc)
 {
 	if (tnc->parser.txdelay != tnc->status.txdelay) {
+		if (embedded_config_apply_kiss_setting(&tnc->config,
+		    KISS_CMD_TXDELAY, tnc->parser.txdelay) !=
+		    EMBEDDED_CONFIG_OK) {
+			tnc->status.config_validation_errors++;
+			return EMBEDDED_TNC_ERR_MODE;
+		}
 		tnc->status.txdelay = tnc->parser.txdelay;
 		tnc->control.config.txdelay_ms =
 		    (uint32_t)tnc->status.txdelay * 10U;
 	}
 	if (tnc->parser.p != tnc->status.p) {
+		if (embedded_config_apply_kiss_setting(&tnc->config,
+		    KISS_CMD_P, tnc->parser.p) != EMBEDDED_CONFIG_OK) {
+			tnc->status.config_validation_errors++;
+			return EMBEDDED_TNC_ERR_MODE;
+		}
 		tnc->status.p = tnc->parser.p;
 		tnc->control.config.p = tnc->status.p;
 	}
 	if (tnc->parser.slottime != tnc->status.slottime) {
+		if (embedded_config_apply_kiss_setting(&tnc->config,
+		    KISS_CMD_SLOTTIME, tnc->parser.slottime) !=
+		    EMBEDDED_CONFIG_OK) {
+			tnc->status.config_validation_errors++;
+			return EMBEDDED_TNC_ERR_MODE;
+		}
 		tnc->status.slottime = tnc->parser.slottime;
 		tnc->control.config.slottime_10ms = tnc->status.slottime;
 	}
 	if (tnc->parser.txtail != tnc->status.txtail) {
+		if (embedded_config_apply_kiss_setting(&tnc->config,
+		    KISS_CMD_TXTAIL, tnc->parser.txtail) !=
+		    EMBEDDED_CONFIG_OK) {
+			tnc->status.config_validation_errors++;
+			return EMBEDDED_TNC_ERR_MODE;
+		}
 		tnc->status.txtail = tnc->parser.txtail;
 		tnc->control.config.txtail_ms =
 		    (uint32_t)tnc->status.txtail * 10U;
 	}
 	if ((uint8_t)(tnc->parser.fullduplex != 0) !=
 	    tnc->status.fullduplex) {
+		if (embedded_config_apply_kiss_setting(&tnc->config,
+		    KISS_CMD_FULLDUPLEX,
+		    (uint8_t)(tnc->parser.fullduplex != 0)) !=
+		    EMBEDDED_CONFIG_OK) {
+			tnc->status.config_validation_errors++;
+			return EMBEDDED_TNC_ERR_MODE;
+		}
 		tnc->status.fullduplex =
 		    (uint8_t)(tnc->parser.fullduplex != 0);
 		tnc->control.config.fullduplex = tnc->status.fullduplex;
@@ -70,13 +101,17 @@ embedded_tnc_apply_mode(struct embedded_tnc *tnc, uint8_t value)
 	const struct tnc_mode_desc *desc;
 	enum tnc_mode_id requested;
 	enum tnc_mode_result mode_result;
+	enum embedded_config_result config_result;
 	int temporary;
 
 	tnc->status.mode_set_requests++;
 	tnc->status.last_nino_sethw = value;
+	config_result = embedded_config_apply_nino_sethw(&tnc->config,
+	    value);
 	mode_result = tnc_mode_from_nino_sethw(value, &requested, &temporary);
 	if (mode_result != TNC_MODE_OK) {
 		tnc->status.invalid_mode_requests++;
+		tnc->status.config_validation_errors++;
 		tnc->status.modem_tx_inhibited = 1U;
 		tnc->status.modem_rx_inhibited = 1U;
 		return EMBEDDED_TNC_OK;
@@ -84,6 +119,20 @@ embedded_tnc_apply_mode(struct embedded_tnc *tnc, uint8_t value)
 
 	tnc->status.last_requested_mode = requested;
 	tnc->status.last_mode_temporary = temporary != 0;
+	if (config_result == EMBEDDED_CONFIG_ERR_UNSUPPORTED) {
+		tnc->status.unsupported_mode_requests++;
+		tnc->status.config_validation_errors++;
+		tnc->status.modem_tx_inhibited = 1U;
+		tnc->status.modem_rx_inhibited = 1U;
+		return EMBEDDED_TNC_OK;
+	}
+	if (config_result != EMBEDDED_CONFIG_OK) {
+		tnc->status.invalid_mode_requests++;
+		tnc->status.config_validation_errors++;
+		tnc->status.modem_tx_inhibited = 1U;
+		tnc->status.modem_rx_inhibited = 1U;
+		return EMBEDDED_TNC_OK;
+	}
 	if (tnc_mode_get(requested, &desc) != TNC_MODE_OK ||
 	    desc->support != TNC_MODE_SUPPORT_IMPLEMENTED) {
 		tnc->status.unsupported_mode_requests++;
@@ -267,12 +316,19 @@ embedded_tnc_init(struct embedded_tnc *tnc)
 
 	(void)memset(tnc, 0, sizeof(*tnc));
 	kiss_parser_init(&tnc->parser);
+	if (embedded_config_defaults(&tnc->config) != EMBEDDED_CONFIG_OK)
+		return EMBEDDED_TNC_ERR_ARG;
+	tnc->parser.txdelay = (uint8_t)tnc->config.txdelay;
+	tnc->parser.p = (uint8_t)tnc->config.p;
+	tnc->parser.slottime = (uint8_t)tnc->config.slottime;
+	tnc->parser.txtail = (uint8_t)tnc->config.txtail;
+	tnc->parser.fullduplex = tnc->config.fullduplex != 0U;
 	(void)memset(&config, 0, sizeof(config));
-	config.p = tnc->parser.p;
-	config.slottime_10ms = tnc->parser.slottime;
-	config.txdelay_ms = (uint32_t)tnc->parser.txdelay * 10U;
-	config.txtail_ms = (uint32_t)tnc->parser.txtail * 10U;
-	config.max_tx_ms = 30000U;
+	config.p = (uint8_t)tnc->config.p;
+	config.slottime_10ms = (uint8_t)tnc->config.slottime;
+	config.txdelay_ms = (uint32_t)tnc->config.txdelay * 10U;
+	config.txtail_ms = (uint32_t)tnc->config.txtail * 10U;
+	config.max_tx_ms = tnc->config.max_tx_ms;
 	config.rng_seed = 1U;
 	if (tnc_control_init(&tnc->control, &config) != TNC_CONTROL_OK)
 		return EMBEDDED_TNC_ERR_ARG;
@@ -281,12 +337,14 @@ embedded_tnc_init(struct embedded_tnc *tnc)
 
 	tnc->status.current_mode = mode;
 	tnc->status.last_requested_mode = mode;
+	tnc->status.config_schema_version = tnc->config.schema_version;
+	tnc->status.max_tx_ms = tnc->config.max_tx_ms;
 	tnc->status.last_nino_sethw = TNC_MODE_NINO_NONE;
-	tnc->status.txdelay = tnc->parser.txdelay;
-	tnc->status.p = tnc->parser.p;
-	tnc->status.slottime = tnc->parser.slottime;
-	tnc->status.txtail = tnc->parser.txtail;
-	tnc->status.fullduplex = (uint8_t)(tnc->parser.fullduplex != 0);
+	tnc->status.txdelay = (uint8_t)tnc->config.txdelay;
+	tnc->status.p = (uint8_t)tnc->config.p;
+	tnc->status.slottime = (uint8_t)tnc->config.slottime;
+	tnc->status.txtail = (uint8_t)tnc->config.txtail;
+	tnc->status.fullduplex = tnc->config.fullduplex;
 	tnc->status.ptt_state = TNC_CONTROL_PTT_OFF;
 	return EMBEDDED_TNC_OK;
 }

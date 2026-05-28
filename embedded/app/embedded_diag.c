@@ -138,6 +138,14 @@ tnc:
 	    embedded_diag_size_to_u32(tnc_status.unsupported_mode_requests);
 	snapshot->tnc_mode_invalid =
 	    embedded_diag_size_to_u32(tnc_status.invalid_mode_requests);
+	snapshot->config_schema_version = tnc_status.config_schema_version;
+	snapshot->config_requested_mode =
+	    (uint32_t)tnc_status.last_requested_mode;
+	snapshot->config_max_tx_ms = tnc_status.max_tx_ms;
+	snapshot->config_validation_errors =
+	    embedded_diag_size_to_u32(tnc_status.config_validation_errors);
+	snapshot->config_persistence_unsupported =
+	    embedded_diag_size_to_u32(tnc_status.persistence_unsupported);
 	snapshot->tnc_modem_tx_requests =
 	    embedded_diag_size_to_u32(tnc_status.modem_tx_requests);
 	snapshot->tnc_modem_tx_accepted =
@@ -157,6 +165,7 @@ tnc:
 	snapshot->tnc_loopback_enabled = tnc_status.loopback_enabled;
 	snapshot->tnc_modem_tx_enabled = tnc_status.modem_tx_enabled;
 	snapshot->tnc_modem_rx_enabled = tnc_status.modem_rx_enabled;
+	snapshot->config_temporary = tnc_status.last_mode_temporary;
 
 modem:
 	if (app->modem == NULL)
@@ -224,8 +233,12 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    "tnc_mode=%u tnc_kiss_frames_in=%u tnc_kiss_frames_out=%u "
 	    "tnc_kiss_parse_errors=%u tnc_kiss_ignored=%u "
 	    "tnc_mode_set_requests=%u tnc_mode_unsupported=%u "
-	    "tnc_mode_invalid=%u tnc_txdelay=%u tnc_p=%u "
-	    "tnc_slottime=%u tnc_txtail=%u tnc_fullduplex=%u "
+	    "tnc_mode_invalid=%u config_schema=%u "
+	    "config_requested_mode=%u config_temporary=%u "
+	    "config_max_tx_ms=%u config_validation_errors=%u "
+	    "config_persistence_unsupported=%u "
+	    "tnc_txdelay=%u tnc_p=%u tnc_slottime=%u "
+	    "tnc_txtail=%u tnc_fullduplex=%u "
 	    "tnc_loopback=%u tnc_modem_tx_enabled=%u "
 	    "tnc_modem_tx_requests=%u tnc_modem_tx_accepted=%u "
 	    "tnc_modem_tx_rejected=%u tnc_modem_rx_enabled=%u "
@@ -255,9 +268,13 @@ embedded_diag_format(const struct embedded_diag_snapshot *snapshot, char *buf,
 	    snapshot->tnc_kiss_frames_out, snapshot->tnc_kiss_parse_errors,
 	    snapshot->tnc_kiss_ignored_commands,
 	    snapshot->tnc_mode_set_requests, snapshot->tnc_mode_unsupported,
-	    snapshot->tnc_mode_invalid, snapshot->tnc_txdelay,
-	    snapshot->tnc_p, snapshot->tnc_slottime, snapshot->tnc_txtail,
-	    snapshot->tnc_fullduplex, snapshot->tnc_loopback_enabled,
+	    snapshot->tnc_mode_invalid, snapshot->config_schema_version,
+	    snapshot->config_requested_mode, snapshot->config_temporary,
+	    snapshot->config_max_tx_ms, snapshot->config_validation_errors,
+	    snapshot->config_persistence_unsupported,
+	    snapshot->tnc_txdelay, snapshot->tnc_p, snapshot->tnc_slottime,
+	    snapshot->tnc_txtail, snapshot->tnc_fullduplex,
+	    snapshot->tnc_loopback_enabled,
 	    snapshot->tnc_modem_tx_enabled, snapshot->tnc_modem_tx_requests,
 	    snapshot->tnc_modem_tx_accepted,
 	    snapshot->tnc_modem_tx_rejected,

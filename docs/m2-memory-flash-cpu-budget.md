@@ -196,6 +196,20 @@ Current queue policy metadata references the existing USB, audio, frame, diagnos
 - Safety/control queue fault behavior.
 - Diagnostics/event queue retention behavior.
 
+## M2.18 Config Storage Budget Impact
+
+`docs/m2-config-persistence-plan.md` defines future persistent config records. Future memory and flash budget work must include:
+
+- Active config struct RAM.
+- Factory defaults.
+- Candidate config record staging buffer if needed.
+- Active and backup flash banks.
+- Commit marker and generation counter.
+- CRC field and validation code.
+- Wear and rate-limit metadata.
+
+M2.18 adds no linker flash region, flash erase, flash write, EEPROM emulation, or persistent storage backend.
+
 ## Sources Checked
 
 Sources checked on 2026-05-27:

@@ -36,6 +36,7 @@ M2 dev-board firmware work must prove safe defaults before any real radio PTT, c
 - M2.15 clock, reset, boot, and watchdog planning keeps clock setup, watchdog enable, and reset register reads as future hardware-adapter work only.
 - M2.16 memory, flash, and CPU budget planning keeps measured usage flags false until linker maps, high-water marks, and cycle measurements exist.
 - M2.17 queue and backpressure planning keeps overflow policy explicit for every planned queue and marks control/PTT events as safety critical.
+- M2.18 config and persistence planning keeps flash writes, EEPROM emulation, filesystem persistence, and storage commits unimplemented.
 
 ## Watchdog And Timeout
 
@@ -124,6 +125,16 @@ M2 firmware planning must include:
 - USB TX overflow must drop and count data or diagnostics deterministically.
 - Audio RX overflow and audio TX underflow must be counted and must not bypass safe-off state.
 - Control/PTT event queue overflow is a safety fault until a verified runtime policy exists.
+
+## M2.18 Config Safety Rules
+
+- Config corruption must fall back to safe factory defaults in future persistence work.
+- Config changes must not directly key PTT.
+- Temporary/no-flash SETHW requests must not persist.
+- No flash writes, flash erase, EEPROM emulation, filesystem persistence, or linker flash-region use is allowed in M2.18.
+- Known but unimplemented modes must not become active TX/RX modes.
+- Invalid modes must be rejected and counted.
+- Persistence APIs must not pretend success while storage is unimplemented.
 
 ## Diagnostics Visibility
 

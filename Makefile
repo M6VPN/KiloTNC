@@ -380,6 +380,7 @@ ${KISSTESTBIN}: ${CORE_SRCS} daemon/kilotncd_kiss_test.c
 
 ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/app/embedded_audio.c \
+	  embedded/app/embedded_config.c \
 	  embedded/app/embedded_diag.c \
 	  embedded/app/embedded_loopback.c \
 	  embedded/app/embedded_modem.c \
@@ -394,6 +395,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	  embedded/tests/test_budget_metadata.c \
 	  embedded/tests/test_embedded_app.c \
 	  embedded/tests/test_embedded_audio.c \
+	  embedded/tests/test_embedded_config.c \
 	  embedded/tests/test_embedded_diag.c \
 	  embedded/tests/test_embedded_loopback.c \
 	  embedded/tests/test_embedded_main.c \
@@ -417,6 +419,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 	mkdir -p ${BUILD}
 	${CC} ${EMBED_CFLAGS} -o $@ embedded/app/embedded_app.c \
 		embedded/app/embedded_audio.c \
+		embedded/app/embedded_config.c \
 		embedded/app/embedded_diag.c \
 		embedded/app/embedded_loopback.c \
 		embedded/app/embedded_modem.c \
@@ -431,6 +434,7 @@ ${EMBEDBIN}: embedded/app/embedded_app.c \
 		embedded/tests/test_budget_metadata.c \
 		embedded/tests/test_embedded_app.c \
 		embedded/tests/test_embedded_audio.c \
+		embedded/tests/test_embedded_config.c \
 		embedded/tests/test_embedded_diag.c \
 		embedded/tests/test_embedded_loopback.c \
 		embedded/tests/test_embedded_main.c \
